@@ -23,8 +23,8 @@ import math as mt
 import matplotlib.pyplot as plt
 import os
 
-from utilityfunct_aoa_toa_doppler import build_aoa_matrix, build_toa_matrix
-from utilityfunct_md_track import md_track_2d
+from utilityfunct_aoa_toa_doppler import build_aoa_matrix, build_toa_matrix, build_dop_matrix
+from utilityfunct_md_track import md_track_3d
 
 
 def plot_combined(paths_refined_amplitude_array, paths_refined_toa_array, paths_refined_aoa_array,
@@ -90,6 +90,7 @@ if __name__ == '__main__':
     # DATA LOADING
     # TODO now each file is [number_of_frames X number_of_subcarriers]
     # TODO create a matrix [number_of_frames X number_of_subcarriers X (number_of_azimuth_antennas + number_of_elevation_antennas)]
+    # TODO create a matrix [number_of_doppler_elem X number_of_subcarriers X (number_of_azimuth_antennas + number_of_elevation_antennas)]
     signal_complete = []
 
     A05, A04, A03, A02, A01 = 0, 0, 0, 0, 0
@@ -107,8 +108,10 @@ if __name__ == '__main__':
 
     num_time_steps = signal_complete.shape[0]
 
+    Tc = 5e-3  # sampling time
+
     F_frequency = 2025
-    delta_f = 78.5E3
+    delta_f = 78.5E3  # sub-channel spacing
 
     frequency_vector_idx = np.arange(F_frequency)
     frequency_vector_hz = delta_f * (frequency_vector_idx - F_frequency / 2)
@@ -118,16 +121,16 @@ if __name__ == '__main__':
                               254, 255], dtype=int)
     # frequency_vector_idx = np.delete(frequency_vector_idx, delete_idxs, axis=0)
     # frequency_vector_hz = np.delete(frequency_vector_hz, delete_idxs, axis=0)
-    fc = 5570E6
+    fc = 5180E6
     frequency_vector_hz = frequency_vector_hz + fc
 
     H_complete_valid = signal_complete
 
     T = 1/delta_f  # OFDM symbol time
-    range_considered = 3e-7
+    range_considered = 1e-8
     idxs_range_considered = int(range_considered/delta_t + 1)
     t_min = 0
-    t_max = T / 2  # T/2
+    t_max = T / 3  # T/2
 
     num_angles = 360
     num_paths = 100
@@ -136,19 +139,25 @@ if __name__ == '__main__':
     AoA_matrix, angles_vector, cos_ant_vector = build_aoa_matrix(num_angles, num_ant)
     AoA_matrix_reshaped = np.reshape(AoA_matrix, (AoA_matrix.shape[0], -1))
 
+    num_pkts = 50
+    step = 1
+    Dop_matrix, doppler_vector = build_dop_matrix(num_pkts, Tc, step)
+    num_freq = doppler_vector.shape[0]
+
     # mD-track 2D: remove offsets CFO, PDD, SFO
     paths_list = []
     paths_amplitude_list = []
     paths_toa_list = []
     paths_aoa_list = []
+    paths_dop_list = []
     optimization_times = np.zeros(num_time_steps)
 
     num_iteration_refinement = 10
-    threshold = -1.5
+    threshold = -2.5
 
-    for time_idx in range(0, num_time_steps):
+    for time_idx in range(0, num_time_steps, 1):
         # time_start = time.time()
-        cfr_sample = H_complete_valid[time_idx, :, :]
+        cfr_sample = H_complete_valid[time_idx:time_idx + num_pkts, :, :]
 
         # coarse estimation
         matrix_cfr_toa = np.dot(ToA_matrix, cfr_sample)
@@ -159,27 +168,32 @@ if __name__ == '__main__':
         index_end_toa = int(min(time_vector.shape[0], time_idx_max + idxs_range_considered))
         ToA_matrix_considered = ToA_matrix[index_start_toa:index_end_toa, :]
         time_vector_considered = time_vector[index_start_toa:index_end_toa]
+        num_times = time_vector_considered.shape[0]
 
         #####
         # MULTI-PATH PARAMETERS ESTIMATION
         start = time.time()
 
-        paths, paths_refined_amplitude, paths_refined_toa_idx, paths_refined_aoa_idx = md_track_2d(
-            cfr_sample, AoA_matrix, ToA_matrix_considered, num_ant, num_subc, num_angles, num_iteration_refinement,
-            threshold)
+        paths, paths_refined_amplitude, paths_refined_dop_idx, paths_refined_toa_idx, paths_refined_aoa_idx = \
+            md_track_3d(cfr_sample, AoA_matrix, ToA_matrix_considered, Dop_matrix, num_ant, num_subc, num_angles,
+                        num_pkts, num_times, num_freq, num_iteration_refinement, threshold)
+
         end = time.time()
         optimization_times[time_idx] = end-start
 
         paths_refined_aoa = angles_vector[paths_refined_aoa_idx] * 180 / mt.pi
         paths_refined_toa = time_vector_considered[paths_refined_toa_idx]
+        paths_refined_dop = doppler_vector[paths_refined_dop_idx]
         paths_refined_amplitude_array = np.asarray(paths_refined_amplitude)
         paths_refined_aoa_array = np.asarray(paths_refined_aoa)
         paths_refined_toa_array = np.asarray(paths_refined_toa)
+        paths_refined_dop_array = np.asarray(paths_refined_dop)
 
         paths_list.append(paths)
         paths_amplitude_list.append(paths_refined_amplitude_array)
         paths_aoa_list.append(paths_refined_aoa_array)
         paths_toa_list.append(paths_refined_toa_array)
+        paths_dop_list.append(paths_refined_dop_array)
         #####
 
     # Saving results
@@ -201,15 +215,9 @@ if __name__ == '__main__':
     name_file = save_dir + 'paths_toa_list_' + name_base + '.txt'
     with open(name_file, "wb") as fp:  # Pickling
         pickle.dump(paths_toa_list, fp)
+    name_file = save_dir + 'paths_dop_list_' + name_base + '.txt'
+    with open(name_file, "wb") as fp:  # Pickling
+        pickle.dump(paths_dop_list, fp)
 
     # plot_combined(paths_refined_amplitude_array, paths_refined_toa_array, paths_refined_aoa_array,
     #               path_loss_sorted_sim, times_sorted_sim, azimuth_sorted_sim_2)
-
-    import matplotlib.pyplot as plt
-    plt.figure()
-    plt.scatter(paths_refined_toa_array[:20], paths_refined_aoa_array[:20])
-    plt.show()
-
-    plt.figure()
-    plt.stem(abs(paths_refined_amplitude_array))
-    plt.show()

@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import os
 import glob
 
-directory = '/mnt/SSD2/INFOCOM_23/Data1/Captures_315/'
-directory_sync = '/mnt/SSD2/INFOCOM_23/Data1/Captures_315/Synced/'
+directory = '../Data1/Captures_315/'
+directory_sync = '../Data1/Captures_315/Synced/'
 extension = '*.csi'  # Replace with the desired file extension
 
 # Create the search pattern
