@@ -22,7 +22,7 @@ The following pipelines take as input a file containing channel frequency respon
 python Python_code/method_mDtrack.py <'number of spatial streams'> <'number of cores'> <'name of the directory of data'> <'starting of the name of the file'> <'delta ToA for grid search in multiples of 10^-11'>
 ```
 e.g., 
-python Python_code/method_mDtrack.py 1 4 ../simulation_files/change_delay_aoa/ simulation_artificial_grid_delaydiff_1e-09_aoadiff_4 --delta_t 25
+python Python_code/method_mDtrack.py 1 4 ../Data1/Captures_180/Synced/ mdtrack2D --delta_t 25
 
 The script uses the following utility functions:
 ```build_aoa_matrix```, ```build_toa_matrix``` in ```utilityfunct_aoa_toa_doppler.py``` 

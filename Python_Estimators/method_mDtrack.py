@@ -25,7 +25,8 @@ import os
 
 from utilityfunct_aoa_toa_doppler import build_aoa_matrix, build_toa_matrix
 from utilityfunct_md_track import md_track_2d
-
+import matplotlib
+matplotlib.use('QtCairo')
 
 def plot_combined(paths_refined_amplitude_array, paths_refined_toa_array, paths_refined_aoa_array,
                   path_loss_sorted_sim, times_sorted_sim, azimuth_sorted_sim_2):
@@ -107,17 +108,26 @@ if __name__ == '__main__':
 
     num_time_steps = signal_complete.shape[0]
 
-    F_frequency = 2025
-    delta_f = 78.5E3
+    BW = 160E6
+    F_frequency = 2025  # 1996 without pilot probably
+
+    delta_f = 78.125E3
 
     frequency_vector_idx = np.arange(F_frequency)
     frequency_vector_hz = delta_f * (frequency_vector_idx - F_frequency / 2)
-    # control_subcarriers = [0, 1, 2, 3, 4, 5, 127, 128, 129, 251, 252, 253, 254, 255]
-    # pilot_subcarriers = [25, 53, 89, 117, 139, 167, 203, 231]
-    delete_idxs = np.asarray([0, 1, 2, 3, 4, 5, 25, 53, 89, 117, 127, 128, 129, 139, 167, 203, 231, 251, 252, 253,
-                              254, 255], dtype=int)
-    # frequency_vector_idx = np.delete(frequency_vector_idx, delete_idxs, axis=0)
-    # frequency_vector_hz = np.delete(frequency_vector_hz, delete_idxs, axis=0)
+    control_subcarriers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                           2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047]
+    frequency_vector_idx = np.concatenate((np.arange(-1012, -514),
+                                          np.arange(-509, -11),
+                                          np.arange(12, 510),
+                                          np.arange(515, 1013)))
+
+    pilot_subcarriers = [-468, -400, -334, -266, -226, -158, -92, -24, 24, 92, 158, 226, 266, 334, 400, 468]
+
+    delete_idxs = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                              2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047], dtype=int)
+    frequency_vector_idx = np.delete(frequency_vector_idx, delete_idxs, axis=0)
+    frequency_vector_hz = np.delete(frequency_vector_hz, delete_idxs, axis=0)
     fc = 5570E6
     frequency_vector_hz = frequency_vector_hz + fc
 
