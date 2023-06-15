@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import os
 import glob
 
-array_names =['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09']
+array_names =['A01', 'A02', 'A03', 'A04', 'A05', 'B01', 'B02', 'B03', 'B04', 'B05']
 
-directory = '../Data1/Captures_calibration/'
+directory = '../Data2/Calibration/'
 extension = '*.csi'  # Replace with the desired file extension
 
 # Create the search pattern
@@ -22,7 +22,7 @@ for file in files:
     A = []
 
     frames = Picoscenes(file)
-    for i in range(1000):
+    for i in range(500):
         saved_file = directory + 'Synced/' + file[-7:-4] + ".npy"
         numTones = frames.raw[i].get("CSI").get("numTones")
         CSI = np.array(frames.raw[i].get("CSI").get("CSI"))[:numTones]

@@ -20,7 +20,7 @@ def process_file(file):
     frames = Picoscenes(file)
 
 
-    for i in range(12288):
+    for i in range(8000):
         sequence = frames.raw[i].get("StandardHeader").get("Sequence")
         np.array(A.append((i, sequence)))
     seq = [tuple[1] for tuple in A]
@@ -56,8 +56,8 @@ def save_corresponding_elements(directory, array_names, synced_sequence):
         np.save(save_name, corresponding_element)
 
 if __name__ == "__main__":
-    array_names = ['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09']
-    directory = '../Data1/Captures_315/'
+    array_names = ['B01', 'B02', 'B03', 'B04', 'B05']
+    directory = '../Data2/Pannel_B/Captures_empty/'
     extension = '*.csi'
     files = load_files(directory, extension)
     for file in files:

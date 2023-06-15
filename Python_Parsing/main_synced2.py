@@ -21,8 +21,8 @@ def process_file(file, directory, directory_sync):
     np.save(saved_file, globals()[seq_array])
 
 if __name__ == "__main__":
-    directory = '../Data1/Captures_315/'
-    directory_sync = '../Data1/Captures_315/Synced/'
+    directory = '../Data2/Pannel_B/Captures_empty/'
+    directory_sync = '../Data2/Pannel_B/Captures_empty/Synced/'
     extension = '*.csi'
     files = load_files(directory, extension)
     for file in files:
