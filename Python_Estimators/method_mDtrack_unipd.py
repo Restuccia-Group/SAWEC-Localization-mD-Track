@@ -22,6 +22,7 @@ import pickle
 import math as mt
 import matplotlib.pyplot as plt
 import os
+import csiread
 
 from utilityfunct_aoa_toa_doppler import build_aoa_matrix, build_toa_matrix
 from utilityfunct_md_track import md_track_2d
@@ -70,8 +71,6 @@ def plot_combined(paths_refined_amplitude_array, paths_refined_toa_array, paths_
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('nics', help='Last two digits of the MAC of the NICs to consider')
-    parser.add_argument('fc', help='Central frequency in MHz', type=int)
     parser.add_argument('exp_dir', help='Name base of the directory')
     parser.add_argument('calibration_dir', help='Name base of the directory for calibration')
     parser.add_argument('name_base', help='Name base of the simulation')
@@ -83,61 +82,55 @@ if __name__ == '__main__':
     name_base = args.name_base  # simulation
 
     delta_t = np.round(args.delta_t * 1e-11, 11)  # 5E-10  # 1.25e-11
-    save_dir = '../results/mdTrack' + str(delta_t) + '/'
+    save_dir = '../results/mdTrack_unipd' + str(delta_t) + '/'
     if os.path.exists(save_dir + 'paths_list_' + name_base + '.txt'):
         print('Already processed')
         exit()
 
     # DATA LOADING
-    # TODO now each file is [number_of_frames X number_of_subcarriers]
-    # TODO create a matrix [number_of_frames X number_of_subcarriers X (number_of_azimuth_antennas + number_of_elevation_antennas)]
     signal_complete = []
 
-    nics_list = []  # 'A05', 'A04', 'A03', 'A02', 'A01'
-    nics = args.nics
-    files_name = []
-    for nic in nics.split(','):
-        nics_list.append(nic)
-    num_ant = len(nics_list)
+    num_ant = 4
 
-    singal_nics = []
-    for file_name in nics_list:
-        csi_file = exp_dir + file_name + '.npy'
-        csi_file_calib = calibration_dir + file_name + '.npy'
-        # globals()[file_name] = np.load(csi_file)
-        # globals()[file_name] = globals()[file_name][:11000]
-        signal_raw = np.load(csi_file)[:11000]
-        signal_calibration = np.load(csi_file_calib)
-        signal_calibrated = signal_raw * np.conj(signal_calibration[100])
-        singal_nics.append(signal_calibrated)
+    BW = 80
+    csi_file = exp_dir + 'trace3.pcap'
+    csi_file_calib = calibration_dir + 'trace3.pcap'
+    try:
+        csi_data = csiread.Nexmon(csi_file, chip='4366c0', bw=BW)
+        csi_data.read()
+        signal_raw = csi_data.csi[:11000]
+        signal_raw = np.fft.fftshift(signal_raw, axes=1)
+        
+        csi_calibration = csiread.Nexmon(csi_file_calib, chip='4366c0', bw=BW)
+        csi_calibration.read()
+        signal_calibration = csi_calibration.csi
+        signal_calibration = np.fft.fftshift(signal_calibration, axes=1)
+        
+    except Exception:
+        print('error in this packet, skipping...')
 
-        # plt.figure()
-        # plt.pcolor(abs(signal_calibration[:500, :]).T)
-        # plt.show()
-        # plt.figure()
-        # plt.pcolor(np.angle(signal_calibration[:500, :]).T)
-        # plt.show()
-        # plt.figure()
-        # plt.plot(np.unwrap(np.angle(signal_raw[:500, :])).T)
-        # plt.show()
+    # plt.figure()
+    # plt.pcolor(abs(signal_calibration[:500, :]).T)
+    # plt.show()
+    # plt.figure()
+    # plt.pcolor(np.angle(signal_calibration[:500, :]).T)
+    # plt.show()
+    # plt.figure()
+    # plt.plot(np.unwrap(np.angle(signal_calibration[:500, :])).T)
+    # plt.show()
 
-    signal_complete = np.stack(singal_nics, axis=2)
+    F_frequency = 256  # 1996 without pilot probably
 
-    num_time_steps = signal_complete.shape[0]
-
-    BW = 160E6
-    F_frequency = 2048  # 1996 without pilot probably
-
-    delta_f = 78.125E3
+    delta_f = 312.5E3
 
     frequency_vector_idx = np.arange(F_frequency)
     frequency_vector_hz = delta_f * (frequency_vector_idx - F_frequency / 2)
 
-    control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-                                      2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047], dtype=int)
-    # pilot_subchannels = [-468, -400, -334, -266, -226, -158, -92, -24, 24, 92, 158, 226, 266, 334, 400, 468]
-
-    frequency_vector_idx = np.delete(frequency_vector_idx, control_subchannels)
+    control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 127, 128, 129, 251, 252, 253, 254, 255], dtype=int)
+    delete_idxs = np.asarray([0, 1, 2, 3, 4, 5, 25, 53, 89, 117, 127, 128, 129, 139, 167, 203, 231, 251, 252, 253,
+                              254, 255], dtype=int)
+    
+    frequency_vector_idx = np.delete(frequency_vector_idx, delete_idxs)
     # frequency_vector_idx = np.concatenate((np.arange(-1012, -514),
     #                                       np.arange(-509, -11),
     #                                       np.arange(12, 510),
@@ -145,19 +138,39 @@ if __name__ == '__main__':
 
     frequency_vector_hz = frequency_vector_hz[frequency_vector_idx]
 
-    delete_idxs = np.arange(1996, 2025)  # PicoScenes return zero here
-    frequency_vector_idx = np.delete(frequency_vector_idx, delete_idxs)
-    frequency_vector_hz = np.delete(frequency_vector_hz, delete_idxs)
-    H_complete_valid = np.delete(signal_complete, delete_idxs, axis=1)
+    H_complete_valid = []
+    num_time_steps_tot = signal_raw.shape[0]
+    for stream in range(num_ant):
 
-    fc = args.fc * 1e6  # B: 5570E6  # A: 5250E6
+        signal_stream = signal_raw[stream:num_time_steps_tot * num_ant:num_ant, :]
+        signal_stream[:, 64:] = - signal_stream[:, 64:]  # TODO needed (already checked)
+        signal_stream = np.delete(signal_stream, delete_idxs, axis=1)
+
+        signal_stream_calib = signal_calibration[stream:num_time_steps_tot * num_ant:num_ant, :]
+        signal_stream_calib[:, 64:] = - signal_stream_calib[:, 64:]  # TODO needed (already checked)
+        signal_stream_calib = np.delete(signal_stream_calib, delete_idxs, axis=1)
+
+        # signal_stream_calibrated = signal_stream * np.conj(signal_stream_calib[100, :])
+        signal_stream_calibrated = signal_stream / signal_stream_calib[0, :]
+        
+        # signal_considered = np.delete(signal_considered, delete_idxs, axis=1)
+        mean_signal = np.mean(np.abs(signal_stream_calibrated), axis=1, keepdims=True)
+        signal_stream_calibrated = signal_stream_calibrated / mean_signal
+
+        delete_zeros_idxs = np.argwhere(np.sum(signal_stream_calibrated, axis=1) == 0)[:, 0]
+        signal_stream_calibrated = np.delete(signal_stream_calibrated, delete_zeros_idxs, axis=0)
+        
+        H_complete_valid.append(signal_stream_calibrated)
+    
+    H_complete_valid = np.stack(H_complete_valid, axis=2)
+    num_time_steps = H_complete_valid.shape[0]
+
+    fc = 5775E6
     frequency_vector_hz = frequency_vector_hz + fc
 
-    T = 1/delta_f  #
-    range_refined_up = 4E-8  # 2.5E-7
-    idxs_range_ref_up = int(range_refined_up / delta_t + 1)
-    range_refined_down = 1E-8  # 2.5E-7
-    idxs_range_ref_down = int(range_refined_down / delta_t + 1)
+    T = 1/delta_f  # OFDM symbol time
+    range_considered = 3e-7
+    idxs_range_considered = int(range_considered/delta_t + 1)
     t_min = 0
     t_max = T  # T/2
 
@@ -176,8 +189,8 @@ if __name__ == '__main__':
 
     num_iteration_refinement = 10
     threshold = -2.5
-
-    for time_idx in range(1000, num_time_steps):
+    
+    for time_idx in range(0, num_time_steps):
         # time_start = time.time()
         cfr_sample = H_complete_valid[time_idx, :, :]
 
@@ -185,14 +198,17 @@ if __name__ == '__main__':
         # cir = np.fft.fftshift(np.fft.fft2(cfr_sample, s=(2048 * 4, 2048)), axes=(1, 0))
         # plt.pcolor(abs(cir[2048 * 2 - 200:2048 * 2 + 200, :]).T)
         # plt.show()
+        # plt.figure()
+        # plt.plot(abs(H_complete_valid[time_idx, :, 0]))
+        # plt.show()
 
         # coarse estimation
         matrix_cfr_toa = np.dot(ToA_matrix, cfr_sample)
         power_matrix_cfr_toa = np.sum(np.abs(matrix_cfr_toa), 1)
         time_idx_max = np.argmax(power_matrix_cfr_toa)
         time_max = time_vector[time_idx_max]
-        index_start_toa = int(max(0, time_idx_max - idxs_range_ref_down))
-        index_end_toa = int(min(time_vector.shape[0], time_idx_max + idxs_range_ref_up))
+        index_start_toa = int(max(0, time_idx_max - idxs_range_considered))
+        index_end_toa = int(min(time_vector.shape[0], time_idx_max + idxs_range_considered))
         ToA_matrix_considered = ToA_matrix[index_start_toa:index_end_toa, :]
         time_vector_considered = time_vector[index_start_toa:index_end_toa]
 
@@ -242,16 +258,16 @@ if __name__ == '__main__':
     #               path_loss_sorted_sim, times_sorted_sim, azimuth_sorted_sim_2)
 
     plt.figure()    
-    vmin = -5
+    vmin = -10 
     vmax = 0 
-    for i in range(0, 30):
+    for i in range(0, 139):
         sort_idx = np.flip(np.argsort(abs(paths_amplitude_list[i])))
         paths_amplitude_sort = paths_amplitude_list[i][sort_idx]
         paths_power = np.power(np.abs(paths_amplitude_sort), 2)
         paths_power = 10 * np.log10(paths_power / np.amax(np.nan_to_num(paths_power)))  # dB
         paths_toa_sort = paths_toa_list[i][sort_idx]
         paths_aoa_sort = paths_aoa_list[i][sort_idx]
-        num_paths_plot = 20
+        num_paths_plot = 10
         # print(paths_power[:num_paths_plot])
         toa_array = paths_toa_sort - paths_toa_sort[0]
         plt.scatter(toa_array[:num_paths_plot] * 1E9, paths_aoa_sort[:num_paths_plot],
@@ -263,7 +279,7 @@ if __name__ == '__main__':
     plt.xlabel('ToA [ns]')
     plt.ylabel('AoA [deg]')    
     # plt.xlim([-1, 40])  # range_considered + 100 * delta_t])
-    # plt.ylim([-90, 90])
+    plt.ylim([-90, 90])
     plt.grid()
     # plt.scatter(paths_refined_toa_array[:20], paths_refined_aoa_array[:20])
     plt.show()
