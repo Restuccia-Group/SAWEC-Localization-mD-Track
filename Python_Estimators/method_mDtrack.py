@@ -108,7 +108,8 @@ if __name__ == '__main__':
         # globals()[file_name] = globals()[file_name][:11000]
         signal_raw = np.load(csi_file)[:11000]
         signal_calibration = np.load(csi_file_calib)
-        signal_calibrated = signal_raw * np.conj(signal_calibration[100])
+        # signal_calibrated = signal_raw * np.conj(signal_calibration[100])
+        signal_calibrated = signal_raw / signal_calibration[100]
         singal_nics.append(signal_calibrated)
 
         # plt.figure()
@@ -244,7 +245,7 @@ if __name__ == '__main__':
     plt.figure()    
     vmin = -5
     vmax = 0 
-    for i in range(0, 30):
+    for i in range(0, 37):
         sort_idx = np.flip(np.argsort(abs(paths_amplitude_list[i])))
         paths_amplitude_sort = paths_amplitude_list[i][sort_idx]
         paths_power = np.power(np.abs(paths_amplitude_sort), 2)
