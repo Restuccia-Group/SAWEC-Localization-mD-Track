@@ -69,14 +69,17 @@ def plot_combined(paths_refined_amplitude_array, paths_refined_toa_array, paths_
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('nss', help='Number of spatial streams', type=int)
-    parser.add_argument('ncore', help='Number of cores', type=int)
+    parser.add_argument('nics', help='Last two digits of the MAC of the NICs to consider')
+    parser.add_argument('fc', help='Central frequency in MHz', type=int)
     parser.add_argument('exp_dir', help='Name base of the directory')
+    parser.add_argument('calibration_dir', help='Name base of the directory for calibration')
     parser.add_argument('name_base', help='Name base of the simulation')
-    parser.add_argument('--delta_t', help='Delta ToA for grid search in multiples of 10^-11', default=50, type=int, required=False)
+    parser.add_argument('--delta_t', help='Delta ToA for grid search in multiples of 10^-11', default=50, type=int,
+                        required=False)
     args = parser.parse_args()
 
     exp_dir = args.exp_dir
+    calibration_dir = args.calibration_dir
     name_base = args.name_base  # simulation
 
     delta_t = np.round(args.delta_t * 1e-11, 11)  # 5E-10  # 1.25e-11
@@ -85,60 +88,87 @@ if __name__ == '__main__':
         print('Already processed')
         exit()
 
-    num_ant = args.nss * args.ncore
-
     # DATA LOADING
     # TODO now each file is [number_of_frames X number_of_subcarriers]
     # TODO create a matrix [number_of_frames X number_of_subcarriers X (number_of_azimuth_antennas + number_of_elevation_antennas)]
-    # TODO create a matrix [number_of_doppler_elem X number_of_subcarriers X (number_of_azimuth_antennas + number_of_elevation_antennas)]
     signal_complete = []
 
-    A05, A04, A03, A02, A01 = 0, 0, 0, 0, 0
+    nics_list = []  # 'A05', 'A04', 'A03', 'A02', 'A01'
+    nics = args.nics
+    files_name = []
+    for nic in nics.split(','):
+        nics_list.append(nic)
+    num_ant = len(nics_list)
 
-    A = ['A05', 'A04', 'A03', 'A02', 'A01']
-
-    for file_name in A:
+    singal_nics = []
+    for file_name in nics_list:
         csi_file = exp_dir + file_name + '.npy'
-        globals()[file_name] = np.load(csi_file)
-        globals()[file_name] = globals()[file_name][:11000]
+        csi_file_calib = calibration_dir + file_name + '.npy'
+        # globals()[file_name] = np.load(csi_file)
+        # globals()[file_name] = globals()[file_name][:11000]
+        signal_raw = np.load(csi_file)[:11000]
+        signal_calibration = np.load(csi_file_calib)
+        # signal_calibrated = signal_raw * np.conj(signal_calibration[100])
+        signal_calibrated = signal_raw / signal_calibration[100]
+        singal_nics.append(signal_calibrated)
 
-    AA = [A05, A04, A03, A02, A01]
+        # plt.figure()
+        # plt.pcolor(abs(signal_calibration[:500, :]).T)
+        # plt.show()
+        # plt.figure()
+        # plt.pcolor(np.angle(signal_calibration[:500, :]).T)
+        # plt.show()
+        # plt.figure()
+        # plt.plot(np.unwrap(np.angle(signal_calibration[:500, :])).T)
+        # plt.show()
 
-    signal_complete = np.stack(AA, axis=2)
+    signal_complete = np.stack(singal_nics, axis=2)
 
     num_time_steps = signal_complete.shape[0]
 
-    Tc = 5e-3  # sampling time
+    BW = 160E6
+    F_frequency = 2048  # 1996 without pilot probably
 
-    F_frequency = 2025
-    delta_f = 78.5E3  # sub-channel spacing
+    delta_f = 78.125E3
 
     frequency_vector_idx = np.arange(F_frequency)
     frequency_vector_hz = delta_f * (frequency_vector_idx - F_frequency / 2)
-    # control_subcarriers = [0, 1, 2, 3, 4, 5, 127, 128, 129, 251, 252, 253, 254, 255]
-    # pilot_subcarriers = [25, 53, 89, 117, 139, 167, 203, 231]
-    delete_idxs = np.asarray([0, 1, 2, 3, 4, 5, 25, 53, 89, 117, 127, 128, 129, 139, 167, 203, 231, 251, 252, 253,
-                              254, 255], dtype=int)
-    # frequency_vector_idx = np.delete(frequency_vector_idx, delete_idxs, axis=0)
-    # frequency_vector_hz = np.delete(frequency_vector_hz, delete_idxs, axis=0)
-    fc = 5180E6
+
+    control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                      2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047], dtype=int)
+    # pilot_subchannels = [-468, -400, -334, -266, -226, -158, -92, -24, 24, 92, 158, 226, 266, 334, 400, 468]
+
+    frequency_vector_idx = np.delete(frequency_vector_idx, control_subchannels)
+    # frequency_vector_idx = np.concatenate((np.arange(-1012, -514),
+    #                                       np.arange(-509, -11),
+    #                                       np.arange(12, 510),
+    #                                       np.arange(515, 1013))) + 1024
+
+    frequency_vector_hz = frequency_vector_hz[frequency_vector_idx]
+
+    delete_idxs = np.arange(1996, 2025)  # PicoScenes return zero here
+    frequency_vector_idx = np.delete(frequency_vector_idx, delete_idxs)
+    frequency_vector_hz = np.delete(frequency_vector_hz, delete_idxs)
+    H_complete_valid = np.delete(signal_complete, delete_idxs, axis=1)
+
+    fc = args.fc * 1e6  # B: 5570E6  # A: 5250E6
     frequency_vector_hz = frequency_vector_hz + fc
 
-    H_complete_valid = signal_complete
-
     T = 1/delta_f  # OFDM symbol time
-    range_considered = 1e-8
-    idxs_range_considered = int(range_considered/delta_t + 1)
+    range_refined_up = 4E-8  # 2.5E-7
+    idxs_range_ref_up = int(range_refined_up / delta_t + 1)
+    range_refined_down = 1E-8  # 2.5E-7
+    idxs_range_ref_down = int(range_refined_down / delta_t + 1)
     t_min = 0
-    t_max = T / 3  # T/2
+    t_max = T  # T/2
 
     num_angles = 360
-    num_paths = 100
     num_subc = frequency_vector_idx.shape[0]
     ToA_matrix, time_vector = build_toa_matrix(frequency_vector_hz, delta_t, t_min, t_max)
     AoA_matrix, angles_vector, cos_ant_vector = build_aoa_matrix(num_angles, num_ant)
     AoA_matrix_reshaped = np.reshape(AoA_matrix, (AoA_matrix.shape[0], -1))
 
+    Tc = 8e-3
     num_pkts = 50
     step = 1
     Dop_matrix, doppler_vector = build_dop_matrix(num_pkts, Tc, step)
@@ -153,19 +183,20 @@ if __name__ == '__main__':
     optimization_times = np.zeros(num_time_steps)
 
     num_iteration_refinement = 10
-    threshold = -2.5
+    threshold = -1.5
 
+    H_complete_valid = np.moveaxis(H_complete_valid, [0, 1, 2], [2, 1, 0])  # angles, subchannels, packets
     for time_idx in range(0, num_time_steps, 1):
         # time_start = time.time()
-        cfr_sample = H_complete_valid[time_idx:time_idx + num_pkts, :, :]
+        cfr_sample = H_complete_valid[:, :, time_idx:time_idx + num_pkts]
 
         # coarse estimation
         matrix_cfr_toa = np.dot(ToA_matrix, cfr_sample)
-        power_matrix_cfr_toa = np.sum(np.abs(matrix_cfr_toa), 1)
+        power_matrix_cfr_toa = np.sum(np.abs(matrix_cfr_toa), (1, 2))
         time_idx_max = np.argmax(power_matrix_cfr_toa)
         time_max = time_vector[time_idx_max]
-        index_start_toa = int(max(0, time_idx_max - idxs_range_considered))
-        index_end_toa = int(min(time_vector.shape[0], time_idx_max + idxs_range_considered))
+        index_start_toa = int(max(0, time_idx_max - idxs_range_ref_down))
+        index_end_toa = int(min(time_vector.shape[0], time_idx_max + idxs_range_ref_up))
         ToA_matrix_considered = ToA_matrix[index_start_toa:index_end_toa, :]
         time_vector_considered = time_vector[index_start_toa:index_end_toa]
         num_times = time_vector_considered.shape[0]

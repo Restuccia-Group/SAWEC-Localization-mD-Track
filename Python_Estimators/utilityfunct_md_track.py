@@ -191,7 +191,7 @@ def md_track_2d(cfr_sample, aoa_matrix, toa_matrix, num_ant, num_subc, num_angle
         paths.append(signal_path)
 
         cfr_sample_residual = cfr_sample_residual - signal_path
-
+    # plt.figure(); plt.plot(cfr_sample_residual[:, 0]); plt.show();
     num_estimated_paths = len(paths)
 
     # mD-Track ITERATIVE REFINEMENT
@@ -294,9 +294,10 @@ def joint_aoa_tof_dop_estimation(cfr_window, aoa_matrix, toa_matrix, dop_matrix,
         matrix_cfr_aoa_sum = np.sum(matrix_cfr_aoa, 0)
 
         matrix_cfr_aoa_toa = np.dot(toa_matrix, matrix_cfr_aoa_sum)
-
+        # plt.figure(); plt.pcolor(abs(matrix_cfr_aoa_toa)); plt.show();
         matrix_cfr_aoa_toa_dop[:, :, index_aoa] = np.dot(matrix_cfr_aoa_toa, dop_matrix) / \
                                                   (num_pkts * num_subc * num_ant)
+        # plt.figure(); plt.pcolor(abs(matrix_cfr_aoa_toa_dop[0, :, :])); plt.show();
     # time_e = time.time()
     # print(time_e-time_s)
 
@@ -306,8 +307,38 @@ def joint_aoa_tof_dop_estimation(cfr_window, aoa_matrix, toa_matrix, dop_matrix,
     angle_dop_idx_max = int(index_max % (num_angles * num_dop))
     dop_idx_max = int(angle_dop_idx_max / num_angles)
     angle_idx_max = int(angle_dop_idx_max % num_angles)
-
+    # plt.figure(); plt.pcolor(abs(matrix_cfr_aoa_toa_dop[time_idx_max, :, :])); plt.show();
+    # plt.figure(); plt.pcolor(abs(matrix_cfr_aoa_toa_dop[:, dop_idx_max, :])); plt.show();
+    # plt.figure(); plt.pcolor(abs(matrix_cfr_aoa_toa_dop[:, :, angle_idx_max])); plt.show();
+    a = 1
     amplitudes_time_max = matrix_cfr_aoa_toa_dop[time_idx_max, dop_idx_max, angle_idx_max]
+
+    return amplitudes_time_max, power_matrix_cfr_aoa_toa_dop[time_idx_max, dop_idx_max, angle_idx_max], \
+           dop_idx_max, time_idx_max, angle_idx_max
+
+
+def joint_aoa_tof_dop_estimation_fast(cfr_window, aoa_matrix, toa_matrix, dop_matrix, num_ant, num_subc, num_pkts,
+                                      num_angles, num_times, num_dop):
+
+    # time_s = time.time()
+    cfr_window_move = np.moveaxis(cfr_window, [0], [2])
+    channel_aoa = np.dot(cfr_window_move, aoa_matrix)
+    channel_aoa = np.moveaxis(channel_aoa, [0], [2])
+
+    channel_toa = np.dot(channel_aoa, toa_matrix.T)
+    channel_toa = np.moveaxis(channel_toa, [0], [2])
+
+    channel_dfs = np.dot(channel_toa, dop_matrix) / (num_pkts * num_subc * num_ant)
+    channel_dfs = np.moveaxis(channel_dfs, [0], [2])
+
+    power_matrix_cfr_aoa_toa_dop = np.power(np.abs(channel_dfs), 2)
+    index_max = np.argmax(power_matrix_cfr_aoa_toa_dop)
+    time_idx_max = int(index_max / (num_angles * num_dop))
+    angle_dop_idx_max = int(index_max % (num_angles * num_dop))
+    dop_idx_max = int(angle_dop_idx_max / num_angles)
+    angle_idx_max = int(angle_dop_idx_max % num_angles)
+
+    amplitudes_time_max = channel_dfs[time_idx_max, dop_idx_max, angle_idx_max]
 
     return amplitudes_time_max, power_matrix_cfr_aoa_toa_dop[time_idx_max, dop_idx_max, angle_idx_max], \
            dop_idx_max, time_idx_max, angle_idx_max
@@ -315,9 +346,8 @@ def joint_aoa_tof_dop_estimation(cfr_window, aoa_matrix, toa_matrix, dop_matrix,
 
 def individual_aoa_tof_dop_estimation(cfr_window, aoa_matrix, toa_matrix, dop_matrix, num_ant, num_subc, num_pkts,
                                       index_toa, index_dop):
-    toa_matrix_select = np.reshape(toa_matrix[index_toa, :], (1, -1, 1))
-    cfr_window_toa = np.multiply(toa_matrix_select, cfr_window)
-    cfr_window_toa = np.sum(cfr_window_toa, axis=1)
+    toa_matrix_select = np.reshape(toa_matrix[index_toa, :], (1, -1))
+    cfr_window_toa = np.dot(toa_matrix_select, cfr_window)
     cfr_window_toa_dop = np.dot(cfr_window_toa, dop_matrix[:, index_dop])
     matrix_cfr_aoa = np.dot(cfr_window_toa_dop, (aoa_matrix)) / (num_ant * num_subc * num_pkts)
     angle_idx_max = np.argmax(np.power(np.abs(matrix_cfr_aoa), 2))
@@ -330,14 +360,22 @@ def individual_aoa_tof_dop_estimation(cfr_window, aoa_matrix, toa_matrix, dop_ma
 
     aoa_matrix_select = np.reshape(aoa_matrix[:, angle_idx_max], (-1, 1, 1))
     cfr_window_aoa = np.sum(np.multiply(cfr_window, aoa_matrix_select), 0)
-    cfr_window_aoa_toa = np.dot(toa_matrix[index_toa, :], cfr_window_aoa)
+    cfr_window_aoa_toa = np.dot(toa_matrix[time_idx_max, :], cfr_window_aoa)
     matrix_cfr_dop = np.dot(cfr_window_aoa_toa, dop_matrix) / (num_ant * num_subc * num_pkts)
     power_matrix_cfr_dop = np.power(np.abs(matrix_cfr_dop), 2)
     dop_idx_max = np.argmax(power_matrix_cfr_dop)
+    a = 1
+    # plt.figure(); plt.pcolor(abs(cfr_window_toa[0, :, :])); plt.show();
+    # plt.figure(); plt.plot(abs(matrix_cfr_aoa[0, :])); plt.show();
+    # plt.figure(); plt.pcolor(abs(cfr_window_aoa)); plt.show();
+    # plt.figure(); plt.plot(abs(matrix_cfr_toa)); plt.show();
+    # plt.figure(); plt.pcolor(abs(cfr_window_aoa)); plt.show();
+    # plt.figure(); plt.plot(abs(matrix_cfr_dop)); plt.show();
 
-    amplitudes_time_max = matrix_cfr_dop[time_idx_max]
+    amplitude_max = matrix_cfr_dop[dop_idx_max]
+    power_max = power_matrix_cfr_dop[dop_idx_max]
 
-    return amplitudes_time_max, power_matrix_cfr_dop[dop_idx_max], dop_idx_max, time_idx_max, angle_idx_max
+    return amplitude_max, power_max, dop_idx_max, time_idx_max, angle_idx_max
 
 
 def md_track_3d(cfr_window, aoa_matrix, toa_matrix, dop_matrix, num_ant, num_subc, num_angles, num_pkts,
@@ -353,7 +391,7 @@ def md_track_3d(cfr_window, aoa_matrix, toa_matrix, dop_matrix, num_ant, num_sub
     paths_aoa = []
     cfr_window_residual = cfr_window
     while True:
-        path_amplitude, path_power, path_dop, path_toa, path_aoa = joint_aoa_tof_dop_estimation(cfr_window_residual,
+        path_amplitude, path_power, path_dop, path_toa, path_aoa = joint_aoa_tof_dop_estimation_fast(cfr_window_residual,
                                                                                                 aoa_matrix, toa_matrix,
                                                                                                 dop_matrix, num_ant,
                                                                                                 num_subc, num_pkts,
@@ -380,7 +418,7 @@ def md_track_3d(cfr_window, aoa_matrix, toa_matrix, dop_matrix, num_ant, num_sub
         paths.append(signal_path)
 
         cfr_window_residual = cfr_window_residual - signal_path
-
+    # plt.figure(); plt.plot(abs(cfr_window_residual[0, :, 10])); plt.show();
     num_estimated_paths = len(paths)
 
     # mD-Track ITERATIVE REFINEMENT
@@ -417,3 +455,31 @@ def md_track_3d(cfr_window, aoa_matrix, toa_matrix, dop_matrix, num_ant, num_sub
     # print(end - start)
 
     return paths, paths_refined_amplitude, paths_refined_dop, paths_refined_toa, paths_refined_aoa
+
+
+    import matplotlib.pyplot as plt
+    plt.figure()
+    vmin = threshold*10
+    vmax = 0
+    paths_amp_array = np.asarray(paths_amplitude)
+    sort_idx = np.flip(np.argsort(abs(paths_amp_array)))
+    paths_amplitude_sort = paths_amp_array[sort_idx]
+    paths_power_arr = np.power(np.abs(paths_amplitude_sort), 2)
+    paths_power_arr = 10 * np.log10(paths_power_arr / np.amax(np.nan_to_num(paths_power)))  # dB
+    paths_toa_sort = np.asarray(paths_toa)[sort_idx]
+    paths_aoa_sort = np.asarray(paths_aoa)[sort_idx]
+    num_paths_plot = 400
+    # print(paths_power[:num_paths_plot])
+    toa_array = paths_toa_sort - paths_toa_sort[0]
+    plt.scatter(toa_array[:num_paths_plot] * 2.5E-10, paths_aoa_sort[:num_paths_plot],
+                c=paths_power_arr[:num_paths_plot],
+                marker='o', cmap='Blues', s=12,
+                vmin=vmin, vmax=vmax)
+    cbar = plt.colorbar()
+    cbar.ax.set_ylabel('power [dB]', rotation=90)
+    plt.xlabel('ToA [ns]')
+    plt.ylabel('AoA [deg]')
+    # plt.xlim([-1, 40])  # range_considered + 100 * delta_t])
+    plt.grid()
+    # plt.scatter(paths_refined_toa_array[:20], paths_refined_aoa_array[:20])
+    plt.show()

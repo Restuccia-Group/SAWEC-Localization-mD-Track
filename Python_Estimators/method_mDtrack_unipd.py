@@ -161,6 +161,7 @@ if __name__ == '__main__':
         signal_stream_calibrated = np.delete(signal_stream_calibrated, delete_zeros_idxs, axis=0)
         
         H_complete_valid.append(signal_stream_calibrated)
+        # plt.figure(); plt.stem(abs(np.fft.ifft(signal_stream_calibrated[3, :]))); plt.show();
     
     H_complete_valid = np.stack(H_complete_valid, axis=2)
     num_time_steps = H_complete_valid.shape[0]
@@ -171,8 +172,8 @@ if __name__ == '__main__':
     T = 1/delta_f  # OFDM symbol time
     range_considered = 3e-7
     idxs_range_considered = int(range_considered/delta_t + 1)
-    t_min = 0
-    t_max = T  # T/2
+    t_min = -T/4
+    t_max = T/4  # T/2
 
     num_angles = 360
     num_subc = frequency_vector_idx.shape[0]
@@ -188,7 +189,7 @@ if __name__ == '__main__':
     optimization_times = np.zeros(num_time_steps)
 
     num_iteration_refinement = 10
-    threshold = -2.5
+    threshold = -1
     
     for time_idx in range(0, num_time_steps):
         # time_start = time.time()
@@ -258,9 +259,9 @@ if __name__ == '__main__':
     #               path_loss_sorted_sim, times_sorted_sim, azimuth_sorted_sim_2)
 
     plt.figure()    
-    vmin = -10 
+    vmin = threshold*10
     vmax = 0 
-    for i in range(0, 139):
+    for i in range(0, 99):
         sort_idx = np.flip(np.argsort(abs(paths_amplitude_list[i])))
         paths_amplitude_sort = paths_amplitude_list[i][sort_idx]
         paths_power = np.power(np.abs(paths_amplitude_sort), 2)

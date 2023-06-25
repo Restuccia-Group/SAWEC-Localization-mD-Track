@@ -19,9 +19,10 @@ import math as mt
 
 
 def build_aoa_matrix(num_angles_, num_antennas):
+    antennas_position = np.arange(0, num_antennas, 1)  # np.asarray([0, 1, 3, 4])
     angles_vector_ = np.linspace(-mt.pi/2 * np.ones(num_antennas), mt.pi/2 * np.ones(num_antennas), num_angles_)
     sin_vector = np.sin(angles_vector_)
-    sin_ant_vector_ = sin_vector * np.arange(0, num_antennas, 1)
+    sin_ant_vector_ = sin_vector * antennas_position
     vector_exp = np.transpose(sin_ant_vector_)
     aoa_matrix_ = np.exp(1j * mt.pi * vector_exp)
     return aoa_matrix_, angles_vector_[:, 0], sin_ant_vector_
@@ -65,7 +66,7 @@ def build_toa_aoa_matrix(frequency_vector_hz, delta_t_, t_min_, t_max_, num_angl
 def build_dop_matrix(n_pkt, tc, step):
     freq_max = 1 / tc
     num_freq = int(n_pkt / step)
-    grid_freq = np.expand_dims(np.linspace(- freq_max / 2, freq_max / 2, num_freq), -1)
+    grid_freq = np.expand_dims(np.linspace(- freq_max / 2, freq_max / 2 + 1, num_freq), -1)
     grid_packets = np.tile(np.expand_dims(np.arange(n_pkt), -1), grid_freq.shape[0])
     dop_matrix = np.exp(1j * 2 * mt.pi * tc * grid_packets * grid_freq.T)
     return dop_matrix, grid_freq
