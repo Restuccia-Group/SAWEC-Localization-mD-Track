@@ -56,8 +56,8 @@ def save_corresponding_elements(directory, array_names, synced_sequence):
         np.save(save_name, corresponding_element)
 
 if __name__ == "__main__":
-    array_names = ['B01', 'B02', 'B03', 'B04', 'B05']
-    directory = '../Data2/Pannel_B/Captures_empty/'
+    array_names = ['A01', 'A02', 'A04', 'A05']
+    directory = '../Data3/Pannel_A/'
     extension = '*.csi'
     files = load_files(directory, extension)
     for file in files:

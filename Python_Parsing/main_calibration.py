@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import os
 import glob
 
-array_names =['A01', 'A02', 'A03', 'A04', 'A05', 'B01', 'B02', 'B03', 'B04', 'B05']
+#array_names =['A01']
 
-directory = '../Data2/Calibration/'
+directory = '../Data4/calibration/A02/'
 extension = '*.csi'  # Replace with the desired file extension
 
 # Create the search pattern
@@ -25,6 +25,6 @@ for file in files:
     for i in range(500):
         saved_file = directory + 'Synced/' + file[-7:-4] + ".npy"
         numTones = frames.raw[i].get("CSI").get("numTones")
-        CSI = np.array(frames.raw[i].get("CSI").get("CSI"))[:numTones]
+        CSI = np.array(frames.raw[i].get("CSI").get("CSI"))[numTones:]
         np.array(globals()[seq_array].append(CSI))
     np.save(saved_file, globals()[seq_array])
