@@ -5,7 +5,7 @@
 #include "DynamicFieldInterpretation.hxx"
 
 std::optional<DynamicContentField> DynamicContentType::queryFieldOffset(const std::string &fieldName) {
-    if (quickQueryMap.contains(fieldName)) {
+    if (quickQueryMap.find(fieldName) != quickQueryMap.cend()) {
         return quickQueryMap[fieldName];
     }
 
@@ -27,7 +27,7 @@ std::shared_ptr<DynamicContentTypeDictionary> DynamicContentTypeDictionary::getI
 
 std::shared_ptr<DynamicContentType> DynamicContentTypeDictionary::queryType(const std::string &name, uint16_t version) {
     auto queryString = name + std::to_string(version);
-    return dictionary.contains(queryString) ? dictionary[queryString] : nullptr;
+    return dictionary.find(queryString) != dictionary.cend() ? dictionary[queryString] : nullptr;
 }
 
 void DynamicContentTypeDictionary::registerType(const DynamicContentType &type) {

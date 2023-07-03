@@ -15,6 +15,13 @@ struct SDRExtra {
     int64_t hardwareRxSamplingIndex{0};
     double preciseRxTime{0};
     double lastTxTime{0};
+    double signalInputSystemTime{0};
+    double signalDecodeSystemTime{0};
+    double sigEVM{0};
+
+    [[nodiscard]] inline double decodingDelay() const {
+        return signalDecodeSystemTime - signalInputSystemTime;
+    }
 
     [[nodiscard]] std::string toString() const;
 

@@ -118,6 +118,7 @@ public:
     std::map<std::string, AbstractPicoScenesFrameSegment> rxUnknownSegments;
     std::map<std::string, AbstractPicoScenesFrameSegment> txUnknownSegments;
     Uint8Vector mpdu;
+    bool isNDP{false};
 
     static std::optional<ModularPicoScenesRxFrame> fromBuffer(const uint8_t *buffer, uint32_t bufferLength, bool interpolateCSI = false);
 
@@ -145,8 +146,7 @@ public:
     std::vector<ModularPicoScenesTxFrame> AMPDUFrames;
 
     Uint8Vector prebuiltMPDU;
-    std::vector<std::vector<std::complex<int8_t>>> prebuiltCS8Signals;
-    std::vector<std::vector<std::complex<int16_t>>> prebuiltCS16Signals;
+    std::vector<std::vector<std::complex<int16_t>>> prebuiltSignals;
 
     void appendAMPDUFrames(const ModularPicoScenesTxFrame &frame);
 
@@ -170,7 +170,7 @@ public:
 
     void prebuildMPDU();
 
-    std::vector<ModularPicoScenesTxFrame> autoSplit(int16_t maxSegmentBuffersLength = 1400) const;
+    std::vector<ModularPicoScenesTxFrame> autoSplit(int16_t maxSegmentBuffersLength = 1400, std::optional<uint16_t> firstSegmentCappingLength = std::nullopt) const;
 
     ModularPicoScenesTxFrame &setMoreFrags();
 

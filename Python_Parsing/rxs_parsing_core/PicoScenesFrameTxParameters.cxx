@@ -34,6 +34,9 @@ void PicoScenesFrameTxParameters::validate() const {
         if (guardInterval != GuardIntervalEnum::GI_800)
             throw std::invalid_argument("Invalid Tx GI: " + GuardInterval2String(guardInterval) + " for NonHT frame.");
 
+        if (preferAMPDU)
+            throw std::invalid_argument("AMPDU is not supported by NonHT format.");
+
     } else if (frameType == PacketFormatEnum::PacketFormat_HT) {
 
         if (NDPFrame)

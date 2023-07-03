@@ -49,7 +49,7 @@ public:
     static const std::shared_ptr<FrontEndModePreset> TR_CBW_20_HT; ///< Equivalent to "--format ht --coding bcc --rate 20e6 --tx-resample-ratio 1.0 --cbw 20 --rx-resample-ratio 1.0 --rx-cbw 20"
     static const std::shared_ptr<FrontEndModePreset> TR_CBW_20_HT_LDPC; ///< Equivalent to "--format ht --coding ldpc --rate 20e6 --tx-resample-ratio 1.0 --cbw 20 --rx-resample-ratio 1.0 --rx-cbw 20"
     static const std::shared_ptr<FrontEndModePreset> TR_CBW_20_NonHT; ///< Equivalent to "--format nonht --coding bcc --rate 20e6 --tx-resample-ratio 1.0 --cbw 20 --rx-resample-ratio 1.0 --rx-cbw 20"
-    static const std::shared_ptr<FrontEndModePreset> Customized; ///< Customized Profile
+    static const std::shared_ptr<FrontEndModePreset> DEFAULT; ///< The default profile, equivalent to TR_CBW_20_HT
 
     static const std::vector<std::shared_ptr<FrontEndModePreset>> &getPresetList();
 

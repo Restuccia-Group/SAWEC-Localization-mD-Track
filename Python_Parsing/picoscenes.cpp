@@ -14,35 +14,35 @@
         ],
         "include_dirs": [
             ".",
-            "/home/foysal/anaconda3/envs/PicoScenes/lib/python3.10/site-packages/numpy/core/include",
+            "/home/foysal/anaconda3/envs/F_Sense/lib/python3.9/site-packages/numpy/core/include",
             "./rxs_parsing_core/preprocess"
         ],
         "language": "c++",
         "name": "picoscenes",
         "sources": [
             "./picoscenes.pyx",
-            "./rxs_parsing_core/DynamicFieldInterpretation.cxx",
             "./rxs_parsing_core/PayloadSegment.cxx",
             "./rxs_parsing_core/CargoSegment.cxx",
-            "./rxs_parsing_core/PicoScenesCommons.cxx",
-            "./rxs_parsing_core/ExtraInfoSegment.cxx",
-            "./rxs_parsing_core/ModularPicoScenesFrame.cxx",
-            "./rxs_parsing_core/FrontEndModePreset.cxx",
-            "./rxs_parsing_core/AbstractPicoScenesFrameSegment.cxx",
+            "./rxs_parsing_core/DynamicFieldInterpretation.cxx",
             "./rxs_parsing_core/SDRResamplingPreset.cxx",
-            "./rxs_parsing_core/RXSExtraInfo.cxx",
-            "./rxs_parsing_core/SDRExtraSegment.cxx",
-            "./rxs_parsing_core/BasebandSignalSegment.cxx",
             "./rxs_parsing_core/MVMExtraSegment.cxx",
+            "./rxs_parsing_core/SDRExtraSegment.cxx",
+            "./rxs_parsing_core/PicoScenesCommons.cxx",
+            "./rxs_parsing_core/CSISegment.cxx",
+            "./rxs_parsing_core/ExtraInfoSegment.cxx",
+            "./rxs_parsing_core/FrontEndModePreset.cxx",
+            "./rxs_parsing_core/RXSExtraInfo.cxx",
+            "./rxs_parsing_core/RxSBasicSegment.cxx",
+            "./rxs_parsing_core/ModularPicoScenesFrame.cxx",
             "./rxs_parsing_core/PreEQSymbolsSegment.cxx",
             "./rxs_parsing_core/PicoScenesFrameTxParameters.cxx",
-            "./rxs_parsing_core/RxSBasicSegment.cxx",
-            "./rxs_parsing_core/CSISegment.cxx",
-            "./rxs_parsing_core/preprocess/generated/rtGetInf.cpp",
-            "./rxs_parsing_core/preprocess/generated/rtGetNaN.cpp",
-            "./rxs_parsing_core/preprocess/generated/crl_permlogic.cpp",
+            "./rxs_parsing_core/BasebandSignalSegment.cxx",
+            "./rxs_parsing_core/AbstractPicoScenesFrameSegment.cxx",
+            "./rxs_parsing_core/preprocess/generated/CSIPreprocessor.cpp",
             "./rxs_parsing_core/preprocess/generated/rt_nonfinite.cpp",
-            "./rxs_parsing_core/preprocess/generated/CSIPreprocessor.cpp"
+            "./rxs_parsing_core/preprocess/generated/rtGetNaN.cpp",
+            "./rxs_parsing_core/preprocess/generated/rtGetInf.cpp",
+            "./rxs_parsing_core/preprocess/generated/crl_permlogic.cpp"
         ]
     },
     "module_name": "picoscenes"
@@ -939,7 +939,6 @@ static CYTHON_INLINE __pyx_t_double_complex __pyx_t_double_complex_from_parts(do
 
 /*--- Type declarations ---*/
 struct __pyx_obj_10picoscenes_Picoscenes;
-struct __pyx_obj_10picoscenes_PicoFrames;
 
 /* "picoscenes.pyx":284
  * 
@@ -958,29 +957,6 @@ struct __pyx_obj_10picoscenes_Picoscenes {
 };
 
 
-/* "picoscenes.pyx":370
- * 
- * #  This has been not used yet
- * cdef class PicoFrames:             # <<<<<<<<<<<<<<
- *     cdef public str file
- *     cdef public list raw
- */
-struct __pyx_obj_10picoscenes_PicoFrames {
-  PyObject_HEAD
-  struct __pyx_vtabstruct_10picoscenes_PicoFrames *__pyx_vtab;
-  PyObject *file;
-  PyObject *raw;
-};
-
-
-
-/* "picoscenes.pyx":284
- * 
- * 
- * cdef class Picoscenes:             # <<<<<<<<<<<<<<
- *     cdef readonly str file
- *     cdef readonly int count
- */
 
 struct __pyx_vtabstruct_10picoscenes_Picoscenes {
   PyObject *(*read)(struct __pyx_obj_10picoscenes_Picoscenes *, int __pyx_skip_dispatch);
@@ -988,21 +964,6 @@ struct __pyx_vtabstruct_10picoscenes_Picoscenes {
   PyObject *(*pmsg)(struct __pyx_obj_10picoscenes_Picoscenes *, unsigned char *, int __pyx_skip_dispatch);
 };
 static struct __pyx_vtabstruct_10picoscenes_Picoscenes *__pyx_vtabptr_10picoscenes_Picoscenes;
-
-
-/* "picoscenes.pyx":370
- * 
- * #  This has been not used yet
- * cdef class PicoFrames:             # <<<<<<<<<<<<<<
- *     cdef public str file
- *     cdef public list raw
- */
-
-struct __pyx_vtabstruct_10picoscenes_PicoFrames {
-  PyObject *(*get_block)(struct __pyx_obj_10picoscenes_PicoFrames *, PyObject *, PyObject *, int __pyx_skip_dispatch);
-  PyObject *(*get_frames)(struct __pyx_obj_10picoscenes_PicoFrames *, int __pyx_skip_dispatch);
-};
-static struct __pyx_vtabstruct_10picoscenes_PicoFrames *__pyx_vtabptr_10picoscenes_PicoFrames;
 
 /* --- Runtime support code (head) --- */
 /* Refnanny.proto */
@@ -1281,12 +1242,21 @@ static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject 
 /* RaiseException.proto */
 static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
 
-/* PyIntBinop.proto */
-#if !CYTHON_COMPILING_IN_PYPY
-static PyObject* __Pyx_PyInt_AddObjC(PyObject *op1, PyObject *op2, long intval, int inplace, int zerodivision_check);
+/* ListCompAppend.proto */
+#if CYTHON_USE_PYLIST_INTERNALS && CYTHON_ASSUME_SAFE_MACROS
+static CYTHON_INLINE int __Pyx_ListComp_Append(PyObject* list, PyObject* x) {
+    PyListObject* L = (PyListObject*) list;
+    Py_ssize_t len = Py_SIZE(list);
+    if (likely(L->allocated > len)) {
+        Py_INCREF(x);
+        PyList_SET_ITEM(list, len, x);
+        __Pyx_SET_SIZE(list, len + 1);
+        return 0;
+    }
+    return PyList_Append(list, x);
+}
 #else
-#define __Pyx_PyInt_AddObjC(op1, op2, intval, inplace, zerodivision_check)\
-    (inplace ? PyNumber_InPlaceAdd(op1, op2) : PyNumber_Add(op1, op2))
+#define __Pyx_ListComp_Append(L,x) PyList_Append(L,x)
 #endif
 
 /* GetModuleGlobalName.proto */
@@ -1308,49 +1278,6 @@ static PyObject *__Pyx__GetModuleGlobalName(PyObject *name, PY_UINT64_T *dict_ve
 #define __Pyx_GetModuleGlobalName(var, name)  (var) = __Pyx__GetModuleGlobalName(name)
 #define __Pyx_GetModuleGlobalNameUncached(var, name)  (var) = __Pyx__GetModuleGlobalName(name)
 static CYTHON_INLINE PyObject *__Pyx__GetModuleGlobalName(PyObject *name);
-#endif
-
-/* ArgTypeTest.proto */
-#define __Pyx_ArgTypeTest(obj, type, none_allowed, name, exact)\
-    ((likely((Py_TYPE(obj) == type) | (none_allowed && (obj == Py_None)))) ? 1 :\
-        __Pyx__ArgTypeTest(obj, type, name, exact))
-static int __Pyx__ArgTypeTest(PyObject *obj, PyTypeObject *type, const char *name, int exact);
-
-/* RaiseTooManyValuesToUnpack.proto */
-static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected);
-
-/* RaiseNeedMoreValuesToUnpack.proto */
-static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index);
-
-/* IterFinish.proto */
-static CYTHON_INLINE int __Pyx_IterFinish(void);
-
-/* UnpackItemEndCheck.proto */
-static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected);
-
-/* PyIntBinop.proto */
-#if !CYTHON_COMPILING_IN_PYPY
-static PyObject* __Pyx_PyInt_SubtractObjC(PyObject *op1, PyObject *op2, long intval, int inplace, int zerodivision_check);
-#else
-#define __Pyx_PyInt_SubtractObjC(op1, op2, intval, inplace, zerodivision_check)\
-    (inplace ? PyNumber_InPlaceSubtract(op1, op2) : PyNumber_Subtract(op1, op2))
-#endif
-
-/* ListCompAppend.proto */
-#if CYTHON_USE_PYLIST_INTERNALS && CYTHON_ASSUME_SAFE_MACROS
-static CYTHON_INLINE int __Pyx_ListComp_Append(PyObject* list, PyObject* x) {
-    PyListObject* L = (PyListObject*) list;
-    Py_ssize_t len = Py_SIZE(list);
-    if (likely(L->allocated > len)) {
-        Py_INCREF(x);
-        PyList_SET_ITEM(list, len, x);
-        __Pyx_SET_SIZE(list, len + 1);
-        return 0;
-    }
-    return PyList_Append(list, x);
-}
-#else
-#define __Pyx_ListComp_Append(L,x) PyList_Append(L,x)
 #endif
 
 /* PyObject_GenericGetAttrNoDict.proto */
@@ -1426,9 +1353,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
-
-/* CIntFromPy.proto */
-static CYTHON_INLINE uint32_t __Pyx_PyInt_As_uint32_t(PyObject *);
 
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_uint16_t(uint16_t value);
@@ -1550,8 +1474,6 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 static PyObject *__pyx_f_10picoscenes_10Picoscenes_read(struct __pyx_obj_10picoscenes_Picoscenes *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
 static PyObject *__pyx_f_10picoscenes_10Picoscenes_seek(struct __pyx_obj_10picoscenes_Picoscenes *__pyx_v_self, PyObject *__pyx_v_file, long __pyx_v_pos, long __pyx_v_num, int __pyx_skip_dispatch); /* proto*/
 static PyObject *__pyx_f_10picoscenes_10Picoscenes_pmsg(struct __pyx_obj_10picoscenes_Picoscenes *__pyx_v_self, unsigned char *__pyx_v_data, int __pyx_skip_dispatch); /* proto*/
-static PyObject *__pyx_f_10picoscenes_10PicoFrames_get_block(CYTHON_UNUSED struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, PyObject *__pyx_v_data, PyObject *__pyx_v_offset, int __pyx_skip_dispatch); /* proto*/
-static PyObject *__pyx_f_10picoscenes_10PicoFrames_get_frames(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
 
 /* Module declarations from 'libc.string' */
 
@@ -1569,7 +1491,6 @@ static PyObject *__pyx_f_10picoscenes_10PicoFrames_get_frames(struct __pyx_obj_1
 
 /* Module declarations from 'picoscenes' */
 static PyTypeObject *__pyx_ptype_10picoscenes_Picoscenes = 0;
-static PyTypeObject *__pyx_ptype_10picoscenes_PicoFrames = 0;
 static CYTHON_INLINE uint32_t __pyx_f_10picoscenes_cu32l(uint8_t, uint8_t, uint8_t, uint8_t); /*proto*/
 static PyObject *__pyx_f_10picoscenes_parse_ieee80211_mac_frame_header(struct ieee80211_mac_frame_header const *); /*proto*/
 static PyObject *__pyx_f_10picoscenes_parse_RxSBasic(struct RxSBasic const *); /*proto*/
@@ -1597,13 +1518,10 @@ int __pyx_module_is_main_picoscenes = 0;
 static PyObject *__pyx_builtin_exit;
 static PyObject *__pyx_builtin_print;
 static PyObject *__pyx_builtin_TypeError;
-static PyObject *__pyx_builtin_open;
 static PyObject *__pyx_builtin_range;
-static const char __pyx_k_I[] = "I";
 static const char __pyx_k_GI[] = "GI";
 static const char __pyx_k_cf[] = "cf";
 static const char __pyx_k_np[] = "np";
-static const char __pyx_k_rb[] = "rb";
 static const char __pyx_k_sf[] = "sf";
 static const char __pyx_k_CBW[] = "CBW";
 static const char __pyx_k_CSI[] = "CSI";
@@ -1621,12 +1539,10 @@ static const char __pyx_k_More[] = "More";
 static const char __pyx_k_ToDS[] = "ToDS";
 static const char __pyx_k_TxId[] = "TxId";
 static const char __pyx_k_Type[] = "Type";
-static const char __pyx_k_data[] = "data";
 static const char __pyx_k_exit[] = "exit";
 static const char __pyx_k_file[] = "file";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
-static const char __pyx_k_open[] = "open";
 static const char __pyx_k_pmsg[] = "pmsg";
 static const char __pyx_k_read[] = "read";
 static const char __pyx_k_rssi[] = "rssi";
@@ -1663,10 +1579,8 @@ static const char __pyx_k_length[] = "length";
 static const char __pyx_k_numCSI[] = "numCSI";
 static const char __pyx_k_numESS[] = "numESS";
 static const char __pyx_k_numSTS[] = "numSTS";
-static const char __pyx_k_offset[] = "offset";
 static const char __pyx_k_reduce[] = "__reduce__";
 static const char __pyx_k_struct[] = "struct";
-static const char __pyx_k_unpack[] = "unpack";
 static const char __pyx_k_SubType[] = "SubType";
 static const char __pyx_k_Version[] = "Version";
 static const char __pyx_k_ant_sel[] = "ant_sel";
@@ -1696,7 +1610,6 @@ static const char __pyx_k_LegacyCSI[] = "LegacyCSI";
 static const char __pyx_k_MoreFrags[] = "MoreFrags";
 static const char __pyx_k_Protected[] = "Protected";
 static const char __pyx_k_TypeError[] = "TypeError";
-static const char __pyx_k_get_block[] = "get_block";
 static const char __pyx_k_hasLength[] = "hasLength";
 static const char __pyx_k_hasTxNess[] = "hasTxNess";
 static const char __pyx_k_if_report[] = "if_report";
@@ -1706,11 +1619,9 @@ static const char __pyx_k_reduce_ex[] = "__reduce_ex__";
 static const char __pyx_k_timestamp[] = "timestamp";
 static const char __pyx_k_DeviceType[] = "DeviceType";
 static const char __pyx_k_MagicValue[] = "MagicValue";
-static const char __pyx_k_PicoFrames[] = "PicoFrames";
 static const char __pyx_k_Picoscenes[] = "Picoscenes";
 static const char __pyx_k_centerFreq[] = "centerFreq";
 static const char __pyx_k_deviceType[] = "deviceType";
-static const char __pyx_k_get_frames[] = "get_frames";
 static const char __pyx_k_hasChansel[] = "hasChansel";
 static const char __pyx_k_hasPLLRate[] = "hasPLLRate";
 static const char __pyx_k_hasTxpower[] = "hasTxpower";
@@ -1752,7 +1663,6 @@ static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_PicoScenesHeader[] = "PicoScenesHeader";
 static const char __pyx_k_pll_clock_select[] = "pll_clock_select";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
-static const char __pyx_k_Reached_end_of_file[] = "Reached end of file.";
 static const char __pyx_k_SubcarrierBandwidth[] = "SubcarrierBandwidth";
 static const char __pyx_k_hasAntennaSelection[] = "hasAntennaSelection";
 static const char __pyx_k_no_default___reduce___due_to_non[] = "no default __reduce__ due to non-trivial __cinit__";
@@ -1769,7 +1679,6 @@ static PyObject *__pyx_n_u_Fragment;
 static PyObject *__pyx_n_u_FrameType;
 static PyObject *__pyx_n_u_FromDS;
 static PyObject *__pyx_n_u_GI;
-static PyObject *__pyx_n_u_I;
 static PyObject *__pyx_n_u_LegacyCSI;
 static PyObject *__pyx_n_u_MCS;
 static PyObject *__pyx_n_u_MPDU;
@@ -1781,13 +1690,11 @@ static PyObject *__pyx_n_u_MoreFrags;
 static PyObject *__pyx_n_u_Order;
 static PyObject *__pyx_n_u_PacketFormat;
 static PyObject *__pyx_n_u_Phase;
-static PyObject *__pyx_n_s_PicoFrames;
 static PyObject *__pyx_n_u_PicoScenesHeader;
 static PyObject *__pyx_n_s_Picoscenes;
 static PyObject *__pyx_n_u_PilotCSI;
 static PyObject *__pyx_n_u_PowerManagement;
 static PyObject *__pyx_n_u_Protected;
-static PyObject *__pyx_kp_u_Reached_end_of_file;
 static PyObject *__pyx_n_u_Retry;
 static PyObject *__pyx_n_u_RxExtraInfo;
 static PyObject *__pyx_n_u_RxSBasic;
@@ -1816,15 +1723,12 @@ static PyObject *__pyx_n_u_chansel;
 static PyObject *__pyx_n_s_clear;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_u_controlFreq;
-static PyObject *__pyx_n_s_data;
 static PyObject *__pyx_n_u_deviceType;
 static PyObject *__pyx_n_s_encode;
 static PyObject *__pyx_n_s_encoding;
 static PyObject *__pyx_n_u_evm;
 static PyObject *__pyx_n_s_exit;
 static PyObject *__pyx_n_s_file;
-static PyObject *__pyx_n_s_get_block;
-static PyObject *__pyx_n_s_get_frames;
 static PyObject *__pyx_n_s_getstate;
 static PyObject *__pyx_n_u_hasAGC;
 static PyObject *__pyx_n_u_hasAntennaSelection;
@@ -1869,8 +1773,6 @@ static PyObject *__pyx_n_u_numSTS;
 static PyObject *__pyx_n_u_numTones;
 static PyObject *__pyx_n_u_numTx;
 static PyObject *__pyx_n_s_numpy;
-static PyObject *__pyx_n_s_offset;
-static PyObject *__pyx_n_s_open;
 static PyObject *__pyx_n_u_packetCBW;
 static PyObject *__pyx_n_u_packetFormat;
 static PyObject *__pyx_n_u_pll_clock_select;
@@ -1883,7 +1785,6 @@ static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_u_rateNflag;
-static PyObject *__pyx_n_u_rb;
 static PyObject *__pyx_n_s_read;
 static PyObject *__pyx_n_s_reduce;
 static PyObject *__pyx_n_s_reduce_cython;
@@ -1908,7 +1809,6 @@ static PyObject *__pyx_n_u_tx_chainmask;
 static PyObject *__pyx_n_u_tx_ness;
 static PyObject *__pyx_n_u_txpower;
 static PyObject *__pyx_n_u_txtsf;
-static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_kp_u_utf_8;
 static PyObject *__pyx_n_u_value56;
 static PyObject *__pyx_n_u_value96;
@@ -1925,30 +1825,13 @@ static int __pyx_pf_10picoscenes_10Picoscenes_3raw_2__set__(struct __pyx_obj_10p
 static int __pyx_pf_10picoscenes_10Picoscenes_3raw_4__del__(struct __pyx_obj_10picoscenes_Picoscenes *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_10picoscenes_10Picoscenes_10__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_10picoscenes_Picoscenes *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_10picoscenes_10Picoscenes_12__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_10picoscenes_Picoscenes *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
-static int __pyx_pf_10picoscenes_10PicoFrames___cinit__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, PyObject *__pyx_v_file, CYTHON_UNUSED PyObject *__pyx_v_argv, CYTHON_UNUSED PyObject *__pyx_v_kw); /* proto */
-static int __pyx_pf_10picoscenes_10PicoFrames_2__init__(CYTHON_UNUSED struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_file, CYTHON_UNUSED PyObject *__pyx_v_if_report); /* proto */
-static PyObject *__pyx_pf_10picoscenes_10PicoFrames_4get_block(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, PyObject *__pyx_v_data, PyObject *__pyx_v_offset); /* proto */
-static PyObject *__pyx_pf_10picoscenes_10PicoFrames_6get_frames(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10picoscenes_10PicoFrames_4file___get__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self); /* proto */
-static int __pyx_pf_10picoscenes_10PicoFrames_4file_2__set__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
-static int __pyx_pf_10picoscenes_10PicoFrames_4file_4__del__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10picoscenes_10PicoFrames_3raw___get__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self); /* proto */
-static int __pyx_pf_10picoscenes_10PicoFrames_3raw_2__set__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
-static int __pyx_pf_10picoscenes_10PicoFrames_3raw_4__del__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10picoscenes_10PicoFrames_8__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10picoscenes_10PicoFrames_10__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_tp_new_10picoscenes_Picoscenes(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
-static PyObject *__pyx_tp_new_10picoscenes_PicoFrames(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_int_0;
-static PyObject *__pyx_int_4;
 static PyObject *__pyx_int_62208;
 static PyObject *__pyx_int_neg_1;
 static PyObject *__pyx_tuple_;
 static PyObject *__pyx_tuple__2;
 static PyObject *__pyx_tuple__3;
-static PyObject *__pyx_tuple__4;
-static PyObject *__pyx_tuple__5;
-static PyObject *__pyx_tuple__6;
 /* Late includes */
 
 /* "picoscenes.pyx":290
@@ -3663,7 +3546,7 @@ static CYTHON_INLINE uint32_t __pyx_f_10picoscenes_cu32l(uint8_t __pyx_v_a, uint
  * cdef inline uint32_t cu32l(uint8_t a, uint8_t b, uint8_t c, uint8_t d):
  *     return a | (b << 8) | (c << 16) | (d << 24)             # <<<<<<<<<<<<<<
  * 
- * #  This has been not used yet
+ * 
  */
   __pyx_r = (((__pyx_v_a | (__pyx_v_b << 8)) | (__pyx_v_c << 16)) | (__pyx_v_d << 24));
   goto __pyx_L0;
@@ -3682,1319 +3565,8 @@ static CYTHON_INLINE uint32_t __pyx_f_10picoscenes_cu32l(uint8_t __pyx_v_a, uint
   return __pyx_r;
 }
 
-/* "picoscenes.pyx":374
- *     cdef public list raw
+/* "picoscenes.pyx":370
  * 
- *     def __cinit__(self, file, *argv, **kw):             # <<<<<<<<<<<<<<
- *         self.file = file
- *         self.raw = list()
- */
-
-/* Python wrapper */
-static int __pyx_pw_10picoscenes_10PicoFrames_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static int __pyx_pw_10picoscenes_10PicoFrames_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_file = 0;
-  CYTHON_UNUSED PyObject *__pyx_v_argv = 0;
-  CYTHON_UNUSED PyObject *__pyx_v_kw = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__cinit__ (wrapper)", 0);
-  __pyx_v_kw = PyDict_New(); if (unlikely(!__pyx_v_kw)) return -1;
-  __Pyx_GOTREF(__pyx_v_kw);
-  if (PyTuple_GET_SIZE(__pyx_args) > 1) {
-    __pyx_v_argv = PyTuple_GetSlice(__pyx_args, 1, PyTuple_GET_SIZE(__pyx_args));
-    if (unlikely(!__pyx_v_argv)) {
-      __Pyx_DECREF(__pyx_v_kw); __pyx_v_kw = 0;
-      __Pyx_RefNannyFinishContext();
-      return -1;
-    }
-    __Pyx_GOTREF(__pyx_v_argv);
-  } else {
-    __pyx_v_argv = __pyx_empty_tuple; __Pyx_INCREF(__pyx_empty_tuple);
-  }
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_file,0};
-    PyObject* values[1] = {0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        default:
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_file)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-      }
-      if (unlikely(kw_args > 0)) {
-        const Py_ssize_t used_pos_args = (pos_args < 1) ? pos_args : 1;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, __pyx_v_kw, values, used_pos_args, "__cinit__") < 0)) __PYX_ERR(0, 374, __pyx_L3_error)
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) < 1) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-    }
-    __pyx_v_file = values[0];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 374, __pyx_L3_error)
-  __pyx_L3_error:;
-  __Pyx_DECREF(__pyx_v_argv); __pyx_v_argv = 0;
-  __Pyx_DECREF(__pyx_v_kw); __pyx_v_kw = 0;
-  __Pyx_AddTraceback("picoscenes.PicoFrames.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return -1;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10picoscenes_10PicoFrames___cinit__(((struct __pyx_obj_10picoscenes_PicoFrames *)__pyx_v_self), __pyx_v_file, __pyx_v_argv, __pyx_v_kw);
-
-  /* function exit code */
-  __Pyx_XDECREF(__pyx_v_argv);
-  __Pyx_XDECREF(__pyx_v_kw);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static int __pyx_pf_10picoscenes_10PicoFrames___cinit__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, PyObject *__pyx_v_file, CYTHON_UNUSED PyObject *__pyx_v_argv, CYTHON_UNUSED PyObject *__pyx_v_kw) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__cinit__", 0);
-
-  /* "picoscenes.pyx":375
- * 
- *     def __cinit__(self, file, *argv, **kw):
- *         self.file = file             # <<<<<<<<<<<<<<
- *         self.raw = list()
- *         self.get_frames()
- */
-  if (!(likely(PyUnicode_CheckExact(__pyx_v_file))||((__pyx_v_file) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_v_file)->tp_name), 0))) __PYX_ERR(0, 375, __pyx_L1_error)
-  __pyx_t_1 = __pyx_v_file;
-  __Pyx_INCREF(__pyx_t_1);
-  __Pyx_GIVEREF(__pyx_t_1);
-  __Pyx_GOTREF(__pyx_v_self->file);
-  __Pyx_DECREF(__pyx_v_self->file);
-  __pyx_v_self->file = ((PyObject*)__pyx_t_1);
-  __pyx_t_1 = 0;
-
-  /* "picoscenes.pyx":376
- *     def __cinit__(self, file, *argv, **kw):
- *         self.file = file
- *         self.raw = list()             # <<<<<<<<<<<<<<
- *         self.get_frames()
- * 
- */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 376, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_GIVEREF(__pyx_t_1);
-  __Pyx_GOTREF(__pyx_v_self->raw);
-  __Pyx_DECREF(__pyx_v_self->raw);
-  __pyx_v_self->raw = ((PyObject*)__pyx_t_1);
-  __pyx_t_1 = 0;
-
-  /* "picoscenes.pyx":377
- *         self.file = file
- *         self.raw = list()
- *         self.get_frames()             # <<<<<<<<<<<<<<
- * 
- *     def __init__(self, file, if_report=True):
- */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_10picoscenes_PicoFrames *)__pyx_v_self->__pyx_vtab)->get_frames(__pyx_v_self, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 377, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "picoscenes.pyx":374
- *     cdef public list raw
- * 
- *     def __cinit__(self, file, *argv, **kw):             # <<<<<<<<<<<<<<
- *         self.file = file
- *         self.raw = list()
- */
-
-  /* function exit code */
-  __pyx_r = 0;
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("picoscenes.PicoFrames.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = -1;
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "picoscenes.pyx":379
- *         self.get_frames()
- * 
- *     def __init__(self, file, if_report=True):             # <<<<<<<<<<<<<<
- *         pass
- * 
- */
-
-/* Python wrapper */
-static int __pyx_pw_10picoscenes_10PicoFrames_3__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static int __pyx_pw_10picoscenes_10PicoFrames_3__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  CYTHON_UNUSED PyObject *__pyx_v_file = 0;
-  CYTHON_UNUSED PyObject *__pyx_v_if_report = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__init__ (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_file,&__pyx_n_s_if_report,0};
-    PyObject* values[2] = {0,0};
-    values[1] = ((PyObject *)Py_True);
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        CYTHON_FALLTHROUGH;
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_file)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        CYTHON_FALLTHROUGH;
-        case  1:
-        if (kw_args > 0) {
-          PyObject* value = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_if_report);
-          if (value) { values[1] = value; kw_args--; }
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 379, __pyx_L3_error)
-      }
-    } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        CYTHON_FALLTHROUGH;
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-    }
-    __pyx_v_file = values[0];
-    __pyx_v_if_report = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 379, __pyx_L3_error)
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("picoscenes.PicoFrames.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return -1;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10picoscenes_10PicoFrames_2__init__(((struct __pyx_obj_10picoscenes_PicoFrames *)__pyx_v_self), __pyx_v_file, __pyx_v_if_report);
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static int __pyx_pf_10picoscenes_10PicoFrames_2__init__(CYTHON_UNUSED struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_file, CYTHON_UNUSED PyObject *__pyx_v_if_report) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__init__", 0);
-
-  /* function exit code */
-  __pyx_r = 0;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "picoscenes.pyx":382
- *         pass
- * 
- *     cpdef get_block(self, data: bytes, offset: int):             # <<<<<<<<<<<<<<
- *         # When retrieving block bytes, adding the length indicator to total size reduces boilerplate.
- *         length = struct.unpack("I", data[offset:offset + 4])[0] + 4
- */
-
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_5get_block(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_10picoscenes_10PicoFrames_get_block(CYTHON_UNUSED struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, PyObject *__pyx_v_data, PyObject *__pyx_v_offset, int __pyx_skip_dispatch) {
-  PyObject *__pyx_v_length = NULL;
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
-  int __pyx_t_5;
-  PyObject *__pyx_t_6 = NULL;
-  Py_ssize_t __pyx_t_7;
-  int __pyx_t_8;
-  Py_ssize_t __pyx_t_9;
-  Py_ssize_t __pyx_t_10;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("get_block", 0);
-  /* Check if called by wrapper */
-  if (unlikely(__pyx_skip_dispatch)) ;
-  /* Check if overridden in Python */
-  else if (unlikely((Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0) || (Py_TYPE(((PyObject *)__pyx_v_self))->tp_flags & (Py_TPFLAGS_IS_ABSTRACT | Py_TPFLAGS_HEAPTYPE)))) {
-    #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP && CYTHON_USE_TYPE_SLOTS
-    static PY_UINT64_T __pyx_tp_dict_version = __PYX_DICT_VERSION_INIT, __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
-    if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
-      PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
-      #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_block); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 382, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_10picoscenes_10PicoFrames_5get_block)) {
-        __Pyx_XDECREF(__pyx_r);
-        __Pyx_INCREF(__pyx_t_1);
-        __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
-        __pyx_t_5 = 0;
-        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
-          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
-          if (likely(__pyx_t_4)) {
-            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-            __Pyx_INCREF(__pyx_t_4);
-            __Pyx_INCREF(function);
-            __Pyx_DECREF_SET(__pyx_t_3, function);
-            __pyx_t_5 = 1;
-          }
-        }
-        #if CYTHON_FAST_PYCALL
-        if (PyFunction_Check(__pyx_t_3)) {
-          PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_data, __pyx_v_offset};
-          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 382, __pyx_L1_error)
-          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __Pyx_GOTREF(__pyx_t_2);
-        } else
-        #endif
-        #if CYTHON_FAST_PYCCALL
-        if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
-          PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_data, __pyx_v_offset};
-          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 382, __pyx_L1_error)
-          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __Pyx_GOTREF(__pyx_t_2);
-        } else
-        #endif
-        {
-          __pyx_t_6 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 382, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_6);
-          if (__pyx_t_4) {
-            __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_4); __pyx_t_4 = NULL;
-          }
-          __Pyx_INCREF(__pyx_v_data);
-          __Pyx_GIVEREF(__pyx_v_data);
-          PyTuple_SET_ITEM(__pyx_t_6, 0+__pyx_t_5, __pyx_v_data);
-          __Pyx_INCREF(__pyx_v_offset);
-          __Pyx_GIVEREF(__pyx_v_offset);
-          PyTuple_SET_ITEM(__pyx_t_6, 1+__pyx_t_5, __pyx_v_offset);
-          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 382, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_2);
-          __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        }
-        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_r = __pyx_t_2;
-        __pyx_t_2 = 0;
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        goto __pyx_L0;
-      }
-      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP && CYTHON_USE_TYPE_SLOTS
-      __pyx_tp_dict_version = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
-      __pyx_obj_dict_version = __Pyx_get_object_dict_version(((PyObject *)__pyx_v_self));
-      if (unlikely(__pyx_type_dict_guard != __pyx_tp_dict_version)) {
-        __pyx_tp_dict_version = __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
-      }
-      #endif
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP && CYTHON_USE_TYPE_SLOTS
-    }
-    #endif
-  }
-
-  /* "picoscenes.pyx":384
- *     cpdef get_block(self, data: bytes, offset: int):
- *         # When retrieving block bytes, adding the length indicator to total size reduces boilerplate.
- *         length = struct.unpack("I", data[offset:offset + 4])[0] + 4             # <<<<<<<<<<<<<<
- *         return length, data[offset:offset + length]
- * 
- */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_struct); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 384, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_unpack); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 384, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(__pyx_v_data == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 384, __pyx_L1_error)
-  }
-  __Pyx_INCREF(__pyx_v_offset);
-  __pyx_t_2 = __pyx_v_offset;
-  __pyx_t_8 = (__pyx_t_2 == Py_None);
-  if (__pyx_t_8) {
-    __pyx_t_7 = 0;
-  } else {
-    __pyx_t_9 = __Pyx_PyIndex_AsSsize_t(__pyx_t_2); if (unlikely((__pyx_t_9 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 384, __pyx_L1_error)
-    __pyx_t_7 = __pyx_t_9;
-  }
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_v_offset, __pyx_int_4, 4, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 384, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_8 = (__pyx_t_2 == Py_None);
-  if (__pyx_t_8) {
-    __pyx_t_9 = PY_SSIZE_T_MAX;
-  } else {
-    __pyx_t_10 = __Pyx_PyIndex_AsSsize_t(__pyx_t_2); if (unlikely((__pyx_t_10 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 384, __pyx_L1_error)
-    __pyx_t_9 = __pyx_t_10;
-  }
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PySequence_GetSlice(__pyx_v_data, __pyx_t_7, __pyx_t_9); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 384, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_6 = NULL;
-  __pyx_t_5 = 0;
-  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
-    __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_3);
-    if (likely(__pyx_t_6)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-      __Pyx_INCREF(__pyx_t_6);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_3, function);
-      __pyx_t_5 = 1;
-    }
-  }
-  #if CYTHON_FAST_PYCALL
-  if (PyFunction_Check(__pyx_t_3)) {
-    PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_n_u_I, __pyx_t_2};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 384, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  } else
-  #endif
-  #if CYTHON_FAST_PYCCALL
-  if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
-    PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_n_u_I, __pyx_t_2};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 384, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  } else
-  #endif
-  {
-    __pyx_t_4 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 384, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    if (__pyx_t_6) {
-      __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_6); __pyx_t_6 = NULL;
-    }
-    __Pyx_INCREF(__pyx_n_u_I);
-    __Pyx_GIVEREF(__pyx_n_u_I);
-    PyTuple_SET_ITEM(__pyx_t_4, 0+__pyx_t_5, __pyx_n_u_I);
-    __Pyx_GIVEREF(__pyx_t_2);
-    PyTuple_SET_ITEM(__pyx_t_4, 1+__pyx_t_5, __pyx_t_2);
-    __pyx_t_2 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 384, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  }
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 384, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_t_3, __pyx_int_4, 4, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 384, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_v_length = __pyx_t_1;
-  __pyx_t_1 = 0;
-
-  /* "picoscenes.pyx":385
- *         # When retrieving block bytes, adding the length indicator to total size reduces boilerplate.
- *         length = struct.unpack("I", data[offset:offset + 4])[0] + 4
- *         return length, data[offset:offset + length]             # <<<<<<<<<<<<<<
- * 
- *     cpdef get_frames(self):
- */
-  __Pyx_XDECREF(__pyx_r);
-  if (unlikely(__pyx_v_data == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 385, __pyx_L1_error)
-  }
-  __Pyx_INCREF(__pyx_v_offset);
-  __pyx_t_1 = __pyx_v_offset;
-  __pyx_t_8 = (__pyx_t_1 == Py_None);
-  if (__pyx_t_8) {
-    __pyx_t_9 = 0;
-  } else {
-    __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 385, __pyx_L1_error)
-    __pyx_t_9 = __pyx_t_7;
-  }
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyNumber_Add(__pyx_v_offset, __pyx_v_length); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 385, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_8 = (__pyx_t_1 == Py_None);
-  if (__pyx_t_8) {
-    __pyx_t_7 = PY_SSIZE_T_MAX;
-  } else {
-    __pyx_t_10 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_10 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 385, __pyx_L1_error)
-    __pyx_t_7 = __pyx_t_10;
-  }
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PySequence_GetSlice(__pyx_v_data, __pyx_t_9, __pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 385, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 385, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_INCREF(__pyx_v_length);
-  __Pyx_GIVEREF(__pyx_v_length);
-  PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_v_length);
-  __Pyx_GIVEREF(__pyx_t_1);
-  PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_1);
-  __pyx_t_1 = 0;
-  __pyx_r = __pyx_t_3;
-  __pyx_t_3 = 0;
-  goto __pyx_L0;
-
-  /* "picoscenes.pyx":382
- *         pass
- * 
- *     cpdef get_block(self, data: bytes, offset: int):             # <<<<<<<<<<<<<<
- *         # When retrieving block bytes, adding the length indicator to total size reduces boilerplate.
- *         length = struct.unpack("I", data[offset:offset + 4])[0] + 4
- */
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("picoscenes.PicoFrames.get_block", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = 0;
-  __pyx_L0:;
-  __Pyx_XDECREF(__pyx_v_length);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_5get_block(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_5get_block(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_data = 0;
-  PyObject *__pyx_v_offset = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("get_block (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_data,&__pyx_n_s_offset,0};
-    PyObject* values[2] = {0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        CYTHON_FALLTHROUGH;
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_data)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        CYTHON_FALLTHROUGH;
-        case  1:
-        if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_offset)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("get_block", 1, 2, 2, 1); __PYX_ERR(0, 382, __pyx_L3_error)
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_block") < 0)) __PYX_ERR(0, 382, __pyx_L3_error)
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-    }
-    __pyx_v_data = ((PyObject*)values[0]);
-    __pyx_v_offset = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_block", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 382, __pyx_L3_error)
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("picoscenes.PicoFrames.get_block", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_data), (&PyBytes_Type), 1, "data", 1))) __PYX_ERR(0, 382, __pyx_L1_error)
-  __pyx_r = __pyx_pf_10picoscenes_10PicoFrames_4get_block(((struct __pyx_obj_10picoscenes_PicoFrames *)__pyx_v_self), __pyx_v_data, __pyx_v_offset);
-
-  /* function exit code */
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_10picoscenes_10PicoFrames_4get_block(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, PyObject *__pyx_v_data, PyObject *__pyx_v_offset) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("get_block", 0);
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10picoscenes_10PicoFrames_get_block(__pyx_v_self, __pyx_v_data, __pyx_v_offset, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 382, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("picoscenes.PicoFrames.get_block", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "picoscenes.pyx":387
- *         return length, data[offset:offset + length]
- * 
- *     cpdef get_frames(self):             # <<<<<<<<<<<<<<
- *         cpdef bytes file_bytes = open(self.file, 'rb').read()  #
- *         cpdef long pos = 0
- */
-
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_7get_frames(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_f_10picoscenes_10PicoFrames_get_frames(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, int __pyx_skip_dispatch) {
-  PyObject *__pyx_v_file_bytes = 0;
-  long __pyx_v_pos;
-  std::optional<ModularPicoScenesRxFrame>  __pyx_v_frame;
-  PyObject *__pyx_v_frame_length = NULL;
-  PyObject *__pyx_v_frame_bytes = NULL;
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
-  Py_ssize_t __pyx_t_5;
-  int __pyx_t_6;
-  PyObject *(*__pyx_t_7)(PyObject *);
-  unsigned char *__pyx_t_8;
-  uint32_t __pyx_t_9;
-  int __pyx_t_10;
-  long __pyx_t_11;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("get_frames", 0);
-  /* Check if called by wrapper */
-  if (unlikely(__pyx_skip_dispatch)) ;
-  /* Check if overridden in Python */
-  else if (unlikely((Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0) || (Py_TYPE(((PyObject *)__pyx_v_self))->tp_flags & (Py_TPFLAGS_IS_ABSTRACT | Py_TPFLAGS_HEAPTYPE)))) {
-    #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP && CYTHON_USE_TYPE_SLOTS
-    static PY_UINT64_T __pyx_tp_dict_version = __PYX_DICT_VERSION_INIT, __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
-    if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
-      PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
-      #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_frames); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 387, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_10picoscenes_10PicoFrames_7get_frames)) {
-        __Pyx_XDECREF(__pyx_r);
-        __Pyx_INCREF(__pyx_t_1);
-        __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
-        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
-          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
-          if (likely(__pyx_t_4)) {
-            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-            __Pyx_INCREF(__pyx_t_4);
-            __Pyx_INCREF(function);
-            __Pyx_DECREF_SET(__pyx_t_3, function);
-          }
-        }
-        __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
-        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 387, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_2);
-        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_r = __pyx_t_2;
-        __pyx_t_2 = 0;
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        goto __pyx_L0;
-      }
-      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP && CYTHON_USE_TYPE_SLOTS
-      __pyx_tp_dict_version = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
-      __pyx_obj_dict_version = __Pyx_get_object_dict_version(((PyObject *)__pyx_v_self));
-      if (unlikely(__pyx_type_dict_guard != __pyx_tp_dict_version)) {
-        __pyx_tp_dict_version = __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
-      }
-      #endif
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP && CYTHON_USE_TYPE_SLOTS
-    }
-    #endif
-  }
-
-  /* "picoscenes.pyx":388
- * 
- *     cpdef get_frames(self):
- *         cpdef bytes file_bytes = open(self.file, 'rb').read()  #             # <<<<<<<<<<<<<<
- *         cpdef long pos = 0
- *         cdef optional[ModularPicoScenesRxFrame] frame
- */
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 388, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(__pyx_v_self->file);
-  __Pyx_GIVEREF(__pyx_v_self->file);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_self->file);
-  __Pyx_INCREF(__pyx_n_u_rb);
-  __Pyx_GIVEREF(__pyx_n_u_rb);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_n_u_rb);
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_open, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 388, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_read); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 388, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = NULL;
-  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_3)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_3);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
-    }
-  }
-  __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 388, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(PyBytes_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "bytes", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 388, __pyx_L1_error)
-  __pyx_v_file_bytes = ((PyObject*)__pyx_t_1);
-  __pyx_t_1 = 0;
-
-  /* "picoscenes.pyx":389
- *     cpdef get_frames(self):
- *         cpdef bytes file_bytes = open(self.file, 'rb').read()  #
- *         cpdef long pos = 0             # <<<<<<<<<<<<<<
- *         cdef optional[ModularPicoScenesRxFrame] frame
- * 
- */
-  __pyx_v_pos = 0;
-
-  /* "picoscenes.pyx":392
- *         cdef optional[ModularPicoScenesRxFrame] frame
- * 
- *         while pos < len(file_bytes):             # <<<<<<<<<<<<<<
- *             frame_length, frame_bytes = self.get_block(file_bytes, pos)
- *             if len(frame_bytes) != frame_length:
- */
-  while (1) {
-    if (unlikely(__pyx_v_file_bytes == Py_None)) {
-      PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-      __PYX_ERR(0, 392, __pyx_L1_error)
-    }
-    __pyx_t_5 = PyBytes_GET_SIZE(__pyx_v_file_bytes); if (unlikely(__pyx_t_5 == ((Py_ssize_t)-1))) __PYX_ERR(0, 392, __pyx_L1_error)
-    __pyx_t_6 = ((__pyx_v_pos < __pyx_t_5) != 0);
-    if (!__pyx_t_6) break;
-
-    /* "picoscenes.pyx":393
- * 
- *         while pos < len(file_bytes):
- *             frame_length, frame_bytes = self.get_block(file_bytes, pos)             # <<<<<<<<<<<<<<
- *             if len(frame_bytes) != frame_length:
- *                 print("Reached end of file.")
- */
-    __pyx_t_1 = __Pyx_PyInt_From_long(__pyx_v_pos); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 393, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = ((struct __pyx_vtabstruct_10picoscenes_PicoFrames *)__pyx_v_self->__pyx_vtab)->get_block(__pyx_v_self, __pyx_v_file_bytes, __pyx_t_1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 393, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if ((likely(PyTuple_CheckExact(__pyx_t_2))) || (PyList_CheckExact(__pyx_t_2))) {
-      PyObject* sequence = __pyx_t_2;
-      Py_ssize_t size = __Pyx_PySequence_SIZE(sequence);
-      if (unlikely(size != 2)) {
-        if (size > 2) __Pyx_RaiseTooManyValuesError(2);
-        else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        __PYX_ERR(0, 393, __pyx_L1_error)
-      }
-      #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-      if (likely(PyTuple_CheckExact(sequence))) {
-        __pyx_t_1 = PyTuple_GET_ITEM(sequence, 0); 
-        __pyx_t_3 = PyTuple_GET_ITEM(sequence, 1); 
-      } else {
-        __pyx_t_1 = PyList_GET_ITEM(sequence, 0); 
-        __pyx_t_3 = PyList_GET_ITEM(sequence, 1); 
-      }
-      __Pyx_INCREF(__pyx_t_1);
-      __Pyx_INCREF(__pyx_t_3);
-      #else
-      __pyx_t_1 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 393, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_3 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 393, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      #endif
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    } else {
-      Py_ssize_t index = -1;
-      __pyx_t_4 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 393, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_7 = Py_TYPE(__pyx_t_4)->tp_iternext;
-      index = 0; __pyx_t_1 = __pyx_t_7(__pyx_t_4); if (unlikely(!__pyx_t_1)) goto __pyx_L5_unpacking_failed;
-      __Pyx_GOTREF(__pyx_t_1);
-      index = 1; __pyx_t_3 = __pyx_t_7(__pyx_t_4); if (unlikely(!__pyx_t_3)) goto __pyx_L5_unpacking_failed;
-      __Pyx_GOTREF(__pyx_t_3);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_7(__pyx_t_4), 2) < 0) __PYX_ERR(0, 393, __pyx_L1_error)
-      __pyx_t_7 = NULL;
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      goto __pyx_L6_unpacking_done;
-      __pyx_L5_unpacking_failed:;
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_7 = NULL;
-      if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      __PYX_ERR(0, 393, __pyx_L1_error)
-      __pyx_L6_unpacking_done:;
-    }
-    __Pyx_XDECREF_SET(__pyx_v_frame_length, __pyx_t_1);
-    __pyx_t_1 = 0;
-    __Pyx_XDECREF_SET(__pyx_v_frame_bytes, __pyx_t_3);
-    __pyx_t_3 = 0;
-
-    /* "picoscenes.pyx":394
- *         while pos < len(file_bytes):
- *             frame_length, frame_bytes = self.get_block(file_bytes, pos)
- *             if len(frame_bytes) != frame_length:             # <<<<<<<<<<<<<<
- *                 print("Reached end of file.")
- *                 break
- */
-    __pyx_t_5 = PyObject_Length(__pyx_v_frame_bytes); if (unlikely(__pyx_t_5 == ((Py_ssize_t)-1))) __PYX_ERR(0, 394, __pyx_L1_error)
-    __pyx_t_2 = PyInt_FromSsize_t(__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 394, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_v_frame_length, Py_NE); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 394, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 394, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (__pyx_t_6) {
-
-      /* "picoscenes.pyx":395
- *             frame_length, frame_bytes = self.get_block(file_bytes, pos)
- *             if len(frame_bytes) != frame_length:
- *                 print("Reached end of file.")             # <<<<<<<<<<<<<<
- *                 break
- *             # picoframe = PicoFrame()
- */
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 395, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-
-      /* "picoscenes.pyx":396
- *             if len(frame_bytes) != frame_length:
- *                 print("Reached end of file.")
- *                 break             # <<<<<<<<<<<<<<
- *             # picoframe = PicoFrame()
- *             frame = ModularPicoScenesRxFrame.fromBuffer(<unsigned char *> frame_bytes, frame_length - 4, True)
- */
-      goto __pyx_L4_break;
-
-      /* "picoscenes.pyx":394
- *         while pos < len(file_bytes):
- *             frame_length, frame_bytes = self.get_block(file_bytes, pos)
- *             if len(frame_bytes) != frame_length:             # <<<<<<<<<<<<<<
- *                 print("Reached end of file.")
- *                 break
- */
-    }
-
-    /* "picoscenes.pyx":398
- *                 break
- *             # picoframe = PicoFrame()
- *             frame = ModularPicoScenesRxFrame.fromBuffer(<unsigned char *> frame_bytes, frame_length - 4, True)             # <<<<<<<<<<<<<<
- *             print(frame.has_value())
- * 
- */
-    __pyx_t_8 = __Pyx_PyObject_AsWritableUString(__pyx_v_frame_bytes); if (unlikely((!__pyx_t_8) && PyErr_Occurred())) __PYX_ERR(0, 398, __pyx_L1_error)
-    __pyx_t_3 = __Pyx_PyInt_SubtractObjC(__pyx_v_frame_length, __pyx_int_4, 4, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 398, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_9 = __Pyx_PyInt_As_uint32_t(__pyx_t_3); if (unlikely((__pyx_t_9 == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 398, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_v_frame = ModularPicoScenesRxFrame::fromBuffer(((unsigned char *)__pyx_t_8), __pyx_t_9, 1);
-
-    /* "picoscenes.pyx":399
- *             # picoframe = PicoFrame()
- *             frame = ModularPicoScenesRxFrame.fromBuffer(<unsigned char *> frame_bytes, frame_length - 4, True)
- *             print(frame.has_value())             # <<<<<<<<<<<<<<
- * 
- *             self.raw.append(parse(&frame))
- */
-    __pyx_t_3 = __Pyx_PyBool_FromLong(__pyx_v_frame.has_value()); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 399, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 399, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-    /* "picoscenes.pyx":401
- *             print(frame.has_value())
- * 
- *             self.raw.append(parse(&frame))             # <<<<<<<<<<<<<<
- *             pos += frame_length
- * 
- */
-    if (unlikely(__pyx_v_self->raw == Py_None)) {
-      PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "append");
-      __PYX_ERR(0, 401, __pyx_L1_error)
-    }
-    __pyx_t_2 = __pyx_f_10picoscenes_parse((&__pyx_v_frame)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 401, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_self->raw, __pyx_t_2); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 401, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-    /* "picoscenes.pyx":402
- * 
- *             self.raw.append(parse(&frame))
- *             pos += frame_length             # <<<<<<<<<<<<<<
- * 
- * cdef parse_ieee80211_mac_frame_header(const ieee80211_mac_frame_header *m):
- */
-    __pyx_t_2 = __Pyx_PyInt_From_long(__pyx_v_pos); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 402, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = PyNumber_InPlaceAdd(__pyx_t_2, __pyx_v_frame_length); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 402, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_11 = __Pyx_PyInt_As_long(__pyx_t_3); if (unlikely((__pyx_t_11 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 402, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_v_pos = __pyx_t_11;
-  }
-  __pyx_L4_break:;
-
-  /* "picoscenes.pyx":387
- *         return length, data[offset:offset + length]
- * 
- *     cpdef get_frames(self):             # <<<<<<<<<<<<<<
- *         cpdef bytes file_bytes = open(self.file, 'rb').read()  #
- *         cpdef long pos = 0
- */
-
-  /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("picoscenes.PicoFrames.get_frames", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = 0;
-  __pyx_L0:;
-  __Pyx_XDECREF(__pyx_v_file_bytes);
-  __Pyx_XDECREF(__pyx_v_frame_length);
-  __Pyx_XDECREF(__pyx_v_frame_bytes);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_7get_frames(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_7get_frames(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("get_frames (wrapper)", 0);
-  __pyx_r = __pyx_pf_10picoscenes_10PicoFrames_6get_frames(((struct __pyx_obj_10picoscenes_PicoFrames *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_10picoscenes_10PicoFrames_6get_frames(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("get_frames", 0);
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10picoscenes_10PicoFrames_get_frames(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 387, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("picoscenes.PicoFrames.get_frames", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "picoscenes.pyx":371
- * #  This has been not used yet
- * cdef class PicoFrames:
- *     cdef public str file             # <<<<<<<<<<<<<<
- *     cdef public list raw
- * 
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_4file_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_4file_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_10picoscenes_10PicoFrames_4file___get__(((struct __pyx_obj_10picoscenes_PicoFrames *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_10picoscenes_10PicoFrames_4file___get__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_XDECREF(__pyx_r);
-  __Pyx_INCREF(__pyx_v_self->file);
-  __pyx_r = __pyx_v_self->file;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static int __pyx_pw_10picoscenes_10PicoFrames_4file_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
-static int __pyx_pw_10picoscenes_10PicoFrames_4file_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_10picoscenes_10PicoFrames_4file_2__set__(((struct __pyx_obj_10picoscenes_PicoFrames *)__pyx_v_self), ((PyObject *)__pyx_v_value));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static int __pyx_pf_10picoscenes_10PicoFrames_4file_2__set__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, PyObject *__pyx_v_value) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__set__", 0);
-  if (!(likely(PyUnicode_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(0, 371, __pyx_L1_error)
-  __pyx_t_1 = __pyx_v_value;
-  __Pyx_INCREF(__pyx_t_1);
-  __Pyx_GIVEREF(__pyx_t_1);
-  __Pyx_GOTREF(__pyx_v_self->file);
-  __Pyx_DECREF(__pyx_v_self->file);
-  __pyx_v_self->file = ((PyObject*)__pyx_t_1);
-  __pyx_t_1 = 0;
-
-  /* function exit code */
-  __pyx_r = 0;
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("picoscenes.PicoFrames.file.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = -1;
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static int __pyx_pw_10picoscenes_10PicoFrames_4file_5__del__(PyObject *__pyx_v_self); /*proto*/
-static int __pyx_pw_10picoscenes_10PicoFrames_4file_5__del__(PyObject *__pyx_v_self) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__del__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_10picoscenes_10PicoFrames_4file_4__del__(((struct __pyx_obj_10picoscenes_PicoFrames *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static int __pyx_pf_10picoscenes_10PicoFrames_4file_4__del__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__del__", 0);
-  __Pyx_INCREF(Py_None);
-  __Pyx_GIVEREF(Py_None);
-  __Pyx_GOTREF(__pyx_v_self->file);
-  __Pyx_DECREF(__pyx_v_self->file);
-  __pyx_v_self->file = ((PyObject*)Py_None);
-
-  /* function exit code */
-  __pyx_r = 0;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "picoscenes.pyx":372
- * cdef class PicoFrames:
- *     cdef public str file
- *     cdef public list raw             # <<<<<<<<<<<<<<
- * 
- *     def __cinit__(self, file, *argv, **kw):
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_3raw_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_3raw_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_10picoscenes_10PicoFrames_3raw___get__(((struct __pyx_obj_10picoscenes_PicoFrames *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_10picoscenes_10PicoFrames_3raw___get__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_XDECREF(__pyx_r);
-  __Pyx_INCREF(__pyx_v_self->raw);
-  __pyx_r = __pyx_v_self->raw;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static int __pyx_pw_10picoscenes_10PicoFrames_3raw_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
-static int __pyx_pw_10picoscenes_10PicoFrames_3raw_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_10picoscenes_10PicoFrames_3raw_2__set__(((struct __pyx_obj_10picoscenes_PicoFrames *)__pyx_v_self), ((PyObject *)__pyx_v_value));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static int __pyx_pf_10picoscenes_10PicoFrames_3raw_2__set__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, PyObject *__pyx_v_value) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__set__", 0);
-  if (!(likely(PyList_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(0, 372, __pyx_L1_error)
-  __pyx_t_1 = __pyx_v_value;
-  __Pyx_INCREF(__pyx_t_1);
-  __Pyx_GIVEREF(__pyx_t_1);
-  __Pyx_GOTREF(__pyx_v_self->raw);
-  __Pyx_DECREF(__pyx_v_self->raw);
-  __pyx_v_self->raw = ((PyObject*)__pyx_t_1);
-  __pyx_t_1 = 0;
-
-  /* function exit code */
-  __pyx_r = 0;
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("picoscenes.PicoFrames.raw.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = -1;
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static int __pyx_pw_10picoscenes_10PicoFrames_3raw_5__del__(PyObject *__pyx_v_self); /*proto*/
-static int __pyx_pw_10picoscenes_10PicoFrames_3raw_5__del__(PyObject *__pyx_v_self) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__del__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_10picoscenes_10PicoFrames_3raw_4__del__(((struct __pyx_obj_10picoscenes_PicoFrames *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static int __pyx_pf_10picoscenes_10PicoFrames_3raw_4__del__(struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__del__", 0);
-  __Pyx_INCREF(Py_None);
-  __Pyx_GIVEREF(Py_None);
-  __Pyx_GOTREF(__pyx_v_self->raw);
-  __Pyx_DECREF(__pyx_v_self->raw);
-  __pyx_v_self->raw = ((PyObject*)Py_None);
-
-  /* function exit code */
-  __pyx_r = 0;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "(tree fragment)":1
- * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- * def __setstate_cython__(self, __pyx_state):
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_9__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_9__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_10picoscenes_10PicoFrames_8__reduce_cython__(((struct __pyx_obj_10picoscenes_PicoFrames *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_10picoscenes_10PicoFrames_8__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__reduce_cython__", 0);
-
-  /* "(tree fragment)":2
- * def __reduce_cython__(self):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
- * def __setstate_cython__(self, __pyx_state):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_Raise(__pyx_t_1, 0, 0, 0);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __PYX_ERR(1, 2, __pyx_L1_error)
-
-  /* "(tree fragment)":1
- * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- * def __setstate_cython__(self, __pyx_state):
- */
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("picoscenes.PicoFrames.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "(tree fragment)":3
- * def __reduce_cython__(self):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_11__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
-static PyObject *__pyx_pw_10picoscenes_10PicoFrames_11__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_10picoscenes_10PicoFrames_10__setstate_cython__(((struct __pyx_obj_10picoscenes_PicoFrames *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_10picoscenes_10PicoFrames_10__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_10picoscenes_PicoFrames *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__setstate_cython__", 0);
-
-  /* "(tree fragment)":4
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- * def __setstate_cython__(self, __pyx_state):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
- */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_Raise(__pyx_t_1, 0, 0, 0);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __PYX_ERR(1, 4, __pyx_L1_error)
-
-  /* "(tree fragment)":3
- * def __reduce_cython__(self):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- */
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("picoscenes.PicoFrames.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "picoscenes.pyx":404
- *             pos += frame_length
  * 
  * cdef parse_ieee80211_mac_frame_header(const ieee80211_mac_frame_header *m):             # <<<<<<<<<<<<<<
  *     cdef int i
@@ -5016,7 +3588,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ieee80211_mac_frame_header(struct ie
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("parse_ieee80211_mac_frame_header", 0);
 
-  /* "picoscenes.pyx":406
+  /* "picoscenes.pyx":372
  * cdef parse_ieee80211_mac_frame_header(const ieee80211_mac_frame_header *m):
  *     cdef int i
  *     return {             # <<<<<<<<<<<<<<
@@ -5025,244 +3597,244 @@ static PyObject *__pyx_f_10picoscenes_parse_ieee80211_mac_frame_header(struct ie
  */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "picoscenes.pyx":407
+  /* "picoscenes.pyx":373
  *     cdef int i
  *     return {
  *         "ControlField": {             # <<<<<<<<<<<<<<
  *             'Version': m.fc.version,
  *             'Type': m.fc.type,
  */
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 407, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 373, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
 
-  /* "picoscenes.pyx":408
+  /* "picoscenes.pyx":374
  *     return {
  *         "ControlField": {
  *             'Version': m.fc.version,             # <<<<<<<<<<<<<<
  *             'Type': m.fc.type,
  *             'SubType': m.fc.subtype,
  */
-  __pyx_t_2 = __Pyx_PyDict_NewPresized(11); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 408, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyDict_NewPresized(11); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.version); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 408, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.version); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_Version, __pyx_t_3) < 0) __PYX_ERR(0, 408, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_Version, __pyx_t_3) < 0) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "picoscenes.pyx":409
+  /* "picoscenes.pyx":375
  *         "ControlField": {
  *             'Version': m.fc.version,
  *             'Type': m.fc.type,             # <<<<<<<<<<<<<<
  *             'SubType': m.fc.subtype,
  *             'ToDS': m.fc.toDS,
  */
-  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.type); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 409, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.type); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 375, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_Type, __pyx_t_3) < 0) __PYX_ERR(0, 408, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_Type, __pyx_t_3) < 0) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "picoscenes.pyx":410
+  /* "picoscenes.pyx":376
  *             'Version': m.fc.version,
  *             'Type': m.fc.type,
  *             'SubType': m.fc.subtype,             # <<<<<<<<<<<<<<
  *             'ToDS': m.fc.toDS,
  *             'FromDS': m.fc.fromDS,
  */
-  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.subtype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 410, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.subtype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 376, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_SubType, __pyx_t_3) < 0) __PYX_ERR(0, 408, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_SubType, __pyx_t_3) < 0) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "picoscenes.pyx":411
+  /* "picoscenes.pyx":377
  *             'Type': m.fc.type,
  *             'SubType': m.fc.subtype,
  *             'ToDS': m.fc.toDS,             # <<<<<<<<<<<<<<
  *             'FromDS': m.fc.fromDS,
  *             'MoreFrags': m.fc.moreFrags,
  */
-  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.toDS); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 411, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.toDS); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 377, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_ToDS, __pyx_t_3) < 0) __PYX_ERR(0, 408, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_ToDS, __pyx_t_3) < 0) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "picoscenes.pyx":412
+  /* "picoscenes.pyx":378
  *             'SubType': m.fc.subtype,
  *             'ToDS': m.fc.toDS,
  *             'FromDS': m.fc.fromDS,             # <<<<<<<<<<<<<<
  *             'MoreFrags': m.fc.moreFrags,
  *             'Retry': m.fc.retry,
  */
-  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.fromDS); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 412, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.fromDS); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 378, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_FromDS, __pyx_t_3) < 0) __PYX_ERR(0, 408, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_FromDS, __pyx_t_3) < 0) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "picoscenes.pyx":413
+  /* "picoscenes.pyx":379
  *             'ToDS': m.fc.toDS,
  *             'FromDS': m.fc.fromDS,
  *             'MoreFrags': m.fc.moreFrags,             # <<<<<<<<<<<<<<
  *             'Retry': m.fc.retry,
  *             'PowerManagement': m.fc.power_mgmt,
  */
-  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.moreFrags); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 413, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.moreFrags); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 379, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_MoreFrags, __pyx_t_3) < 0) __PYX_ERR(0, 408, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_MoreFrags, __pyx_t_3) < 0) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "picoscenes.pyx":414
+  /* "picoscenes.pyx":380
  *             'FromDS': m.fc.fromDS,
  *             'MoreFrags': m.fc.moreFrags,
  *             'Retry': m.fc.retry,             # <<<<<<<<<<<<<<
  *             'PowerManagement': m.fc.power_mgmt,
  *             'More': m.fc.more,
  */
-  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.retry); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 414, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.retry); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 380, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_Retry, __pyx_t_3) < 0) __PYX_ERR(0, 408, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_Retry, __pyx_t_3) < 0) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "picoscenes.pyx":415
+  /* "picoscenes.pyx":381
  *             'MoreFrags': m.fc.moreFrags,
  *             'Retry': m.fc.retry,
  *             'PowerManagement': m.fc.power_mgmt,             # <<<<<<<<<<<<<<
  *             'More': m.fc.more,
  *             'Protected': m.fc.protect,
  */
-  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.power_mgmt); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 415, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.power_mgmt); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 381, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_PowerManagement, __pyx_t_3) < 0) __PYX_ERR(0, 408, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_PowerManagement, __pyx_t_3) < 0) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "picoscenes.pyx":416
+  /* "picoscenes.pyx":382
  *             'Retry': m.fc.retry,
  *             'PowerManagement': m.fc.power_mgmt,
  *             'More': m.fc.more,             # <<<<<<<<<<<<<<
  *             'Protected': m.fc.protect,
  *             'Order': m.fc.order,
  */
-  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.more); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 416, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.more); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 382, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_More, __pyx_t_3) < 0) __PYX_ERR(0, 408, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_More, __pyx_t_3) < 0) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "picoscenes.pyx":417
+  /* "picoscenes.pyx":383
  *             'PowerManagement': m.fc.power_mgmt,
  *             'More': m.fc.more,
  *             'Protected': m.fc.protect,             # <<<<<<<<<<<<<<
  *             'Order': m.fc.order,
  *         },
  */
-  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.protect); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 417, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.protect); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 383, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_Protected, __pyx_t_3) < 0) __PYX_ERR(0, 408, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_Protected, __pyx_t_3) < 0) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "picoscenes.pyx":418
+  /* "picoscenes.pyx":384
  *             'More': m.fc.more,
  *             'Protected': m.fc.protect,
  *             'Order': m.fc.order,             # <<<<<<<<<<<<<<
  *         },
  *         "Addr1": [m.addr1[i] for i in range(6)],
  */
-  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.order); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 418, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->fc.order); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 384, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_Order, __pyx_t_3) < 0) __PYX_ERR(0, 408, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_u_Order, __pyx_t_3) < 0) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_ControlField, __pyx_t_2) < 0) __PYX_ERR(0, 407, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_ControlField, __pyx_t_2) < 0) __PYX_ERR(0, 373, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   { /* enter inner scope */
 
-    /* "picoscenes.pyx":420
+    /* "picoscenes.pyx":386
  *             'Order': m.fc.order,
  *         },
  *         "Addr1": [m.addr1[i] for i in range(6)],             # <<<<<<<<<<<<<<
  *         "Addr2": [m.addr2[i] for i in range(6)],
  *         "Addr3": [m.addr3[i] for i in range(6)],
  */
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 420, __pyx_L1_error)
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 386, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     for (__pyx_t_4 = 0; __pyx_t_4 < 6; __pyx_t_4+=1) {
       __pyx_7genexpr__pyx_v_i = __pyx_t_4;
-      __pyx_t_3 = __Pyx_PyInt_From_uint8_t((__pyx_v_m->addr1[__pyx_7genexpr__pyx_v_i])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 420, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyInt_From_uint8_t((__pyx_v_m->addr1[__pyx_7genexpr__pyx_v_i])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 386, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_3))) __PYX_ERR(0, 420, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_3))) __PYX_ERR(0, 386, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     }
   } /* exit inner scope */
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Addr1, __pyx_t_2) < 0) __PYX_ERR(0, 407, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Addr1, __pyx_t_2) < 0) __PYX_ERR(0, 373, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   { /* enter inner scope */
 
-    /* "picoscenes.pyx":421
+    /* "picoscenes.pyx":387
  *         },
  *         "Addr1": [m.addr1[i] for i in range(6)],
  *         "Addr2": [m.addr2[i] for i in range(6)],             # <<<<<<<<<<<<<<
  *         "Addr3": [m.addr3[i] for i in range(6)],
  *         "Fragment": m.frag,
  */
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 421, __pyx_L1_error)
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 387, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     for (__pyx_t_4 = 0; __pyx_t_4 < 6; __pyx_t_4+=1) {
       __pyx_8genexpr1__pyx_v_i = __pyx_t_4;
-      __pyx_t_3 = __Pyx_PyInt_From_uint8_t((__pyx_v_m->addr2[__pyx_8genexpr1__pyx_v_i])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 421, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyInt_From_uint8_t((__pyx_v_m->addr2[__pyx_8genexpr1__pyx_v_i])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 387, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_3))) __PYX_ERR(0, 421, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_3))) __PYX_ERR(0, 387, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     }
   } /* exit inner scope */
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Addr2, __pyx_t_2) < 0) __PYX_ERR(0, 407, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Addr2, __pyx_t_2) < 0) __PYX_ERR(0, 373, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   { /* enter inner scope */
 
-    /* "picoscenes.pyx":422
+    /* "picoscenes.pyx":388
  *         "Addr1": [m.addr1[i] for i in range(6)],
  *         "Addr2": [m.addr2[i] for i in range(6)],
  *         "Addr3": [m.addr3[i] for i in range(6)],             # <<<<<<<<<<<<<<
  *         "Fragment": m.frag,
  *         "Sequence": m.seq,
  */
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 422, __pyx_L1_error)
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 388, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     for (__pyx_t_4 = 0; __pyx_t_4 < 6; __pyx_t_4+=1) {
       __pyx_8genexpr2__pyx_v_i = __pyx_t_4;
-      __pyx_t_3 = __Pyx_PyInt_From_uint8_t((__pyx_v_m->addr3[__pyx_8genexpr2__pyx_v_i])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 422, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyInt_From_uint8_t((__pyx_v_m->addr3[__pyx_8genexpr2__pyx_v_i])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 388, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_3))) __PYX_ERR(0, 422, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_3))) __PYX_ERR(0, 388, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     }
   } /* exit inner scope */
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Addr3, __pyx_t_2) < 0) __PYX_ERR(0, 407, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Addr3, __pyx_t_2) < 0) __PYX_ERR(0, 373, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":423
+  /* "picoscenes.pyx":389
  *         "Addr2": [m.addr2[i] for i in range(6)],
  *         "Addr3": [m.addr3[i] for i in range(6)],
  *         "Fragment": m.frag,             # <<<<<<<<<<<<<<
  *         "Sequence": m.seq,
  *     }
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->frag); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 423, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->frag); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 389, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Fragment, __pyx_t_2) < 0) __PYX_ERR(0, 407, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Fragment, __pyx_t_2) < 0) __PYX_ERR(0, 373, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":424
+  /* "picoscenes.pyx":390
  *         "Addr3": [m.addr3[i] for i in range(6)],
  *         "Fragment": m.frag,
  *         "Sequence": m.seq,             # <<<<<<<<<<<<<<
  *     }
  * 
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->seq); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 424, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->seq); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 390, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Sequence, __pyx_t_2) < 0) __PYX_ERR(0, 407, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Sequence, __pyx_t_2) < 0) __PYX_ERR(0, 373, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "picoscenes.pyx":404
- *             pos += frame_length
+  /* "picoscenes.pyx":370
+ * 
  * 
  * cdef parse_ieee80211_mac_frame_header(const ieee80211_mac_frame_header *m):             # <<<<<<<<<<<<<<
  *     cdef int i
@@ -5282,7 +3854,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ieee80211_mac_frame_header(struct ie
   return __pyx_r;
 }
 
-/* "picoscenes.pyx":427
+/* "picoscenes.pyx":393
  *     }
  * 
  * cdef parse_RxSBasic(const RxSBasic *m):             # <<<<<<<<<<<<<<
@@ -5300,7 +3872,7 @@ static PyObject *__pyx_f_10picoscenes_parse_RxSBasic(struct RxSBasic const *__py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("parse_RxSBasic", 0);
 
-  /* "picoscenes.pyx":428
+  /* "picoscenes.pyx":394
  * 
  * cdef parse_RxSBasic(const RxSBasic *m):
  *     return {             # <<<<<<<<<<<<<<
@@ -5309,228 +3881,228 @@ static PyObject *__pyx_f_10picoscenes_parse_RxSBasic(struct RxSBasic const *__py
  */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "picoscenes.pyx":429
+  /* "picoscenes.pyx":395
  * cdef parse_RxSBasic(const RxSBasic *m):
  *     return {
  *         "deviceType": m.deviceType,             # <<<<<<<<<<<<<<
  *         "timestamp": m.tstamp,
  *         "systemns": m.systemTime,
  */
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(18); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 429, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(18); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->deviceType); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 429, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->deviceType); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_deviceType, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_deviceType, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":430
+  /* "picoscenes.pyx":396
  *     return {
  *         "deviceType": m.deviceType,
  *         "timestamp": m.tstamp,             # <<<<<<<<<<<<<<
  *         "systemns": m.systemTime,
  *         "centerFreq": m.centerFreq,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->tstamp); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 430, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->tstamp); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 396, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_timestamp, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_timestamp, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":431
+  /* "picoscenes.pyx":397
  *         "deviceType": m.deviceType,
  *         "timestamp": m.tstamp,
  *         "systemns": m.systemTime,             # <<<<<<<<<<<<<<
  *         "centerFreq": m.centerFreq,
  *         "controlFreq": m.controlFreq,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->systemTime); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 431, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->systemTime); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 397, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_systemns, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_systemns, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":432
+  /* "picoscenes.pyx":398
  *         "timestamp": m.tstamp,
  *         "systemns": m.systemTime,
  *         "centerFreq": m.centerFreq,             # <<<<<<<<<<<<<<
  *         "controlFreq": m.controlFreq,
  *         "CBW": m.cbw,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_int16_t(__pyx_v_m->centerFreq); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 432, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int16_t(__pyx_v_m->centerFreq); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 398, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_centerFreq, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_centerFreq, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":433
+  /* "picoscenes.pyx":399
  *         "systemns": m.systemTime,
  *         "centerFreq": m.centerFreq,
  *         "controlFreq": m.controlFreq,             # <<<<<<<<<<<<<<
  *         "CBW": m.cbw,
  *         "packetFormat": m.packetFormat,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_int16_t(__pyx_v_m->controlFreq); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 433, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int16_t(__pyx_v_m->controlFreq); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 399, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_controlFreq, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_controlFreq, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":434
+  /* "picoscenes.pyx":400
  *         "centerFreq": m.centerFreq,
  *         "controlFreq": m.controlFreq,
  *         "CBW": m.cbw,             # <<<<<<<<<<<<<<
  *         "packetFormat": m.packetFormat,
  *         "packetCBW": m.pkt_cbw,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->cbw); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 434, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->cbw); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 400, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_CBW, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_CBW, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":435
+  /* "picoscenes.pyx":401
  *         "controlFreq": m.controlFreq,
  *         "CBW": m.cbw,
  *         "packetFormat": m.packetFormat,             # <<<<<<<<<<<<<<
  *         "packetCBW": m.pkt_cbw,
  *         "GI": m.guardInterval,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->packetFormat); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 435, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->packetFormat); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 401, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_packetFormat, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_packetFormat, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":436
+  /* "picoscenes.pyx":402
  *         "CBW": m.cbw,
  *         "packetFormat": m.packetFormat,
  *         "packetCBW": m.pkt_cbw,             # <<<<<<<<<<<<<<
  *         "GI": m.guardInterval,
  *         "MCS": m.mcs,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->pkt_cbw); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 436, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->pkt_cbw); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 402, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_packetCBW, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_packetCBW, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":437
+  /* "picoscenes.pyx":403
  *         "packetFormat": m.packetFormat,
  *         "packetCBW": m.pkt_cbw,
  *         "GI": m.guardInterval,             # <<<<<<<<<<<<<<
  *         "MCS": m.mcs,
  *         "numSTS": m.numSTS,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->guardInterval); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 437, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->guardInterval); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 403, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_GI, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_GI, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":438
+  /* "picoscenes.pyx":404
  *         "packetCBW": m.pkt_cbw,
  *         "GI": m.guardInterval,
  *         "MCS": m.mcs,             # <<<<<<<<<<<<<<
  *         "numSTS": m.numSTS,
  *         "numESS": m.numESS,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->mcs); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 438, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->mcs); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 404, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_MCS, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_MCS, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":439
+  /* "picoscenes.pyx":405
  *         "GI": m.guardInterval,
  *         "MCS": m.mcs,
  *         "numSTS": m.numSTS,             # <<<<<<<<<<<<<<
  *         "numESS": m.numESS,
  *         "numRx": m.numRx,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->numSTS); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 439, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->numSTS); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 405, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numSTS, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numSTS, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":440
+  /* "picoscenes.pyx":406
  *         "MCS": m.mcs,
  *         "numSTS": m.numSTS,
  *         "numESS": m.numESS,             # <<<<<<<<<<<<<<
  *         "numRx": m.numRx,
  *         "noiseFloor": m.noiseFloor,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->numESS); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 440, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->numESS); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 406, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numESS, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numESS, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":441
+  /* "picoscenes.pyx":407
  *         "numSTS": m.numSTS,
  *         "numESS": m.numESS,
  *         "numRx": m.numRx,             # <<<<<<<<<<<<<<
  *         "noiseFloor": m.noiseFloor,
  *         "rssi": m.rssi,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->numRx); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 441, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->numRx); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 407, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numRx, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numRx, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":442
+  /* "picoscenes.pyx":408
  *         "numESS": m.numESS,
  *         "numRx": m.numRx,
  *         "noiseFloor": m.noiseFloor,             # <<<<<<<<<<<<<<
  *         "rssi": m.rssi,
  *         "rssi1": m.rssi_ctl0,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_int8_t(__pyx_v_m->noiseFloor); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 442, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int8_t(__pyx_v_m->noiseFloor); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 408, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_noiseFloor, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_noiseFloor, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":443
+  /* "picoscenes.pyx":409
  *         "numRx": m.numRx,
  *         "noiseFloor": m.noiseFloor,
  *         "rssi": m.rssi,             # <<<<<<<<<<<<<<
  *         "rssi1": m.rssi_ctl0,
  *         "rssi2": m.rssi_ctl1,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_int8_t(__pyx_v_m->rssi); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 443, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int8_t(__pyx_v_m->rssi); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 409, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_rssi, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_rssi, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":444
+  /* "picoscenes.pyx":410
  *         "noiseFloor": m.noiseFloor,
  *         "rssi": m.rssi,
  *         "rssi1": m.rssi_ctl0,             # <<<<<<<<<<<<<<
  *         "rssi2": m.rssi_ctl1,
  *         "rssi3": m.rssi_ctl2,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_int8_t(__pyx_v_m->rssi_ctl0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 444, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int8_t(__pyx_v_m->rssi_ctl0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 410, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_rssi1, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_rssi1, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":445
+  /* "picoscenes.pyx":411
  *         "rssi": m.rssi,
  *         "rssi1": m.rssi_ctl0,
  *         "rssi2": m.rssi_ctl1,             # <<<<<<<<<<<<<<
  *         "rssi3": m.rssi_ctl2,
  *     }
  */
-  __pyx_t_2 = __Pyx_PyInt_From_int8_t(__pyx_v_m->rssi_ctl1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 445, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int8_t(__pyx_v_m->rssi_ctl1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 411, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_rssi2, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_rssi2, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":446
+  /* "picoscenes.pyx":412
  *         "rssi1": m.rssi_ctl0,
  *         "rssi2": m.rssi_ctl1,
  *         "rssi3": m.rssi_ctl2,             # <<<<<<<<<<<<<<
  *     }
  * 
  */
-  __pyx_t_2 = __Pyx_PyInt_From_int8_t(__pyx_v_m->rssi_ctl2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 446, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int8_t(__pyx_v_m->rssi_ctl2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 412, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_rssi3, __pyx_t_2) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_rssi3, __pyx_t_2) < 0) __PYX_ERR(0, 395, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "picoscenes.pyx":427
+  /* "picoscenes.pyx":393
  *     }
  * 
  * cdef parse_RxSBasic(const RxSBasic *m):             # <<<<<<<<<<<<<<
@@ -5550,7 +4122,7 @@ static PyObject *__pyx_f_10picoscenes_parse_RxSBasic(struct RxSBasic const *__py
   return __pyx_r;
 }
 
-/* "picoscenes.pyx":449
+/* "picoscenes.pyx":415
  *     }
  * 
  * cdef parse_ExtraInfo(const ExtraInfo *m):             # <<<<<<<<<<<<<<
@@ -5575,299 +4147,299 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("parse_ExtraInfo", 0);
 
-  /* "picoscenes.pyx":452
+  /* "picoscenes.pyx":418
  *     cdef int i
  *     result = {
  *         "hasLength": m.hasLength,             # <<<<<<<<<<<<<<
  *         "hasVersion": m.hasVersion,
  *         "hasMacAddr_cur": m.hasMacAddr_cur,
  */
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(24); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 452, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(24); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasLength); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 452, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasLength); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasLength, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasLength, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":453
+  /* "picoscenes.pyx":419
  *     result = {
  *         "hasLength": m.hasLength,
  *         "hasVersion": m.hasVersion,             # <<<<<<<<<<<<<<
  *         "hasMacAddr_cur": m.hasMacAddr_cur,
  *         "hasMacAddr_rom": m.hasMacAddr_rom,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasVersion); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 453, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasVersion); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 419, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasVersion, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasVersion, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":454
+  /* "picoscenes.pyx":420
  *         "hasLength": m.hasLength,
  *         "hasVersion": m.hasVersion,
  *         "hasMacAddr_cur": m.hasMacAddr_cur,             # <<<<<<<<<<<<<<
  *         "hasMacAddr_rom": m.hasMacAddr_rom,
  *         "hasChansel": m.hasChansel,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasMacAddr_cur); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 454, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasMacAddr_cur); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 420, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasMacAddr_cur, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasMacAddr_cur, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":455
+  /* "picoscenes.pyx":421
  *         "hasVersion": m.hasVersion,
  *         "hasMacAddr_cur": m.hasMacAddr_cur,
  *         "hasMacAddr_rom": m.hasMacAddr_rom,             # <<<<<<<<<<<<<<
  *         "hasChansel": m.hasChansel,
  *         "hasBMode": m.hasBMode,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasMacAddr_rom); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 455, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasMacAddr_rom); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 421, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasMacAddr_rom, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasMacAddr_rom, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":456
+  /* "picoscenes.pyx":422
  *         "hasMacAddr_cur": m.hasMacAddr_cur,
  *         "hasMacAddr_rom": m.hasMacAddr_rom,
  *         "hasChansel": m.hasChansel,             # <<<<<<<<<<<<<<
  *         "hasBMode": m.hasBMode,
  *         "hasEVM": m.hasEVM,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasChansel); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 456, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasChansel); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 422, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasChansel, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasChansel, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":457
+  /* "picoscenes.pyx":423
  *         "hasMacAddr_rom": m.hasMacAddr_rom,
  *         "hasChansel": m.hasChansel,
  *         "hasBMode": m.hasBMode,             # <<<<<<<<<<<<<<
  *         "hasEVM": m.hasEVM,
  *         "hasTxChainMask": m.hasTxChainMask,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasBMode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 457, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasBMode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 423, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasBMode, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasBMode, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":458
+  /* "picoscenes.pyx":424
  *         "hasChansel": m.hasChansel,
  *         "hasBMode": m.hasBMode,
  *         "hasEVM": m.hasEVM,             # <<<<<<<<<<<<<<
  *         "hasTxChainMask": m.hasTxChainMask,
  *         "hasRxChainMask": m.hasRxChainMask,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasEVM); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 458, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasEVM); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 424, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasEVM, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasEVM, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":459
+  /* "picoscenes.pyx":425
  *         "hasBMode": m.hasBMode,
  *         "hasEVM": m.hasEVM,
  *         "hasTxChainMask": m.hasTxChainMask,             # <<<<<<<<<<<<<<
  *         "hasRxChainMask": m.hasRxChainMask,
  *         "hasTxpower": m.hasTxpower,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasTxChainMask); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 459, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasTxChainMask); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 425, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasTxChainMask, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasTxChainMask, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":460
+  /* "picoscenes.pyx":426
  *         "hasEVM": m.hasEVM,
  *         "hasTxChainMask": m.hasTxChainMask,
  *         "hasRxChainMask": m.hasRxChainMask,             # <<<<<<<<<<<<<<
  *         "hasTxpower": m.hasTxpower,
  *         "hasCF": m.hasCF,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasRxChainMask); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 460, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasRxChainMask); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 426, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasRxChainMask, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasRxChainMask, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":461
+  /* "picoscenes.pyx":427
  *         "hasTxChainMask": m.hasTxChainMask,
  *         "hasRxChainMask": m.hasRxChainMask,
  *         "hasTxpower": m.hasTxpower,             # <<<<<<<<<<<<<<
  *         "hasCF": m.hasCF,
  *         "hasTxTSF": m.hasTxTSF,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasTxpower); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 461, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasTxpower); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 427, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasTxpower, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasTxpower, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":462
+  /* "picoscenes.pyx":428
  *         "hasRxChainMask": m.hasRxChainMask,
  *         "hasTxpower": m.hasTxpower,
  *         "hasCF": m.hasCF,             # <<<<<<<<<<<<<<
  *         "hasTxTSF": m.hasTxTSF,
  *         "hasLastHwTxTSF": m.hasLastHWTxTSF,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasCF); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 462, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasCF); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 428, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasCF, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasCF, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":463
+  /* "picoscenes.pyx":429
  *         "hasTxpower": m.hasTxpower,
  *         "hasCF": m.hasCF,
  *         "hasTxTSF": m.hasTxTSF,             # <<<<<<<<<<<<<<
  *         "hasLastHwTxTSF": m.hasLastHWTxTSF,
  *         "hasChannelFlags": m.hasChannelFlags,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasTxTSF); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 463, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasTxTSF); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 429, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasTxTSF, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasTxTSF, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":464
+  /* "picoscenes.pyx":430
  *         "hasCF": m.hasCF,
  *         "hasTxTSF": m.hasTxTSF,
  *         "hasLastHwTxTSF": m.hasLastHWTxTSF,             # <<<<<<<<<<<<<<
  *         "hasChannelFlags": m.hasChannelFlags,
  *         "hasTxNess": m.hasTxNess,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasLastHWTxTSF); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 464, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasLastHWTxTSF); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 430, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasLastHwTxTSF, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasLastHwTxTSF, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":465
+  /* "picoscenes.pyx":431
  *         "hasTxTSF": m.hasTxTSF,
  *         "hasLastHwTxTSF": m.hasLastHWTxTSF,
  *         "hasChannelFlags": m.hasChannelFlags,             # <<<<<<<<<<<<<<
  *         "hasTxNess": m.hasTxNess,
  *         "hasTuningPolicy": m.hasTuningPolicy,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasChannelFlags); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 465, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasChannelFlags); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 431, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasChannelFlags, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasChannelFlags, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":466
+  /* "picoscenes.pyx":432
  *         "hasLastHwTxTSF": m.hasLastHWTxTSF,
  *         "hasChannelFlags": m.hasChannelFlags,
  *         "hasTxNess": m.hasTxNess,             # <<<<<<<<<<<<<<
  *         "hasTuningPolicy": m.hasTuningPolicy,
  *         "hasPLLRate": m.hasPLLRate,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasTxNess); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 466, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasTxNess); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 432, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasTxNess, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasTxNess, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":467
+  /* "picoscenes.pyx":433
  *         "hasChannelFlags": m.hasChannelFlags,
  *         "hasTxNess": m.hasTxNess,
  *         "hasTuningPolicy": m.hasTuningPolicy,             # <<<<<<<<<<<<<<
  *         "hasPLLRate": m.hasPLLRate,
  *         "hasPLLClkSel": m.hasPLLClkSel,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasTuningPolicy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 467, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasTuningPolicy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 433, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasTuningPolicy, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasTuningPolicy, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":468
+  /* "picoscenes.pyx":434
  *         "hasTxNess": m.hasTxNess,
  *         "hasTuningPolicy": m.hasTuningPolicy,
  *         "hasPLLRate": m.hasPLLRate,             # <<<<<<<<<<<<<<
  *         "hasPLLClkSel": m.hasPLLClkSel,
  *         "hasPLLRefDiv": m.hasPLLRefDiv,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasPLLRate); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 468, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasPLLRate); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 434, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasPLLRate, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasPLLRate, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":469
+  /* "picoscenes.pyx":435
  *         "hasTuningPolicy": m.hasTuningPolicy,
  *         "hasPLLRate": m.hasPLLRate,
  *         "hasPLLClkSel": m.hasPLLClkSel,             # <<<<<<<<<<<<<<
  *         "hasPLLRefDiv": m.hasPLLRefDiv,
  *         "hasAGC": m.hasAGC,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasPLLClkSel); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 469, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasPLLClkSel); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 435, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasPLLClkSel, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasPLLClkSel, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":470
+  /* "picoscenes.pyx":436
  *         "hasPLLRate": m.hasPLLRate,
  *         "hasPLLClkSel": m.hasPLLClkSel,
  *         "hasPLLRefDiv": m.hasPLLRefDiv,             # <<<<<<<<<<<<<<
  *         "hasAGC": m.hasAGC,
  *         "hasAntennaSelection": m.hasAntennaSelection,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasPLLRefDiv); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 470, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasPLLRefDiv); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 436, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasPLLRefDiv, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasPLLRefDiv, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":471
+  /* "picoscenes.pyx":437
  *         "hasPLLClkSel": m.hasPLLClkSel,
  *         "hasPLLRefDiv": m.hasPLLRefDiv,
  *         "hasAGC": m.hasAGC,             # <<<<<<<<<<<<<<
  *         "hasAntennaSelection": m.hasAntennaSelection,
  *         "hasSamplingRate": m.hasSamplingRate,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasAGC); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 471, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasAGC); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 437, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasAGC, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasAGC, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":472
+  /* "picoscenes.pyx":438
  *         "hasPLLRefDiv": m.hasPLLRefDiv,
  *         "hasAGC": m.hasAGC,
  *         "hasAntennaSelection": m.hasAntennaSelection,             # <<<<<<<<<<<<<<
  *         "hasSamplingRate": m.hasSamplingRate,
  *         "hasCFO": m.hasCFO,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasAntennaSelection); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 472, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasAntennaSelection); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 438, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasAntennaSelection, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasAntennaSelection, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":473
+  /* "picoscenes.pyx":439
  *         "hasAGC": m.hasAGC,
  *         "hasAntennaSelection": m.hasAntennaSelection,
  *         "hasSamplingRate": m.hasSamplingRate,             # <<<<<<<<<<<<<<
  *         "hasCFO": m.hasCFO,
  *         "hasSFO": m.hasSFO,
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasSamplingRate); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 473, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasSamplingRate); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 439, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasSamplingRate, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasSamplingRate, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":474
+  /* "picoscenes.pyx":440
  *         "hasAntennaSelection": m.hasAntennaSelection,
  *         "hasSamplingRate": m.hasSamplingRate,
  *         "hasCFO": m.hasCFO,             # <<<<<<<<<<<<<<
  *         "hasSFO": m.hasSFO,
  *     }
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasCFO); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 474, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasCFO); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 440, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasCFO, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasCFO, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":475
+  /* "picoscenes.pyx":441
  *         "hasSamplingRate": m.hasSamplingRate,
  *         "hasCFO": m.hasCFO,
  *         "hasSFO": m.hasSFO,             # <<<<<<<<<<<<<<
  *     }
  *     if m.hasLength:
  */
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasSFO); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 475, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_m->hasSFO); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 441, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasSFO, __pyx_t_2) < 0) __PYX_ERR(0, 452, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_hasSFO, __pyx_t_2) < 0) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_result = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "picoscenes.pyx":477
+  /* "picoscenes.pyx":443
  *         "hasSFO": m.hasSFO,
  *     }
  *     if m.hasLength:             # <<<<<<<<<<<<<<
@@ -5877,19 +4449,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasLength != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":478
+    /* "picoscenes.pyx":444
  *     }
  *     if m.hasLength:
  *         result["length"] = m.length             # <<<<<<<<<<<<<<
  *     if m.hasVersion:
  *         result["version"] = m.version
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->length); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 478, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->length); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 444, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_length, __pyx_t_1) < 0)) __PYX_ERR(0, 478, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_length, __pyx_t_1) < 0)) __PYX_ERR(0, 444, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":477
+    /* "picoscenes.pyx":443
  *         "hasSFO": m.hasSFO,
  *     }
  *     if m.hasLength:             # <<<<<<<<<<<<<<
@@ -5898,7 +4470,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":479
+  /* "picoscenes.pyx":445
  *     if m.hasLength:
  *         result["length"] = m.length
  *     if m.hasVersion:             # <<<<<<<<<<<<<<
@@ -5908,19 +4480,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasVersion != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":480
+    /* "picoscenes.pyx":446
  *         result["length"] = m.length
  *     if m.hasVersion:
  *         result["version"] = m.version             # <<<<<<<<<<<<<<
  *     if m.hasMacAddr_cur:
  *         result["macaddr_cur"] = [m.macaddr_cur[i] for i in range(6)]
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->version); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 480, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->version); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 446, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_version, __pyx_t_1) < 0)) __PYX_ERR(0, 480, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_version, __pyx_t_1) < 0)) __PYX_ERR(0, 446, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":479
+    /* "picoscenes.pyx":445
  *     if m.hasLength:
  *         result["length"] = m.length
  *     if m.hasVersion:             # <<<<<<<<<<<<<<
@@ -5929,7 +4501,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":481
+  /* "picoscenes.pyx":447
  *     if m.hasVersion:
  *         result["version"] = m.version
  *     if m.hasMacAddr_cur:             # <<<<<<<<<<<<<<
@@ -5939,7 +4511,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasMacAddr_cur != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":482
+    /* "picoscenes.pyx":448
  *         result["version"] = m.version
  *     if m.hasMacAddr_cur:
  *         result["macaddr_cur"] = [m.macaddr_cur[i] for i in range(6)]             # <<<<<<<<<<<<<<
@@ -5947,20 +4519,20 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  *         result["macaddr_rom"] = [m.macaddr_rom[i] for i in range(6)]
  */
     { /* enter inner scope */
-      __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 482, __pyx_L1_error)
+      __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 448, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       for (__pyx_t_4 = 0; __pyx_t_4 < 6; __pyx_t_4+=1) {
         __pyx_8genexpr3__pyx_v_i = __pyx_t_4;
-        __pyx_t_2 = __Pyx_PyInt_From_uint8_t((__pyx_v_m->macaddr_cur[__pyx_8genexpr3__pyx_v_i])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 482, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyInt_From_uint8_t((__pyx_v_m->macaddr_cur[__pyx_8genexpr3__pyx_v_i])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 448, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_2))) __PYX_ERR(0, 482, __pyx_L1_error)
+        if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_2))) __PYX_ERR(0, 448, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       }
     } /* exit inner scope */
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_macaddr_cur, __pyx_t_1) < 0)) __PYX_ERR(0, 482, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_macaddr_cur, __pyx_t_1) < 0)) __PYX_ERR(0, 448, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":481
+    /* "picoscenes.pyx":447
  *     if m.hasVersion:
  *         result["version"] = m.version
  *     if m.hasMacAddr_cur:             # <<<<<<<<<<<<<<
@@ -5969,7 +4541,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":483
+  /* "picoscenes.pyx":449
  *     if m.hasMacAddr_cur:
  *         result["macaddr_cur"] = [m.macaddr_cur[i] for i in range(6)]
  *     if m.hasMacAddr_rom:             # <<<<<<<<<<<<<<
@@ -5979,7 +4551,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasMacAddr_rom != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":484
+    /* "picoscenes.pyx":450
  *         result["macaddr_cur"] = [m.macaddr_cur[i] for i in range(6)]
  *     if m.hasMacAddr_rom:
  *         result["macaddr_rom"] = [m.macaddr_rom[i] for i in range(6)]             # <<<<<<<<<<<<<<
@@ -5987,20 +4559,20 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  *         result["chansel"] = m.chansel
  */
     { /* enter inner scope */
-      __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 484, __pyx_L1_error)
+      __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 450, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       for (__pyx_t_4 = 0; __pyx_t_4 < 6; __pyx_t_4+=1) {
         __pyx_8genexpr4__pyx_v_i = __pyx_t_4;
-        __pyx_t_2 = __Pyx_PyInt_From_uint8_t((__pyx_v_m->macaddr_rom[__pyx_8genexpr4__pyx_v_i])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 484, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyInt_From_uint8_t((__pyx_v_m->macaddr_rom[__pyx_8genexpr4__pyx_v_i])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 450, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_2))) __PYX_ERR(0, 484, __pyx_L1_error)
+        if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_2))) __PYX_ERR(0, 450, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       }
     } /* exit inner scope */
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_macaddr_rom, __pyx_t_1) < 0)) __PYX_ERR(0, 484, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_macaddr_rom, __pyx_t_1) < 0)) __PYX_ERR(0, 450, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":483
+    /* "picoscenes.pyx":449
  *     if m.hasMacAddr_cur:
  *         result["macaddr_cur"] = [m.macaddr_cur[i] for i in range(6)]
  *     if m.hasMacAddr_rom:             # <<<<<<<<<<<<<<
@@ -6009,7 +4581,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":485
+  /* "picoscenes.pyx":451
  *     if m.hasMacAddr_rom:
  *         result["macaddr_rom"] = [m.macaddr_rom[i] for i in range(6)]
  *     if m.hasChansel:             # <<<<<<<<<<<<<<
@@ -6019,19 +4591,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasChansel != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":486
+    /* "picoscenes.pyx":452
  *         result["macaddr_rom"] = [m.macaddr_rom[i] for i in range(6)]
  *     if m.hasChansel:
  *         result["chansel"] = m.chansel             # <<<<<<<<<<<<<<
  *     if m.hasBMode:
  *         result["bmode"] = m.bmode
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->chansel); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 486, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->chansel); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 452, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_chansel, __pyx_t_1) < 0)) __PYX_ERR(0, 486, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_chansel, __pyx_t_1) < 0)) __PYX_ERR(0, 452, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":485
+    /* "picoscenes.pyx":451
  *     if m.hasMacAddr_rom:
  *         result["macaddr_rom"] = [m.macaddr_rom[i] for i in range(6)]
  *     if m.hasChansel:             # <<<<<<<<<<<<<<
@@ -6040,7 +4612,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":487
+  /* "picoscenes.pyx":453
  *     if m.hasChansel:
  *         result["chansel"] = m.chansel
  *     if m.hasBMode:             # <<<<<<<<<<<<<<
@@ -6050,19 +4622,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasBMode != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":488
+    /* "picoscenes.pyx":454
  *         result["chansel"] = m.chansel
  *     if m.hasBMode:
  *         result["bmode"] = m.bmode             # <<<<<<<<<<<<<<
  *     if m.hasEVM:
  *         result["evm"] = [m.evm[i] for i in range(18)]
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->bmode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 488, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->bmode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 454, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_bmode, __pyx_t_1) < 0)) __PYX_ERR(0, 488, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_bmode, __pyx_t_1) < 0)) __PYX_ERR(0, 454, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":487
+    /* "picoscenes.pyx":453
  *     if m.hasChansel:
  *         result["chansel"] = m.chansel
  *     if m.hasBMode:             # <<<<<<<<<<<<<<
@@ -6071,7 +4643,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":489
+  /* "picoscenes.pyx":455
  *     if m.hasBMode:
  *         result["bmode"] = m.bmode
  *     if m.hasEVM:             # <<<<<<<<<<<<<<
@@ -6081,7 +4653,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasEVM != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":490
+    /* "picoscenes.pyx":456
  *         result["bmode"] = m.bmode
  *     if m.hasEVM:
  *         result["evm"] = [m.evm[i] for i in range(18)]             # <<<<<<<<<<<<<<
@@ -6089,20 +4661,20 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  *         result["tx_chainmask"] = m.txChainMask
  */
     { /* enter inner scope */
-      __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 490, __pyx_L1_error)
+      __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 456, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       for (__pyx_t_4 = 0; __pyx_t_4 < 18; __pyx_t_4+=1) {
         __pyx_8genexpr5__pyx_v_i = __pyx_t_4;
-        __pyx_t_2 = __Pyx_PyInt_From_int8_t((__pyx_v_m->evm[__pyx_8genexpr5__pyx_v_i])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 490, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyInt_From_int8_t((__pyx_v_m->evm[__pyx_8genexpr5__pyx_v_i])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 456, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_2))) __PYX_ERR(0, 490, __pyx_L1_error)
+        if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_2))) __PYX_ERR(0, 456, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       }
     } /* exit inner scope */
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_evm, __pyx_t_1) < 0)) __PYX_ERR(0, 490, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_evm, __pyx_t_1) < 0)) __PYX_ERR(0, 456, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":489
+    /* "picoscenes.pyx":455
  *     if m.hasBMode:
  *         result["bmode"] = m.bmode
  *     if m.hasEVM:             # <<<<<<<<<<<<<<
@@ -6111,7 +4683,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":491
+  /* "picoscenes.pyx":457
  *     if m.hasEVM:
  *         result["evm"] = [m.evm[i] for i in range(18)]
  *     if m.hasTxChainMask:             # <<<<<<<<<<<<<<
@@ -6121,19 +4693,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasTxChainMask != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":492
+    /* "picoscenes.pyx":458
  *         result["evm"] = [m.evm[i] for i in range(18)]
  *     if m.hasTxChainMask:
  *         result["tx_chainmask"] = m.txChainMask             # <<<<<<<<<<<<<<
  *     if m.hasRxChainMask:
  *         result["rx_chainmask"] = m.rxChainMask
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->txChainMask); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 492, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->txChainMask); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 458, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_tx_chainmask, __pyx_t_1) < 0)) __PYX_ERR(0, 492, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_tx_chainmask, __pyx_t_1) < 0)) __PYX_ERR(0, 458, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":491
+    /* "picoscenes.pyx":457
  *     if m.hasEVM:
  *         result["evm"] = [m.evm[i] for i in range(18)]
  *     if m.hasTxChainMask:             # <<<<<<<<<<<<<<
@@ -6142,7 +4714,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":493
+  /* "picoscenes.pyx":459
  *     if m.hasTxChainMask:
  *         result["tx_chainmask"] = m.txChainMask
  *     if m.hasRxChainMask:             # <<<<<<<<<<<<<<
@@ -6152,19 +4724,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasRxChainMask != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":494
+    /* "picoscenes.pyx":460
  *         result["tx_chainmask"] = m.txChainMask
  *     if m.hasRxChainMask:
  *         result["rx_chainmask"] = m.rxChainMask             # <<<<<<<<<<<<<<
  *     if m.hasTxpower:
  *         result["txpower"] = m.txpower
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->rxChainMask); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 494, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->rxChainMask); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 460, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_rx_chainmask, __pyx_t_1) < 0)) __PYX_ERR(0, 494, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_rx_chainmask, __pyx_t_1) < 0)) __PYX_ERR(0, 460, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":493
+    /* "picoscenes.pyx":459
  *     if m.hasTxChainMask:
  *         result["tx_chainmask"] = m.txChainMask
  *     if m.hasRxChainMask:             # <<<<<<<<<<<<<<
@@ -6173,7 +4745,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":495
+  /* "picoscenes.pyx":461
  *     if m.hasRxChainMask:
  *         result["rx_chainmask"] = m.rxChainMask
  *     if m.hasTxpower:             # <<<<<<<<<<<<<<
@@ -6183,19 +4755,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasTxpower != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":496
+    /* "picoscenes.pyx":462
  *         result["rx_chainmask"] = m.rxChainMask
  *     if m.hasTxpower:
  *         result["txpower"] = m.txpower             # <<<<<<<<<<<<<<
  *     if m.hasCF:
  *         result["cf"] = m.cf
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->txpower); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 496, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->txpower); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 462, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_txpower, __pyx_t_1) < 0)) __PYX_ERR(0, 496, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_txpower, __pyx_t_1) < 0)) __PYX_ERR(0, 462, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":495
+    /* "picoscenes.pyx":461
  *     if m.hasRxChainMask:
  *         result["rx_chainmask"] = m.rxChainMask
  *     if m.hasTxpower:             # <<<<<<<<<<<<<<
@@ -6204,7 +4776,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":497
+  /* "picoscenes.pyx":463
  *     if m.hasTxpower:
  *         result["txpower"] = m.txpower
  *     if m.hasCF:             # <<<<<<<<<<<<<<
@@ -6214,19 +4786,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasCF != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":498
+    /* "picoscenes.pyx":464
  *         result["txpower"] = m.txpower
  *     if m.hasCF:
  *         result["cf"] = m.cf             # <<<<<<<<<<<<<<
  *     if m.hasTxTSF:
  *         result["txtsf"] = m.txTSF
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->cf); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 498, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->cf); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 464, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_cf, __pyx_t_1) < 0)) __PYX_ERR(0, 498, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_cf, __pyx_t_1) < 0)) __PYX_ERR(0, 464, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":497
+    /* "picoscenes.pyx":463
  *     if m.hasTxpower:
  *         result["txpower"] = m.txpower
  *     if m.hasCF:             # <<<<<<<<<<<<<<
@@ -6235,7 +4807,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":499
+  /* "picoscenes.pyx":465
  *     if m.hasCF:
  *         result["cf"] = m.cf
  *     if m.hasTxTSF:             # <<<<<<<<<<<<<<
@@ -6245,19 +4817,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasTxTSF != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":500
+    /* "picoscenes.pyx":466
  *         result["cf"] = m.cf
  *     if m.hasTxTSF:
  *         result["txtsf"] = m.txTSF             # <<<<<<<<<<<<<<
  *     if m.hasLastHWTxTSF:
  *         result["last_txtsf"] = m.lastHwTxTSF
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->txTSF); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 500, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->txTSF); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 466, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_txtsf, __pyx_t_1) < 0)) __PYX_ERR(0, 500, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_txtsf, __pyx_t_1) < 0)) __PYX_ERR(0, 466, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":499
+    /* "picoscenes.pyx":465
  *     if m.hasCF:
  *         result["cf"] = m.cf
  *     if m.hasTxTSF:             # <<<<<<<<<<<<<<
@@ -6266,7 +4838,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":501
+  /* "picoscenes.pyx":467
  *     if m.hasTxTSF:
  *         result["txtsf"] = m.txTSF
  *     if m.hasLastHWTxTSF:             # <<<<<<<<<<<<<<
@@ -6276,19 +4848,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasLastHWTxTSF != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":502
+    /* "picoscenes.pyx":468
  *         result["txtsf"] = m.txTSF
  *     if m.hasLastHWTxTSF:
  *         result["last_txtsf"] = m.lastHwTxTSF             # <<<<<<<<<<<<<<
  *     if m.hasChannelFlags:
  *         result["channel_flags"] = m.channelFlags
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->lastHwTxTSF); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 502, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->lastHwTxTSF); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 468, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_last_txtsf, __pyx_t_1) < 0)) __PYX_ERR(0, 502, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_last_txtsf, __pyx_t_1) < 0)) __PYX_ERR(0, 468, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":501
+    /* "picoscenes.pyx":467
  *     if m.hasTxTSF:
  *         result["txtsf"] = m.txTSF
  *     if m.hasLastHWTxTSF:             # <<<<<<<<<<<<<<
@@ -6297,7 +4869,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":503
+  /* "picoscenes.pyx":469
  *     if m.hasLastHWTxTSF:
  *         result["last_txtsf"] = m.lastHwTxTSF
  *     if m.hasChannelFlags:             # <<<<<<<<<<<<<<
@@ -6307,19 +4879,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasChannelFlags != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":504
+    /* "picoscenes.pyx":470
  *         result["last_txtsf"] = m.lastHwTxTSF
  *     if m.hasChannelFlags:
  *         result["channel_flags"] = m.channelFlags             # <<<<<<<<<<<<<<
  *     if m.hasTxNess:
  *         result["tx_ness"] = m.tx_ness
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->channelFlags); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 504, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->channelFlags); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 470, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_channel_flags, __pyx_t_1) < 0)) __PYX_ERR(0, 504, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_channel_flags, __pyx_t_1) < 0)) __PYX_ERR(0, 470, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":503
+    /* "picoscenes.pyx":469
  *     if m.hasLastHWTxTSF:
  *         result["last_txtsf"] = m.lastHwTxTSF
  *     if m.hasChannelFlags:             # <<<<<<<<<<<<<<
@@ -6328,7 +4900,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":505
+  /* "picoscenes.pyx":471
  *     if m.hasChannelFlags:
  *         result["channel_flags"] = m.channelFlags
  *     if m.hasTxNess:             # <<<<<<<<<<<<<<
@@ -6338,19 +4910,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasTxNess != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":506
+    /* "picoscenes.pyx":472
  *         result["channel_flags"] = m.channelFlags
  *     if m.hasTxNess:
  *         result["tx_ness"] = m.tx_ness             # <<<<<<<<<<<<<<
  *     if m.hasTuningPolicy:
  *         result["tuning_policy"] = m.tuningPolicy
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->tx_ness); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 506, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->tx_ness); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 472, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_tx_ness, __pyx_t_1) < 0)) __PYX_ERR(0, 506, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_tx_ness, __pyx_t_1) < 0)) __PYX_ERR(0, 472, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":505
+    /* "picoscenes.pyx":471
  *     if m.hasChannelFlags:
  *         result["channel_flags"] = m.channelFlags
  *     if m.hasTxNess:             # <<<<<<<<<<<<<<
@@ -6359,7 +4931,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":507
+  /* "picoscenes.pyx":473
  *     if m.hasTxNess:
  *         result["tx_ness"] = m.tx_ness
  *     if m.hasTuningPolicy:             # <<<<<<<<<<<<<<
@@ -6369,19 +4941,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasTuningPolicy != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":508
+    /* "picoscenes.pyx":474
  *         result["tx_ness"] = m.tx_ness
  *     if m.hasTuningPolicy:
  *         result["tuning_policy"] = m.tuningPolicy             # <<<<<<<<<<<<<<
  *     if m.hasPLLRate:
  *         result["pll_rate"] = m.pll_rate
  */
-    __pyx_t_1 = __Pyx_PyInt_From_enum__AtherosCFTuningPolicy(__pyx_v_m->tuningPolicy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 508, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_enum__AtherosCFTuningPolicy(__pyx_v_m->tuningPolicy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 474, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_tuning_policy, __pyx_t_1) < 0)) __PYX_ERR(0, 508, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_tuning_policy, __pyx_t_1) < 0)) __PYX_ERR(0, 474, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":507
+    /* "picoscenes.pyx":473
  *     if m.hasTxNess:
  *         result["tx_ness"] = m.tx_ness
  *     if m.hasTuningPolicy:             # <<<<<<<<<<<<<<
@@ -6390,7 +4962,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":509
+  /* "picoscenes.pyx":475
  *     if m.hasTuningPolicy:
  *         result["tuning_policy"] = m.tuningPolicy
  *     if m.hasPLLRate:             # <<<<<<<<<<<<<<
@@ -6400,19 +4972,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasPLLRate != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":510
+    /* "picoscenes.pyx":476
  *         result["tuning_policy"] = m.tuningPolicy
  *     if m.hasPLLRate:
  *         result["pll_rate"] = m.pll_rate             # <<<<<<<<<<<<<<
  *     if m.hasPLLClkSel:
  *         result["pll_clock_select"] = m.pll_clock_select
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->pll_rate); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 510, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->pll_rate); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 476, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_pll_rate, __pyx_t_1) < 0)) __PYX_ERR(0, 510, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_pll_rate, __pyx_t_1) < 0)) __PYX_ERR(0, 476, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":509
+    /* "picoscenes.pyx":475
  *     if m.hasTuningPolicy:
  *         result["tuning_policy"] = m.tuningPolicy
  *     if m.hasPLLRate:             # <<<<<<<<<<<<<<
@@ -6421,7 +4993,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":511
+  /* "picoscenes.pyx":477
  *     if m.hasPLLRate:
  *         result["pll_rate"] = m.pll_rate
  *     if m.hasPLLClkSel:             # <<<<<<<<<<<<<<
@@ -6431,19 +5003,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasPLLClkSel != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":512
+    /* "picoscenes.pyx":478
  *         result["pll_rate"] = m.pll_rate
  *     if m.hasPLLClkSel:
  *         result["pll_clock_select"] = m.pll_clock_select             # <<<<<<<<<<<<<<
  *     if m.hasPLLRefDiv:
  *         result["pll_refdiv"] = m.pll_refdiv
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->pll_clock_select); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 512, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->pll_clock_select); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 478, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_pll_clock_select, __pyx_t_1) < 0)) __PYX_ERR(0, 512, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_pll_clock_select, __pyx_t_1) < 0)) __PYX_ERR(0, 478, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":511
+    /* "picoscenes.pyx":477
  *     if m.hasPLLRate:
  *         result["pll_rate"] = m.pll_rate
  *     if m.hasPLLClkSel:             # <<<<<<<<<<<<<<
@@ -6452,7 +5024,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":513
+  /* "picoscenes.pyx":479
  *     if m.hasPLLClkSel:
  *         result["pll_clock_select"] = m.pll_clock_select
  *     if m.hasPLLRefDiv:             # <<<<<<<<<<<<<<
@@ -6462,19 +5034,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasPLLRefDiv != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":514
+    /* "picoscenes.pyx":480
  *         result["pll_clock_select"] = m.pll_clock_select
  *     if m.hasPLLRefDiv:
  *         result["pll_refdiv"] = m.pll_refdiv             # <<<<<<<<<<<<<<
  *     if m.hasAGC:
  *         result["agc"] = m.agc
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->pll_refdiv); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 514, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->pll_refdiv); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 480, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_pll_refdiv, __pyx_t_1) < 0)) __PYX_ERR(0, 514, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_pll_refdiv, __pyx_t_1) < 0)) __PYX_ERR(0, 480, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":513
+    /* "picoscenes.pyx":479
  *     if m.hasPLLClkSel:
  *         result["pll_clock_select"] = m.pll_clock_select
  *     if m.hasPLLRefDiv:             # <<<<<<<<<<<<<<
@@ -6483,7 +5055,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":515
+  /* "picoscenes.pyx":481
  *     if m.hasPLLRefDiv:
  *         result["pll_refdiv"] = m.pll_refdiv
  *     if m.hasAGC:             # <<<<<<<<<<<<<<
@@ -6493,19 +5065,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasAGC != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":516
+    /* "picoscenes.pyx":482
  *         result["pll_refdiv"] = m.pll_refdiv
  *     if m.hasAGC:
  *         result["agc"] = m.agc             # <<<<<<<<<<<<<<
  *     if m.hasAntennaSelection:
  *         result["ant_sel"] = [m.ant_sel[i] for i in range(3)]
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->agc); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 516, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->agc); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 482, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_agc, __pyx_t_1) < 0)) __PYX_ERR(0, 516, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_agc, __pyx_t_1) < 0)) __PYX_ERR(0, 482, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":515
+    /* "picoscenes.pyx":481
  *     if m.hasPLLRefDiv:
  *         result["pll_refdiv"] = m.pll_refdiv
  *     if m.hasAGC:             # <<<<<<<<<<<<<<
@@ -6514,7 +5086,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":517
+  /* "picoscenes.pyx":483
  *     if m.hasAGC:
  *         result["agc"] = m.agc
  *     if m.hasAntennaSelection:             # <<<<<<<<<<<<<<
@@ -6524,7 +5096,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasAntennaSelection != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":518
+    /* "picoscenes.pyx":484
  *         result["agc"] = m.agc
  *     if m.hasAntennaSelection:
  *         result["ant_sel"] = [m.ant_sel[i] for i in range(3)]             # <<<<<<<<<<<<<<
@@ -6532,20 +5104,20 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  *         result["sf"] = m.samplingRate
  */
     { /* enter inner scope */
-      __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 518, __pyx_L1_error)
+      __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 484, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       for (__pyx_t_4 = 0; __pyx_t_4 < 3; __pyx_t_4+=1) {
         __pyx_8genexpr6__pyx_v_i = __pyx_t_4;
-        __pyx_t_2 = __Pyx_PyInt_From_uint8_t((__pyx_v_m->ant_sel[__pyx_8genexpr6__pyx_v_i])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 518, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyInt_From_uint8_t((__pyx_v_m->ant_sel[__pyx_8genexpr6__pyx_v_i])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 484, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_2))) __PYX_ERR(0, 518, __pyx_L1_error)
+        if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_2))) __PYX_ERR(0, 484, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       }
     } /* exit inner scope */
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_ant_sel, __pyx_t_1) < 0)) __PYX_ERR(0, 518, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_ant_sel, __pyx_t_1) < 0)) __PYX_ERR(0, 484, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":517
+    /* "picoscenes.pyx":483
  *     if m.hasAGC:
  *         result["agc"] = m.agc
  *     if m.hasAntennaSelection:             # <<<<<<<<<<<<<<
@@ -6554,7 +5126,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":519
+  /* "picoscenes.pyx":485
  *     if m.hasAntennaSelection:
  *         result["ant_sel"] = [m.ant_sel[i] for i in range(3)]
  *     if m.hasSamplingRate:             # <<<<<<<<<<<<<<
@@ -6564,19 +5136,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasSamplingRate != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":520
+    /* "picoscenes.pyx":486
  *         result["ant_sel"] = [m.ant_sel[i] for i in range(3)]
  *     if m.hasSamplingRate:
  *         result["sf"] = m.samplingRate             # <<<<<<<<<<<<<<
  *     if m.hasCFO:
  *         result["cfo"] = m.cfo
  */
-    __pyx_t_1 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->samplingRate); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 520, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->samplingRate); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 486, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_sf, __pyx_t_1) < 0)) __PYX_ERR(0, 520, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_sf, __pyx_t_1) < 0)) __PYX_ERR(0, 486, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":519
+    /* "picoscenes.pyx":485
  *     if m.hasAntennaSelection:
  *         result["ant_sel"] = [m.ant_sel[i] for i in range(3)]
  *     if m.hasSamplingRate:             # <<<<<<<<<<<<<<
@@ -6585,7 +5157,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":521
+  /* "picoscenes.pyx":487
  *     if m.hasSamplingRate:
  *         result["sf"] = m.samplingRate
  *     if m.hasCFO:             # <<<<<<<<<<<<<<
@@ -6595,19 +5167,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasCFO != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":522
+    /* "picoscenes.pyx":488
  *         result["sf"] = m.samplingRate
  *     if m.hasCFO:
  *         result["cfo"] = m.cfo             # <<<<<<<<<<<<<<
  *     if m.hasSFO:
  *         result["sfo"] = m.sfo
  */
-    __pyx_t_1 = __Pyx_PyInt_From_int32_t(__pyx_v_m->cfo); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 522, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_int32_t(__pyx_v_m->cfo); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 488, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_cfo, __pyx_t_1) < 0)) __PYX_ERR(0, 522, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_cfo, __pyx_t_1) < 0)) __PYX_ERR(0, 488, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":521
+    /* "picoscenes.pyx":487
  *     if m.hasSamplingRate:
  *         result["sf"] = m.samplingRate
  *     if m.hasCFO:             # <<<<<<<<<<<<<<
@@ -6616,7 +5188,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":523
+  /* "picoscenes.pyx":489
  *     if m.hasCFO:
  *         result["cfo"] = m.cfo
  *     if m.hasSFO:             # <<<<<<<<<<<<<<
@@ -6626,19 +5198,19 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_t_3 = (__pyx_v_m->hasSFO != 0);
   if (__pyx_t_3) {
 
-    /* "picoscenes.pyx":524
+    /* "picoscenes.pyx":490
  *         result["cfo"] = m.cfo
  *     if m.hasSFO:
  *         result["sfo"] = m.sfo             # <<<<<<<<<<<<<<
  *     return result
  * 
  */
-    __pyx_t_1 = __Pyx_PyInt_From_int32_t(__pyx_v_m->sfo); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 524, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_int32_t(__pyx_v_m->sfo); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 490, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_sfo, __pyx_t_1) < 0)) __PYX_ERR(0, 524, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_n_u_sfo, __pyx_t_1) < 0)) __PYX_ERR(0, 490, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":523
+    /* "picoscenes.pyx":489
  *     if m.hasCFO:
  *         result["cfo"] = m.cfo
  *     if m.hasSFO:             # <<<<<<<<<<<<<<
@@ -6647,7 +5219,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
  */
   }
 
-  /* "picoscenes.pyx":525
+  /* "picoscenes.pyx":491
  *     if m.hasSFO:
  *         result["sfo"] = m.sfo
  *     return result             # <<<<<<<<<<<<<<
@@ -6659,7 +5231,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "picoscenes.pyx":449
+  /* "picoscenes.pyx":415
  *     }
  * 
  * cdef parse_ExtraInfo(const ExtraInfo *m):             # <<<<<<<<<<<<<<
@@ -6680,7 +5252,7 @@ static PyObject *__pyx_f_10picoscenes_parse_ExtraInfo(struct ExtraInfo const *__
   return __pyx_r;
 }
 
-/* "picoscenes.pyx":527
+/* "picoscenes.pyx":493
  *     return result
  * 
  * cdef parse_CSI(const CSI *m):             # <<<<<<<<<<<<<<
@@ -6698,7 +5270,7 @@ static PyObject *__pyx_f_10picoscenes_parse_CSI(CSI const *__pyx_v_m) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("parse_CSI", 0);
 
-  /* "picoscenes.pyx":528
+  /* "picoscenes.pyx":494
  * 
  * cdef parse_CSI(const CSI *m):
  *     return {             # <<<<<<<<<<<<<<
@@ -6707,216 +5279,216 @@ static PyObject *__pyx_f_10picoscenes_parse_CSI(CSI const *__pyx_v_m) {
  */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "picoscenes.pyx":529
+  /* "picoscenes.pyx":495
  * cdef parse_CSI(const CSI *m):
  *     return {
  *         "DeviceType": <uint16_t> m.deviceType,             # <<<<<<<<<<<<<<
  *         "PacketFormat": <int8_t> m.packetFormat,
  *         "FirmwareVersion": <uint8_t> m.firmwareVersion,
  */
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(17); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 529, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(17); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(((uint16_t)__pyx_v_m->deviceType)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 529, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(((uint16_t)__pyx_v_m->deviceType)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_DeviceType, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_DeviceType, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":530
+  /* "picoscenes.pyx":496
  *     return {
  *         "DeviceType": <uint16_t> m.deviceType,
  *         "PacketFormat": <int8_t> m.packetFormat,             # <<<<<<<<<<<<<<
  *         "FirmwareVersion": <uint8_t> m.firmwareVersion,
  *         "CBW": <uint16_t> m.cbw,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_int8_t(((int8_t)__pyx_v_m->packetFormat)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 530, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int8_t(((int8_t)__pyx_v_m->packetFormat)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 496, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_PacketFormat, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_PacketFormat, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":531
+  /* "picoscenes.pyx":497
  *         "DeviceType": <uint16_t> m.deviceType,
  *         "PacketFormat": <int8_t> m.packetFormat,
  *         "FirmwareVersion": <uint8_t> m.firmwareVersion,             # <<<<<<<<<<<<<<
  *         "CBW": <uint16_t> m.cbw,
  *         "CarrierFreq": m.carrierFreq,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(((uint8_t)__pyx_v_m->firmwareVersion)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 531, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(((uint8_t)__pyx_v_m->firmwareVersion)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 497, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_FirmwareVersion, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_FirmwareVersion, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":532
+  /* "picoscenes.pyx":498
  *         "PacketFormat": <int8_t> m.packetFormat,
  *         "FirmwareVersion": <uint8_t> m.firmwareVersion,
  *         "CBW": <uint16_t> m.cbw,             # <<<<<<<<<<<<<<
  *         "CarrierFreq": m.carrierFreq,
  *         "SamplingRate": m.samplingRate,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(((uint16_t)__pyx_v_m->cbw)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 532, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(((uint16_t)__pyx_v_m->cbw)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 498, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_CBW, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_CBW, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":533
+  /* "picoscenes.pyx":499
  *         "FirmwareVersion": <uint8_t> m.firmwareVersion,
  *         "CBW": <uint16_t> m.cbw,
  *         "CarrierFreq": m.carrierFreq,             # <<<<<<<<<<<<<<
  *         "SamplingRate": m.samplingRate,
  *         "SubcarrierBandwidth": m.subcarrierBandwidth,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->carrierFreq); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 533, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->carrierFreq); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 499, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_CarrierFreq, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_CarrierFreq, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":534
+  /* "picoscenes.pyx":500
  *         "CBW": <uint16_t> m.cbw,
  *         "CarrierFreq": m.carrierFreq,
  *         "SamplingRate": m.samplingRate,             # <<<<<<<<<<<<<<
  *         "SubcarrierBandwidth": m.subcarrierBandwidth,
  *         "numTones": m.dimensions.numTones,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->samplingRate); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 534, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint64_t(__pyx_v_m->samplingRate); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 500, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_SamplingRate, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_SamplingRate, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":535
+  /* "picoscenes.pyx":501
  *         "CarrierFreq": m.carrierFreq,
  *         "SamplingRate": m.samplingRate,
  *         "SubcarrierBandwidth": m.subcarrierBandwidth,             # <<<<<<<<<<<<<<
  *         "numTones": m.dimensions.numTones,
  *         "numTx": m.dimensions.numTx,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->subcarrierBandwidth); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 535, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->subcarrierBandwidth); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 501, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_SubcarrierBandwidth, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_SubcarrierBandwidth, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":536
+  /* "picoscenes.pyx":502
  *         "SamplingRate": m.samplingRate,
  *         "SubcarrierBandwidth": m.subcarrierBandwidth,
  *         "numTones": m.dimensions.numTones,             # <<<<<<<<<<<<<<
  *         "numTx": m.dimensions.numTx,
  *         "numRx": m.dimensions.numRx,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->dimensions.numTones); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 536, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->dimensions.numTones); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 502, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numTones, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numTones, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":537
+  /* "picoscenes.pyx":503
  *         "SubcarrierBandwidth": m.subcarrierBandwidth,
  *         "numTones": m.dimensions.numTones,
  *         "numTx": m.dimensions.numTx,             # <<<<<<<<<<<<<<
  *         "numRx": m.dimensions.numRx,
  *         "numESS": m.dimensions.numESS,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->dimensions.numTx); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 537, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->dimensions.numTx); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 503, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numTx, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numTx, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":538
+  /* "picoscenes.pyx":504
  *         "numTones": m.dimensions.numTones,
  *         "numTx": m.dimensions.numTx,
  *         "numRx": m.dimensions.numRx,             # <<<<<<<<<<<<<<
  *         "numESS": m.dimensions.numESS,
  *         "numCSI": m.dimensions.numCSI,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->dimensions.numRx); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 538, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->dimensions.numRx); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 504, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numRx, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numRx, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":539
+  /* "picoscenes.pyx":505
  *         "numTx": m.dimensions.numTx,
  *         "numRx": m.dimensions.numRx,
  *         "numESS": m.dimensions.numESS,             # <<<<<<<<<<<<<<
  *         "numCSI": m.dimensions.numCSI,
  *         "ant_sel": m.dimensions.numESS,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->dimensions.numESS); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 539, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->dimensions.numESS); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 505, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numESS, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numESS, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":540
+  /* "picoscenes.pyx":506
  *         "numRx": m.dimensions.numRx,
  *         "numESS": m.dimensions.numESS,
  *         "numCSI": m.dimensions.numCSI,             # <<<<<<<<<<<<<<
  *         "ant_sel": m.dimensions.numESS,
  *         "CSI": m.CSIArray.array,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->dimensions.numCSI); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 540, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->dimensions.numCSI); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 506, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numCSI, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_numCSI, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":541
+  /* "picoscenes.pyx":507
  *         "numESS": m.dimensions.numESS,
  *         "numCSI": m.dimensions.numCSI,
  *         "ant_sel": m.dimensions.numESS,             # <<<<<<<<<<<<<<
  *         "CSI": m.CSIArray.array,
  *         "Mag": m.magnitudeArray.array,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->dimensions.numESS); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 541, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->dimensions.numESS); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 507, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_ant_sel, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_ant_sel, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":542
+  /* "picoscenes.pyx":508
  *         "numCSI": m.dimensions.numCSI,
  *         "ant_sel": m.dimensions.numESS,
  *         "CSI": m.CSIArray.array,             # <<<<<<<<<<<<<<
  *         "Mag": m.magnitudeArray.array,
  *         "Phase": m.phaseArray.array,
  */
-  __pyx_t_2 = __pyx_convert_vector_to_py_std_3a__3a_complex_3c_double_3e___(__pyx_v_m->CSIArray.array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 542, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_vector_to_py_std_3a__3a_complex_3c_double_3e___(__pyx_v_m->CSIArray.array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_CSI, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_CSI, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":543
+  /* "picoscenes.pyx":509
  *         "ant_sel": m.dimensions.numESS,
  *         "CSI": m.CSIArray.array,
  *         "Mag": m.magnitudeArray.array,             # <<<<<<<<<<<<<<
  *         "Phase": m.phaseArray.array,
  *         "SubcarrierIndex": m.subcarrierIndices,
  */
-  __pyx_t_2 = __pyx_convert_vector_to_py_double(__pyx_v_m->magnitudeArray.array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 543, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_vector_to_py_double(__pyx_v_m->magnitudeArray.array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 509, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Mag, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Mag, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":544
+  /* "picoscenes.pyx":510
  *         "CSI": m.CSIArray.array,
  *         "Mag": m.magnitudeArray.array,
  *         "Phase": m.phaseArray.array,             # <<<<<<<<<<<<<<
  *         "SubcarrierIndex": m.subcarrierIndices,
  *     }
  */
-  __pyx_t_2 = __pyx_convert_vector_to_py_double(__pyx_v_m->phaseArray.array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 544, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_vector_to_py_double(__pyx_v_m->phaseArray.array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 510, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Phase, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Phase, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":545
+  /* "picoscenes.pyx":511
  *         "Mag": m.magnitudeArray.array,
  *         "Phase": m.phaseArray.array,
  *         "SubcarrierIndex": m.subcarrierIndices,             # <<<<<<<<<<<<<<
  *     }
  * 
  */
-  __pyx_t_2 = __pyx_convert_vector_to_py_int16_t(__pyx_v_m->subcarrierIndices); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 545, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_vector_to_py_int16_t(__pyx_v_m->subcarrierIndices); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 511, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_SubcarrierIndex, __pyx_t_2) < 0) __PYX_ERR(0, 529, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_SubcarrierIndex, __pyx_t_2) < 0) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "picoscenes.pyx":527
+  /* "picoscenes.pyx":493
  *     return result
  * 
  * cdef parse_CSI(const CSI *m):             # <<<<<<<<<<<<<<
@@ -6936,7 +5508,7 @@ static PyObject *__pyx_f_10picoscenes_parse_CSI(CSI const *__pyx_v_m) {
   return __pyx_r;
 }
 
-/* "picoscenes.pyx":548
+/* "picoscenes.pyx":514
  *     }
  * 
  * cdef parse_IntelMVMParsedCSIHeader(const IntelMVMParsedCSIHeader *m):             # <<<<<<<<<<<<<<
@@ -6959,65 +5531,65 @@ static PyObject *__pyx_f_10picoscenes_parse_IntelMVMParsedCSIHeader(IntelMVMPars
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("parse_IntelMVMParsedCSIHeader", 0);
 
-  /* "picoscenes.pyx":550
+  /* "picoscenes.pyx":516
  * cdef parse_IntelMVMParsedCSIHeader(const IntelMVMParsedCSIHeader *m):
  *     result = {
  *         "value56":[m.value56[i] for i in range(9)],             # <<<<<<<<<<<<<<
  *         "rateNflag": m.rateNflag,
  *         "value96": [m.value96[i] for i in range(44)] ,
  */
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 550, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 516, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   { /* enter inner scope */
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 550, __pyx_L1_error)
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 516, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     for (__pyx_t_3 = 0; __pyx_t_3 < 9; __pyx_t_3+=1) {
       __pyx_8genexpr7__pyx_v_i = __pyx_t_3;
-      __pyx_t_4 = __Pyx_PyInt_From_uint32_t((__pyx_v_m->value56[__pyx_8genexpr7__pyx_v_i])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 550, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyInt_From_uint32_t((__pyx_v_m->value56[__pyx_8genexpr7__pyx_v_i])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 516, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_4))) __PYX_ERR(0, 550, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_4))) __PYX_ERR(0, 516, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
   } /* exit inner scope */
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_value56, __pyx_t_2) < 0) __PYX_ERR(0, 550, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_value56, __pyx_t_2) < 0) __PYX_ERR(0, 516, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":551
+  /* "picoscenes.pyx":517
  *     result = {
  *         "value56":[m.value56[i] for i in range(9)],
  *         "rateNflag": m.rateNflag,             # <<<<<<<<<<<<<<
  *         "value96": [m.value96[i] for i in range(44)] ,
  *     }
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->rateNflag); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 551, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->rateNflag); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 517, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_rateNflag, __pyx_t_2) < 0) __PYX_ERR(0, 550, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_rateNflag, __pyx_t_2) < 0) __PYX_ERR(0, 516, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   { /* enter inner scope */
 
-    /* "picoscenes.pyx":552
+    /* "picoscenes.pyx":518
  *         "value56":[m.value56[i] for i in range(9)],
  *         "rateNflag": m.rateNflag,
  *         "value96": [m.value96[i] for i in range(44)] ,             # <<<<<<<<<<<<<<
  *     }
  *     return result
  */
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 552, __pyx_L1_error)
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 518, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     for (__pyx_t_3 = 0; __pyx_t_3 < 44; __pyx_t_3+=1) {
       __pyx_8genexpr8__pyx_v_i = __pyx_t_3;
-      __pyx_t_4 = __Pyx_PyInt_From_uint32_t((__pyx_v_m->value96[__pyx_8genexpr8__pyx_v_i])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 552, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyInt_From_uint32_t((__pyx_v_m->value96[__pyx_8genexpr8__pyx_v_i])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 518, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_4))) __PYX_ERR(0, 552, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_4))) __PYX_ERR(0, 518, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
   } /* exit inner scope */
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_value96, __pyx_t_2) < 0) __PYX_ERR(0, 550, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_value96, __pyx_t_2) < 0) __PYX_ERR(0, 516, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_result = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "picoscenes.pyx":554
+  /* "picoscenes.pyx":520
  *         "value96": [m.value96[i] for i in range(44)] ,
  *     }
  *     return result             # <<<<<<<<<<<<<<
@@ -7029,7 +5601,7 @@ static PyObject *__pyx_f_10picoscenes_parse_IntelMVMParsedCSIHeader(IntelMVMPars
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "picoscenes.pyx":548
+  /* "picoscenes.pyx":514
  *     }
  * 
  * cdef parse_IntelMVMParsedCSIHeader(const IntelMVMParsedCSIHeader *m):             # <<<<<<<<<<<<<<
@@ -7051,7 +5623,7 @@ static PyObject *__pyx_f_10picoscenes_parse_IntelMVMParsedCSIHeader(IntelMVMPars
   return __pyx_r;
 }
 
-/* "picoscenes.pyx":570
+/* "picoscenes.pyx":536
  * #     }
  * 
  * cdef parse_PicoScenesFrameHeader(const PicoScenesFrameHeader *m):             # <<<<<<<<<<<<<<
@@ -7069,7 +5641,7 @@ static PyObject *__pyx_f_10picoscenes_parse_PicoScenesFrameHeader(struct PicoSce
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("parse_PicoScenesFrameHeader", 0);
 
-  /* "picoscenes.pyx":571
+  /* "picoscenes.pyx":537
  * 
  * cdef parse_PicoScenesFrameHeader(const PicoScenesFrameHeader *m):
  *     return {             # <<<<<<<<<<<<<<
@@ -7078,84 +5650,84 @@ static PyObject *__pyx_f_10picoscenes_parse_PicoScenesFrameHeader(struct PicoSce
  */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "picoscenes.pyx":572
+  /* "picoscenes.pyx":538
  * cdef parse_PicoScenesFrameHeader(const PicoScenesFrameHeader *m):
  *     return {
  *         "MagicValue": m.magicValue,             # <<<<<<<<<<<<<<
  *         "Version": m.version,
  *         "DeviceType": <uint16_t> m.deviceType,
  */
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 572, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 538, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->magicValue); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 572, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->magicValue); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 538, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_MagicValue, __pyx_t_2) < 0) __PYX_ERR(0, 572, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_MagicValue, __pyx_t_2) < 0) __PYX_ERR(0, 538, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":573
+  /* "picoscenes.pyx":539
  *     return {
  *         "MagicValue": m.magicValue,
  *         "Version": m.version,             # <<<<<<<<<<<<<<
  *         "DeviceType": <uint16_t> m.deviceType,
  *         "FrameType": m.frameType,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->version); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 573, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint32_t(__pyx_v_m->version); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 539, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Version, __pyx_t_2) < 0) __PYX_ERR(0, 572, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_Version, __pyx_t_2) < 0) __PYX_ERR(0, 538, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":574
+  /* "picoscenes.pyx":540
  *         "MagicValue": m.magicValue,
  *         "Version": m.version,
  *         "DeviceType": <uint16_t> m.deviceType,             # <<<<<<<<<<<<<<
  *         "FrameType": m.frameType,
  *         "TaskId": m.taskId,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(((uint16_t)__pyx_v_m->deviceType)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 574, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(((uint16_t)__pyx_v_m->deviceType)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 540, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_DeviceType, __pyx_t_2) < 0) __PYX_ERR(0, 572, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_DeviceType, __pyx_t_2) < 0) __PYX_ERR(0, 538, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":575
+  /* "picoscenes.pyx":541
  *         "Version": m.version,
  *         "DeviceType": <uint16_t> m.deviceType,
  *         "FrameType": m.frameType,             # <<<<<<<<<<<<<<
  *         "TaskId": m.taskId,
  *         "TxId": m.txId,
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->frameType); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 575, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint8_t(__pyx_v_m->frameType); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 541, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_FrameType, __pyx_t_2) < 0) __PYX_ERR(0, 572, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_FrameType, __pyx_t_2) < 0) __PYX_ERR(0, 538, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":576
+  /* "picoscenes.pyx":542
  *         "DeviceType": <uint16_t> m.deviceType,
  *         "FrameType": m.frameType,
  *         "TaskId": m.taskId,             # <<<<<<<<<<<<<<
  *         "TxId": m.txId,
  *     }
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->taskId); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 576, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->taskId); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 542, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_TaskId, __pyx_t_2) < 0) __PYX_ERR(0, 572, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_TaskId, __pyx_t_2) < 0) __PYX_ERR(0, 538, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "picoscenes.pyx":577
+  /* "picoscenes.pyx":543
  *         "FrameType": m.frameType,
  *         "TaskId": m.taskId,
  *         "TxId": m.txId,             # <<<<<<<<<<<<<<
  *     }
  * 
  */
-  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->txId); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 577, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_uint16_t(__pyx_v_m->txId); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 543, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_TxId, __pyx_t_2) < 0) __PYX_ERR(0, 572, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_TxId, __pyx_t_2) < 0) __PYX_ERR(0, 538, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "picoscenes.pyx":570
+  /* "picoscenes.pyx":536
  * #     }
  * 
  * cdef parse_PicoScenesFrameHeader(const PicoScenesFrameHeader *m):             # <<<<<<<<<<<<<<
@@ -7175,7 +5747,7 @@ static PyObject *__pyx_f_10picoscenes_parse_PicoScenesFrameHeader(struct PicoSce
   return __pyx_r;
 }
 
-/* "picoscenes.pyx":580
+/* "picoscenes.pyx":546
  *     }
  * 
  * cdef parse_SignalMatrix(const SignalMatrix[ccomplex[double]] *m):             # <<<<<<<<<<<<<<
@@ -7196,7 +5768,7 @@ static PyObject *__pyx_f_10picoscenes_parse_SignalMatrix(SignalMatrix<std::compl
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("parse_SignalMatrix", 0);
 
-  /* "picoscenes.pyx":581
+  /* "picoscenes.pyx":547
  * 
  * cdef parse_SignalMatrix(const SignalMatrix[ccomplex[double]] *m):
  *     return np.asarray(m.array).reshape(m.dimensions)             # <<<<<<<<<<<<<<
@@ -7204,12 +5776,12 @@ static PyObject *__pyx_f_10picoscenes_parse_SignalMatrix(SignalMatrix<std::compl
  * cdef parse(optional[ModularPicoScenesRxFrame] *frame):
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 581, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 547, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_asarray); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 581, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_asarray); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 547, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __pyx_convert_vector_to_py_std_3a__3a_complex_3c_double_3e___(__pyx_v_m->array); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 581, __pyx_L1_error)
+  __pyx_t_3 = __pyx_convert_vector_to_py_std_3a__3a_complex_3c_double_3e___(__pyx_v_m->array); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 547, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_5 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_4))) {
@@ -7224,13 +5796,13 @@ static PyObject *__pyx_f_10picoscenes_parse_SignalMatrix(SignalMatrix<std::compl
   __pyx_t_2 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_5, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3);
   __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 581, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 547, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_reshape); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 581, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_reshape); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 547, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __pyx_convert_vector_to_py_int64_t(__pyx_v_m->dimensions); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 581, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_vector_to_py_int64_t(__pyx_v_m->dimensions); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 547, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
@@ -7245,14 +5817,14 @@ static PyObject *__pyx_f_10picoscenes_parse_SignalMatrix(SignalMatrix<std::compl
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_3, __pyx_t_2) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 581, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 547, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "picoscenes.pyx":580
+  /* "picoscenes.pyx":546
  *     }
  * 
  * cdef parse_SignalMatrix(const SignalMatrix[ccomplex[double]] *m):             # <<<<<<<<<<<<<<
@@ -7275,7 +5847,7 @@ static PyObject *__pyx_f_10picoscenes_parse_SignalMatrix(SignalMatrix<std::compl
   return __pyx_r;
 }
 
-/* "picoscenes.pyx":583
+/* "picoscenes.pyx":549
  *     return np.asarray(m.array).reshape(m.dimensions)
  * 
  * cdef parse(optional[ModularPicoScenesRxFrame] *frame):             # <<<<<<<<<<<<<<
@@ -7296,19 +5868,19 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("parse", 0);
 
-  /* "picoscenes.pyx":584
+  /* "picoscenes.pyx":550
  * 
  * cdef parse(optional[ModularPicoScenesRxFrame] *frame):
  *     data = {}             # <<<<<<<<<<<<<<
  *     cdef ModularPicoScenesRxFrame frame_value
  *     if frame.has_value():
  */
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 584, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 550, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_data = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "picoscenes.pyx":586
+  /* "picoscenes.pyx":552
  *     data = {}
  *     cdef ModularPicoScenesRxFrame frame_value
  *     if frame.has_value():             # <<<<<<<<<<<<<<
@@ -7318,7 +5890,7 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
   __pyx_t_2 = (__pyx_v_frame->has_value() != 0);
   if (__pyx_t_2) {
 
-    /* "picoscenes.pyx":587
+    /* "picoscenes.pyx":553
  *     cdef ModularPicoScenesRxFrame frame_value
  *     if frame.has_value():
  *         frame_value = frame.value()             # <<<<<<<<<<<<<<
@@ -7327,59 +5899,59 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
  */
     __pyx_v_frame_value = __pyx_v_frame->value();
 
-    /* "picoscenes.pyx":589
+    /* "picoscenes.pyx":555
  *         frame_value = frame.value()
  *         data = {
  *             "StandardHeader": parse_ieee80211_mac_frame_header(&frame_value.standardHeader),             # <<<<<<<<<<<<<<
  *             "RxSBasic": parse_RxSBasic(&frame_value.rxSBasicSegment.getBasic()),
  *             "RxExtraInfo": parse_ExtraInfo(&frame_value.rxExtraInfoSegment.getExtraInfo()),
  */
-    __pyx_t_1 = __Pyx_PyDict_NewPresized(4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 589, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyDict_NewPresized(4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 555, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __pyx_f_10picoscenes_parse_ieee80211_mac_frame_header((&__pyx_v_frame_value.standardHeader)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 589, __pyx_L1_error)
+    __pyx_t_3 = __pyx_f_10picoscenes_parse_ieee80211_mac_frame_header((&__pyx_v_frame_value.standardHeader)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 555, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_StandardHeader, __pyx_t_3) < 0) __PYX_ERR(0, 589, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_StandardHeader, __pyx_t_3) < 0) __PYX_ERR(0, 555, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "picoscenes.pyx":590
+    /* "picoscenes.pyx":556
  *         data = {
  *             "StandardHeader": parse_ieee80211_mac_frame_header(&frame_value.standardHeader),
  *             "RxSBasic": parse_RxSBasic(&frame_value.rxSBasicSegment.getBasic()),             # <<<<<<<<<<<<<<
  *             "RxExtraInfo": parse_ExtraInfo(&frame_value.rxExtraInfoSegment.getExtraInfo()),
  *             "CSI": parse_CSI(&frame_value.csiSegment.getCSI()),
  */
-    __pyx_t_3 = __pyx_f_10picoscenes_parse_RxSBasic((&__pyx_v_frame_value.rxSBasicSegment.getBasic())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 590, __pyx_L1_error)
+    __pyx_t_3 = __pyx_f_10picoscenes_parse_RxSBasic((&__pyx_v_frame_value.rxSBasicSegment.getBasic())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 556, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_RxSBasic, __pyx_t_3) < 0) __PYX_ERR(0, 589, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_RxSBasic, __pyx_t_3) < 0) __PYX_ERR(0, 555, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "picoscenes.pyx":591
+    /* "picoscenes.pyx":557
  *             "StandardHeader": parse_ieee80211_mac_frame_header(&frame_value.standardHeader),
  *             "RxSBasic": parse_RxSBasic(&frame_value.rxSBasicSegment.getBasic()),
  *             "RxExtraInfo": parse_ExtraInfo(&frame_value.rxExtraInfoSegment.getExtraInfo()),             # <<<<<<<<<<<<<<
  *             "CSI": parse_CSI(&frame_value.csiSegment.getCSI()),
  *         }
  */
-    __pyx_t_3 = __pyx_f_10picoscenes_parse_ExtraInfo((&__pyx_v_frame_value.rxExtraInfoSegment.getExtraInfo())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 591, __pyx_L1_error)
+    __pyx_t_3 = __pyx_f_10picoscenes_parse_ExtraInfo((&__pyx_v_frame_value.rxExtraInfoSegment.getExtraInfo())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 557, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_RxExtraInfo, __pyx_t_3) < 0) __PYX_ERR(0, 589, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_RxExtraInfo, __pyx_t_3) < 0) __PYX_ERR(0, 555, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "picoscenes.pyx":592
+    /* "picoscenes.pyx":558
  *             "RxSBasic": parse_RxSBasic(&frame_value.rxSBasicSegment.getBasic()),
  *             "RxExtraInfo": parse_ExtraInfo(&frame_value.rxExtraInfoSegment.getExtraInfo()),
  *             "CSI": parse_CSI(&frame_value.csiSegment.getCSI()),             # <<<<<<<<<<<<<<
  *         }
  *         if frame_value.mvmExtraSegment.has_value():
  */
-    __pyx_t_3 = __pyx_f_10picoscenes_parse_CSI((&__pyx_v_frame_value.csiSegment.getCSI())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 592, __pyx_L1_error)
+    __pyx_t_3 = __pyx_f_10picoscenes_parse_CSI((&__pyx_v_frame_value.csiSegment.getCSI())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 558, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_CSI, __pyx_t_3) < 0) __PYX_ERR(0, 589, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_CSI, __pyx_t_3) < 0) __PYX_ERR(0, 555, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF_SET(__pyx_v_data, ((PyObject*)__pyx_t_1));
     __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":594
+    /* "picoscenes.pyx":560
  *             "CSI": parse_CSI(&frame_value.csiSegment.getCSI()),
  *         }
  *         if frame_value.mvmExtraSegment.has_value():             # <<<<<<<<<<<<<<
@@ -7389,19 +5961,19 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
     __pyx_t_2 = (__pyx_v_frame_value.mvmExtraSegment.has_value() != 0);
     if (__pyx_t_2) {
 
-      /* "picoscenes.pyx":595
+      /* "picoscenes.pyx":561
  *         }
  *         if frame_value.mvmExtraSegment.has_value():
  *             data["MVMExtra"] = parse_IntelMVMParsedCSIHeader(             # <<<<<<<<<<<<<<
  *                 &frame_value.mvmExtraSegment.value().getMvmExtra().parsedHeader)
  *         if frame_value.PicoScenesHeader.has_value():
  */
-      __pyx_t_1 = __pyx_f_10picoscenes_parse_IntelMVMParsedCSIHeader((&__pyx_v_frame_value.mvmExtraSegment.value().getMvmExtra().parsedHeader)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 595, __pyx_L1_error)
+      __pyx_t_1 = __pyx_f_10picoscenes_parse_IntelMVMParsedCSIHeader((&__pyx_v_frame_value.mvmExtraSegment.value().getMvmExtra().parsedHeader)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 561, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (unlikely(PyDict_SetItem(__pyx_v_data, __pyx_n_u_MVMExtra, __pyx_t_1) < 0)) __PYX_ERR(0, 595, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_data, __pyx_n_u_MVMExtra, __pyx_t_1) < 0)) __PYX_ERR(0, 561, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "picoscenes.pyx":594
+      /* "picoscenes.pyx":560
  *             "CSI": parse_CSI(&frame_value.csiSegment.getCSI()),
  *         }
  *         if frame_value.mvmExtraSegment.has_value():             # <<<<<<<<<<<<<<
@@ -7410,7 +5982,7 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
  */
     }
 
-    /* "picoscenes.pyx":597
+    /* "picoscenes.pyx":563
  *             data["MVMExtra"] = parse_IntelMVMParsedCSIHeader(
  *                 &frame_value.mvmExtraSegment.value().getMvmExtra().parsedHeader)
  *         if frame_value.PicoScenesHeader.has_value():             # <<<<<<<<<<<<<<
@@ -7420,19 +5992,19 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
     __pyx_t_2 = (__pyx_v_frame_value.PicoScenesHeader.has_value() != 0);
     if (__pyx_t_2) {
 
-      /* "picoscenes.pyx":598
+      /* "picoscenes.pyx":564
  *                 &frame_value.mvmExtraSegment.value().getMvmExtra().parsedHeader)
  *         if frame_value.PicoScenesHeader.has_value():
  *             data["PicoScenesHeader"] = parse_PicoScenesFrameHeader(&frame_value.PicoScenesHeader.value())             # <<<<<<<<<<<<<<
  *         if frame_value.txExtraInfoSegment.has_value():
  *             data["TxExtraInfo"] = parse_ExtraInfo(&frame_value.txExtraInfoSegment.value().getExtraInfo())
  */
-      __pyx_t_1 = __pyx_f_10picoscenes_parse_PicoScenesFrameHeader((&__pyx_v_frame_value.PicoScenesHeader.value())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 598, __pyx_L1_error)
+      __pyx_t_1 = __pyx_f_10picoscenes_parse_PicoScenesFrameHeader((&__pyx_v_frame_value.PicoScenesHeader.value())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 564, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (unlikely(PyDict_SetItem(__pyx_v_data, __pyx_n_u_PicoScenesHeader, __pyx_t_1) < 0)) __PYX_ERR(0, 598, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_data, __pyx_n_u_PicoScenesHeader, __pyx_t_1) < 0)) __PYX_ERR(0, 564, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "picoscenes.pyx":597
+      /* "picoscenes.pyx":563
  *             data["MVMExtra"] = parse_IntelMVMParsedCSIHeader(
  *                 &frame_value.mvmExtraSegment.value().getMvmExtra().parsedHeader)
  *         if frame_value.PicoScenesHeader.has_value():             # <<<<<<<<<<<<<<
@@ -7441,7 +6013,7 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
  */
     }
 
-    /* "picoscenes.pyx":599
+    /* "picoscenes.pyx":565
  *         if frame_value.PicoScenesHeader.has_value():
  *             data["PicoScenesHeader"] = parse_PicoScenesFrameHeader(&frame_value.PicoScenesHeader.value())
  *         if frame_value.txExtraInfoSegment.has_value():             # <<<<<<<<<<<<<<
@@ -7451,19 +6023,19 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
     __pyx_t_2 = (__pyx_v_frame_value.txExtraInfoSegment.has_value() != 0);
     if (__pyx_t_2) {
 
-      /* "picoscenes.pyx":600
+      /* "picoscenes.pyx":566
  *             data["PicoScenesHeader"] = parse_PicoScenesFrameHeader(&frame_value.PicoScenesHeader.value())
  *         if frame_value.txExtraInfoSegment.has_value():
  *             data["TxExtraInfo"] = parse_ExtraInfo(&frame_value.txExtraInfoSegment.value().getExtraInfo())             # <<<<<<<<<<<<<<
  *         if frame_value.pilotCSISegment.has_value():
  *             data["PilotCSI"] = parse_CSI(&frame_value.pilotCSISegment.value().getCSI())
  */
-      __pyx_t_1 = __pyx_f_10picoscenes_parse_ExtraInfo((&__pyx_v_frame_value.txExtraInfoSegment.value().getExtraInfo())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 600, __pyx_L1_error)
+      __pyx_t_1 = __pyx_f_10picoscenes_parse_ExtraInfo((&__pyx_v_frame_value.txExtraInfoSegment.value().getExtraInfo())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 566, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (unlikely(PyDict_SetItem(__pyx_v_data, __pyx_n_u_TxExtraInfo, __pyx_t_1) < 0)) __PYX_ERR(0, 600, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_data, __pyx_n_u_TxExtraInfo, __pyx_t_1) < 0)) __PYX_ERR(0, 566, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "picoscenes.pyx":599
+      /* "picoscenes.pyx":565
  *         if frame_value.PicoScenesHeader.has_value():
  *             data["PicoScenesHeader"] = parse_PicoScenesFrameHeader(&frame_value.PicoScenesHeader.value())
  *         if frame_value.txExtraInfoSegment.has_value():             # <<<<<<<<<<<<<<
@@ -7472,7 +6044,7 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
  */
     }
 
-    /* "picoscenes.pyx":601
+    /* "picoscenes.pyx":567
  *         if frame_value.txExtraInfoSegment.has_value():
  *             data["TxExtraInfo"] = parse_ExtraInfo(&frame_value.txExtraInfoSegment.value().getExtraInfo())
  *         if frame_value.pilotCSISegment.has_value():             # <<<<<<<<<<<<<<
@@ -7482,19 +6054,19 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
     __pyx_t_2 = (__pyx_v_frame_value.pilotCSISegment.has_value() != 0);
     if (__pyx_t_2) {
 
-      /* "picoscenes.pyx":602
+      /* "picoscenes.pyx":568
  *             data["TxExtraInfo"] = parse_ExtraInfo(&frame_value.txExtraInfoSegment.value().getExtraInfo())
  *         if frame_value.pilotCSISegment.has_value():
  *             data["PilotCSI"] = parse_CSI(&frame_value.pilotCSISegment.value().getCSI())             # <<<<<<<<<<<<<<
  *         if frame_value.legacyCSISegment.has_value():
  *             data["LegacyCSI"] = parse_CSI(&frame_value.legacyCSISegment.value().getCSI())
  */
-      __pyx_t_1 = __pyx_f_10picoscenes_parse_CSI((&__pyx_v_frame_value.pilotCSISegment.value().getCSI())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 602, __pyx_L1_error)
+      __pyx_t_1 = __pyx_f_10picoscenes_parse_CSI((&__pyx_v_frame_value.pilotCSISegment.value().getCSI())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 568, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (unlikely(PyDict_SetItem(__pyx_v_data, __pyx_n_u_PilotCSI, __pyx_t_1) < 0)) __PYX_ERR(0, 602, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_data, __pyx_n_u_PilotCSI, __pyx_t_1) < 0)) __PYX_ERR(0, 568, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "picoscenes.pyx":601
+      /* "picoscenes.pyx":567
  *         if frame_value.txExtraInfoSegment.has_value():
  *             data["TxExtraInfo"] = parse_ExtraInfo(&frame_value.txExtraInfoSegment.value().getExtraInfo())
  *         if frame_value.pilotCSISegment.has_value():             # <<<<<<<<<<<<<<
@@ -7503,7 +6075,7 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
  */
     }
 
-    /* "picoscenes.pyx":603
+    /* "picoscenes.pyx":569
  *         if frame_value.pilotCSISegment.has_value():
  *             data["PilotCSI"] = parse_CSI(&frame_value.pilotCSISegment.value().getCSI())
  *         if frame_value.legacyCSISegment.has_value():             # <<<<<<<<<<<<<<
@@ -7513,19 +6085,19 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
     __pyx_t_2 = (__pyx_v_frame_value.legacyCSISegment.has_value() != 0);
     if (__pyx_t_2) {
 
-      /* "picoscenes.pyx":604
+      /* "picoscenes.pyx":570
  *             data["PilotCSI"] = parse_CSI(&frame_value.pilotCSISegment.value().getCSI())
  *         if frame_value.legacyCSISegment.has_value():
  *             data["LegacyCSI"] = parse_CSI(&frame_value.legacyCSISegment.value().getCSI())             # <<<<<<<<<<<<<<
  * #        if frame_value.basebandSignalSegment.has_value():
  * #            data["BasebandSignals"] = parse_SignalMatrix(&frame_value.basebandSignalSegment.value().getFloat32SignalMatrix())
  */
-      __pyx_t_1 = __pyx_f_10picoscenes_parse_CSI((&__pyx_v_frame_value.legacyCSISegment.value().getCSI())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 604, __pyx_L1_error)
+      __pyx_t_1 = __pyx_f_10picoscenes_parse_CSI((&__pyx_v_frame_value.legacyCSISegment.value().getCSI())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 570, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (unlikely(PyDict_SetItem(__pyx_v_data, __pyx_n_u_LegacyCSI, __pyx_t_1) < 0)) __PYX_ERR(0, 604, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_data, __pyx_n_u_LegacyCSI, __pyx_t_1) < 0)) __PYX_ERR(0, 570, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "picoscenes.pyx":603
+      /* "picoscenes.pyx":569
  *         if frame_value.pilotCSISegment.has_value():
  *             data["PilotCSI"] = parse_CSI(&frame_value.pilotCSISegment.value().getCSI())
  *         if frame_value.legacyCSISegment.has_value():             # <<<<<<<<<<<<<<
@@ -7534,19 +6106,19 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
  */
     }
 
-    /* "picoscenes.pyx":613
+    /* "picoscenes.pyx":579
  *         #         frame_value.dpasRequestSegment.value().getRequest())
  * 
  *         data["MPDU"] = frame_value.mpdu             # <<<<<<<<<<<<<<
  * 
  *     # print(data)
  */
-    __pyx_t_1 = __pyx_convert_vector_to_py_uint8_t(__pyx_v_frame_value.mpdu); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 613, __pyx_L1_error)
+    __pyx_t_1 = __pyx_convert_vector_to_py_uint8_t(__pyx_v_frame_value.mpdu); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 579, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_data, __pyx_n_u_MPDU, __pyx_t_1) < 0)) __PYX_ERR(0, 613, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_data, __pyx_n_u_MPDU, __pyx_t_1) < 0)) __PYX_ERR(0, 579, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "picoscenes.pyx":586
+    /* "picoscenes.pyx":552
  *     data = {}
  *     cdef ModularPicoScenesRxFrame frame_value
  *     if frame.has_value():             # <<<<<<<<<<<<<<
@@ -7555,7 +6127,7 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
  */
   }
 
-  /* "picoscenes.pyx":616
+  /* "picoscenes.pyx":582
  * 
  *     # print(data)
  *     return data             # <<<<<<<<<<<<<<
@@ -7565,7 +6137,7 @@ static PyObject *__pyx_f_10picoscenes_parse(std::optional<ModularPicoScenesRxFra
   __pyx_r = __pyx_v_data;
   goto __pyx_L0;
 
-  /* "picoscenes.pyx":583
+  /* "picoscenes.pyx":549
  *     return np.asarray(m.array).reshape(m.dimensions)
  * 
  * cdef parse(optional[ModularPicoScenesRxFrame] *frame):             # <<<<<<<<<<<<<<
@@ -8351,167 +6923,6 @@ static PyTypeObject __pyx_type_10picoscenes_Picoscenes = {
   0, /*tp_print*/
   #endif
 };
-static struct __pyx_vtabstruct_10picoscenes_PicoFrames __pyx_vtable_10picoscenes_PicoFrames;
-
-static PyObject *__pyx_tp_new_10picoscenes_PicoFrames(PyTypeObject *t, PyObject *a, PyObject *k) {
-  struct __pyx_obj_10picoscenes_PicoFrames *p;
-  PyObject *o;
-  if (likely((t->tp_flags & Py_TPFLAGS_IS_ABSTRACT) == 0)) {
-    o = (*t->tp_alloc)(t, 0);
-  } else {
-    o = (PyObject *) PyBaseObject_Type.tp_new(t, __pyx_empty_tuple, 0);
-  }
-  if (unlikely(!o)) return 0;
-  p = ((struct __pyx_obj_10picoscenes_PicoFrames *)o);
-  p->__pyx_vtab = __pyx_vtabptr_10picoscenes_PicoFrames;
-  p->file = ((PyObject*)Py_None); Py_INCREF(Py_None);
-  p->raw = ((PyObject*)Py_None); Py_INCREF(Py_None);
-  if (unlikely(__pyx_pw_10picoscenes_10PicoFrames_1__cinit__(o, a, k) < 0)) goto bad;
-  return o;
-  bad:
-  Py_DECREF(o); o = 0;
-  return NULL;
-}
-
-static void __pyx_tp_dealloc_10picoscenes_PicoFrames(PyObject *o) {
-  struct __pyx_obj_10picoscenes_PicoFrames *p = (struct __pyx_obj_10picoscenes_PicoFrames *)o;
-  #if CYTHON_USE_TP_FINALIZE
-  if (unlikely(PyType_HasFeature(Py_TYPE(o), Py_TPFLAGS_HAVE_FINALIZE) && Py_TYPE(o)->tp_finalize) && !_PyGC_FINALIZED(o)) {
-    if (PyObject_CallFinalizerFromDealloc(o)) return;
-  }
-  #endif
-  PyObject_GC_UnTrack(o);
-  Py_CLEAR(p->file);
-  Py_CLEAR(p->raw);
-  (*Py_TYPE(o)->tp_free)(o);
-}
-
-static int __pyx_tp_traverse_10picoscenes_PicoFrames(PyObject *o, visitproc v, void *a) {
-  int e;
-  struct __pyx_obj_10picoscenes_PicoFrames *p = (struct __pyx_obj_10picoscenes_PicoFrames *)o;
-  if (p->raw) {
-    e = (*v)(p->raw, a); if (e) return e;
-  }
-  return 0;
-}
-
-static int __pyx_tp_clear_10picoscenes_PicoFrames(PyObject *o) {
-  PyObject* tmp;
-  struct __pyx_obj_10picoscenes_PicoFrames *p = (struct __pyx_obj_10picoscenes_PicoFrames *)o;
-  tmp = ((PyObject*)p->raw);
-  p->raw = ((PyObject*)Py_None); Py_INCREF(Py_None);
-  Py_XDECREF(tmp);
-  return 0;
-}
-
-static PyObject *__pyx_getprop_10picoscenes_10PicoFrames_file(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_10picoscenes_10PicoFrames_4file_1__get__(o);
-}
-
-static int __pyx_setprop_10picoscenes_10PicoFrames_file(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
-  if (v) {
-    return __pyx_pw_10picoscenes_10PicoFrames_4file_3__set__(o, v);
-  }
-  else {
-    return __pyx_pw_10picoscenes_10PicoFrames_4file_5__del__(o);
-  }
-}
-
-static PyObject *__pyx_getprop_10picoscenes_10PicoFrames_raw(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_10picoscenes_10PicoFrames_3raw_1__get__(o);
-}
-
-static int __pyx_setprop_10picoscenes_10PicoFrames_raw(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
-  if (v) {
-    return __pyx_pw_10picoscenes_10PicoFrames_3raw_3__set__(o, v);
-  }
-  else {
-    return __pyx_pw_10picoscenes_10PicoFrames_3raw_5__del__(o);
-  }
-}
-
-static PyMethodDef __pyx_methods_10picoscenes_PicoFrames[] = {
-  {"get_block", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_10picoscenes_10PicoFrames_5get_block, METH_VARARGS|METH_KEYWORDS, 0},
-  {"get_frames", (PyCFunction)__pyx_pw_10picoscenes_10PicoFrames_7get_frames, METH_NOARGS, 0},
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_10picoscenes_10PicoFrames_9__reduce_cython__, METH_NOARGS, 0},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_10picoscenes_10PicoFrames_11__setstate_cython__, METH_O, 0},
-  {0, 0, 0, 0}
-};
-
-static struct PyGetSetDef __pyx_getsets_10picoscenes_PicoFrames[] = {
-  {(char *)"file", __pyx_getprop_10picoscenes_10PicoFrames_file, __pyx_setprop_10picoscenes_10PicoFrames_file, (char *)0, 0},
-  {(char *)"raw", __pyx_getprop_10picoscenes_10PicoFrames_raw, __pyx_setprop_10picoscenes_10PicoFrames_raw, (char *)0, 0},
-  {0, 0, 0, 0, 0}
-};
-
-static PyTypeObject __pyx_type_10picoscenes_PicoFrames = {
-  PyVarObject_HEAD_INIT(0, 0)
-  "picoscenes.PicoFrames", /*tp_name*/
-  sizeof(struct __pyx_obj_10picoscenes_PicoFrames), /*tp_basicsize*/
-  0, /*tp_itemsize*/
-  __pyx_tp_dealloc_10picoscenes_PicoFrames, /*tp_dealloc*/
-  #if PY_VERSION_HEX < 0x030800b4
-  0, /*tp_print*/
-  #endif
-  #if PY_VERSION_HEX >= 0x030800b4
-  0, /*tp_vectorcall_offset*/
-  #endif
-  0, /*tp_getattr*/
-  0, /*tp_setattr*/
-  #if PY_MAJOR_VERSION < 3
-  0, /*tp_compare*/
-  #endif
-  #if PY_MAJOR_VERSION >= 3
-  0, /*tp_as_async*/
-  #endif
-  0, /*tp_repr*/
-  0, /*tp_as_number*/
-  0, /*tp_as_sequence*/
-  0, /*tp_as_mapping*/
-  0, /*tp_hash*/
-  0, /*tp_call*/
-  0, /*tp_str*/
-  0, /*tp_getattro*/
-  0, /*tp_setattro*/
-  0, /*tp_as_buffer*/
-  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
-  0, /*tp_doc*/
-  __pyx_tp_traverse_10picoscenes_PicoFrames, /*tp_traverse*/
-  __pyx_tp_clear_10picoscenes_PicoFrames, /*tp_clear*/
-  0, /*tp_richcompare*/
-  0, /*tp_weaklistoffset*/
-  0, /*tp_iter*/
-  0, /*tp_iternext*/
-  __pyx_methods_10picoscenes_PicoFrames, /*tp_methods*/
-  0, /*tp_members*/
-  __pyx_getsets_10picoscenes_PicoFrames, /*tp_getset*/
-  0, /*tp_base*/
-  0, /*tp_dict*/
-  0, /*tp_descr_get*/
-  0, /*tp_descr_set*/
-  0, /*tp_dictoffset*/
-  __pyx_pw_10picoscenes_10PicoFrames_3__init__, /*tp_init*/
-  0, /*tp_alloc*/
-  __pyx_tp_new_10picoscenes_PicoFrames, /*tp_new*/
-  0, /*tp_free*/
-  0, /*tp_is_gc*/
-  0, /*tp_bases*/
-  0, /*tp_mro*/
-  0, /*tp_cache*/
-  0, /*tp_subclasses*/
-  0, /*tp_weaklist*/
-  0, /*tp_del*/
-  0, /*tp_version_tag*/
-  #if PY_VERSION_HEX >= 0x030400a1
-  0, /*tp_finalize*/
-  #endif
-  #if PY_VERSION_HEX >= 0x030800b1
-  0, /*tp_vectorcall*/
-  #endif
-  #if PY_VERSION_HEX >= 0x030800b4 && PY_VERSION_HEX < 0x03090000
-  0, /*tp_print*/
-  #endif
-};
 
 static PyMethodDef __pyx_methods[] = {
   {0, 0, 0, 0}
@@ -8572,7 +6983,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_u_FrameType, __pyx_k_FrameType, sizeof(__pyx_k_FrameType), 0, 1, 0, 1},
   {&__pyx_n_u_FromDS, __pyx_k_FromDS, sizeof(__pyx_k_FromDS), 0, 1, 0, 1},
   {&__pyx_n_u_GI, __pyx_k_GI, sizeof(__pyx_k_GI), 0, 1, 0, 1},
-  {&__pyx_n_u_I, __pyx_k_I, sizeof(__pyx_k_I), 0, 1, 0, 1},
   {&__pyx_n_u_LegacyCSI, __pyx_k_LegacyCSI, sizeof(__pyx_k_LegacyCSI), 0, 1, 0, 1},
   {&__pyx_n_u_MCS, __pyx_k_MCS, sizeof(__pyx_k_MCS), 0, 1, 0, 1},
   {&__pyx_n_u_MPDU, __pyx_k_MPDU, sizeof(__pyx_k_MPDU), 0, 1, 0, 1},
@@ -8584,13 +6994,11 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_u_Order, __pyx_k_Order, sizeof(__pyx_k_Order), 0, 1, 0, 1},
   {&__pyx_n_u_PacketFormat, __pyx_k_PacketFormat, sizeof(__pyx_k_PacketFormat), 0, 1, 0, 1},
   {&__pyx_n_u_Phase, __pyx_k_Phase, sizeof(__pyx_k_Phase), 0, 1, 0, 1},
-  {&__pyx_n_s_PicoFrames, __pyx_k_PicoFrames, sizeof(__pyx_k_PicoFrames), 0, 0, 1, 1},
   {&__pyx_n_u_PicoScenesHeader, __pyx_k_PicoScenesHeader, sizeof(__pyx_k_PicoScenesHeader), 0, 1, 0, 1},
   {&__pyx_n_s_Picoscenes, __pyx_k_Picoscenes, sizeof(__pyx_k_Picoscenes), 0, 0, 1, 1},
   {&__pyx_n_u_PilotCSI, __pyx_k_PilotCSI, sizeof(__pyx_k_PilotCSI), 0, 1, 0, 1},
   {&__pyx_n_u_PowerManagement, __pyx_k_PowerManagement, sizeof(__pyx_k_PowerManagement), 0, 1, 0, 1},
   {&__pyx_n_u_Protected, __pyx_k_Protected, sizeof(__pyx_k_Protected), 0, 1, 0, 1},
-  {&__pyx_kp_u_Reached_end_of_file, __pyx_k_Reached_end_of_file, sizeof(__pyx_k_Reached_end_of_file), 0, 1, 0, 0},
   {&__pyx_n_u_Retry, __pyx_k_Retry, sizeof(__pyx_k_Retry), 0, 1, 0, 1},
   {&__pyx_n_u_RxExtraInfo, __pyx_k_RxExtraInfo, sizeof(__pyx_k_RxExtraInfo), 0, 1, 0, 1},
   {&__pyx_n_u_RxSBasic, __pyx_k_RxSBasic, sizeof(__pyx_k_RxSBasic), 0, 1, 0, 1},
@@ -8619,15 +7027,12 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_clear, __pyx_k_clear, sizeof(__pyx_k_clear), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_u_controlFreq, __pyx_k_controlFreq, sizeof(__pyx_k_controlFreq), 0, 1, 0, 1},
-  {&__pyx_n_s_data, __pyx_k_data, sizeof(__pyx_k_data), 0, 0, 1, 1},
   {&__pyx_n_u_deviceType, __pyx_k_deviceType, sizeof(__pyx_k_deviceType), 0, 1, 0, 1},
   {&__pyx_n_s_encode, __pyx_k_encode, sizeof(__pyx_k_encode), 0, 0, 1, 1},
   {&__pyx_n_s_encoding, __pyx_k_encoding, sizeof(__pyx_k_encoding), 0, 0, 1, 1},
   {&__pyx_n_u_evm, __pyx_k_evm, sizeof(__pyx_k_evm), 0, 1, 0, 1},
   {&__pyx_n_s_exit, __pyx_k_exit, sizeof(__pyx_k_exit), 0, 0, 1, 1},
   {&__pyx_n_s_file, __pyx_k_file, sizeof(__pyx_k_file), 0, 0, 1, 1},
-  {&__pyx_n_s_get_block, __pyx_k_get_block, sizeof(__pyx_k_get_block), 0, 0, 1, 1},
-  {&__pyx_n_s_get_frames, __pyx_k_get_frames, sizeof(__pyx_k_get_frames), 0, 0, 1, 1},
   {&__pyx_n_s_getstate, __pyx_k_getstate, sizeof(__pyx_k_getstate), 0, 0, 1, 1},
   {&__pyx_n_u_hasAGC, __pyx_k_hasAGC, sizeof(__pyx_k_hasAGC), 0, 1, 0, 1},
   {&__pyx_n_u_hasAntennaSelection, __pyx_k_hasAntennaSelection, sizeof(__pyx_k_hasAntennaSelection), 0, 1, 0, 1},
@@ -8672,8 +7077,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_u_numTones, __pyx_k_numTones, sizeof(__pyx_k_numTones), 0, 1, 0, 1},
   {&__pyx_n_u_numTx, __pyx_k_numTx, sizeof(__pyx_k_numTx), 0, 1, 0, 1},
   {&__pyx_n_s_numpy, __pyx_k_numpy, sizeof(__pyx_k_numpy), 0, 0, 1, 1},
-  {&__pyx_n_s_offset, __pyx_k_offset, sizeof(__pyx_k_offset), 0, 0, 1, 1},
-  {&__pyx_n_s_open, __pyx_k_open, sizeof(__pyx_k_open), 0, 0, 1, 1},
   {&__pyx_n_u_packetCBW, __pyx_k_packetCBW, sizeof(__pyx_k_packetCBW), 0, 1, 0, 1},
   {&__pyx_n_u_packetFormat, __pyx_k_packetFormat, sizeof(__pyx_k_packetFormat), 0, 1, 0, 1},
   {&__pyx_n_u_pll_clock_select, __pyx_k_pll_clock_select, sizeof(__pyx_k_pll_clock_select), 0, 1, 0, 1},
@@ -8686,7 +7089,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {&__pyx_n_u_rateNflag, __pyx_k_rateNflag, sizeof(__pyx_k_rateNflag), 0, 1, 0, 1},
-  {&__pyx_n_u_rb, __pyx_k_rb, sizeof(__pyx_k_rb), 0, 1, 0, 1},
   {&__pyx_n_s_read, __pyx_k_read, sizeof(__pyx_k_read), 0, 0, 1, 1},
   {&__pyx_n_s_reduce, __pyx_k_reduce, sizeof(__pyx_k_reduce), 0, 0, 1, 1},
   {&__pyx_n_s_reduce_cython, __pyx_k_reduce_cython, sizeof(__pyx_k_reduce_cython), 0, 0, 1, 1},
@@ -8711,7 +7113,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_u_tx_ness, __pyx_k_tx_ness, sizeof(__pyx_k_tx_ness), 0, 1, 0, 1},
   {&__pyx_n_u_txpower, __pyx_k_txpower, sizeof(__pyx_k_txpower), 0, 1, 0, 1},
   {&__pyx_n_u_txtsf, __pyx_k_txtsf, sizeof(__pyx_k_txtsf), 0, 1, 0, 1},
-  {&__pyx_n_s_unpack, __pyx_k_unpack, sizeof(__pyx_k_unpack), 0, 0, 1, 1},
   {&__pyx_kp_u_utf_8, __pyx_k_utf_8, sizeof(__pyx_k_utf_8), 0, 1, 0, 0},
   {&__pyx_n_u_value56, __pyx_k_value56, sizeof(__pyx_k_value56), 0, 1, 0, 1},
   {&__pyx_n_u_value96, __pyx_k_value96, sizeof(__pyx_k_value96), 0, 1, 0, 1},
@@ -8722,8 +7123,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_exit = __Pyx_GetBuiltinName(__pyx_n_s_exit); if (!__pyx_builtin_exit) __PYX_ERR(0, 311, __pyx_L1_error)
   __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 362, __pyx_L1_error)
   __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) __PYX_ERR(1, 2, __pyx_L1_error)
-  __pyx_builtin_open = __Pyx_GetBuiltinName(__pyx_n_s_open); if (!__pyx_builtin_open) __PYX_ERR(0, 388, __pyx_L1_error)
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 420, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 386, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -8762,36 +7162,6 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __pyx_tuple__3 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__3);
   __Pyx_GIVEREF(__pyx_tuple__3);
-
-  /* "picoscenes.pyx":395
- *             frame_length, frame_bytes = self.get_block(file_bytes, pos)
- *             if len(frame_bytes) != frame_length:
- *                 print("Reached end of file.")             # <<<<<<<<<<<<<<
- *                 break
- *             # picoframe = PicoFrame()
- */
-  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_kp_u_Reached_end_of_file); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 395, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__4);
-  __Pyx_GIVEREF(__pyx_tuple__4);
-
-  /* "(tree fragment)":2
- * def __reduce_cython__(self):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
- * def __setstate_cython__(self, __pyx_state):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- */
-  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__5);
-  __Pyx_GIVEREF(__pyx_tuple__5);
-
-  /* "(tree fragment)":4
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
- * def __setstate_cython__(self, __pyx_state):
- *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
- */
-  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__6);
-  __Pyx_GIVEREF(__pyx_tuple__6);
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -8802,7 +7172,6 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
 static CYTHON_SMALL_CODE int __Pyx_InitGlobals(void) {
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_int_4 = PyInt_FromLong(4); if (unlikely(!__pyx_int_4)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_62208 = PyInt_FromLong(62208L); if (unlikely(!__pyx_int_62208)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_neg_1 = PyInt_FromLong(-1); if (unlikely(!__pyx_int_neg_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   return 0;
@@ -8864,20 +7233,6 @@ static int __Pyx_modinit_type_init_code(void) {
   if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Picoscenes, (PyObject *)&__pyx_type_10picoscenes_Picoscenes) < 0) __PYX_ERR(0, 284, __pyx_L1_error)
   if (__Pyx_setup_reduce((PyObject*)&__pyx_type_10picoscenes_Picoscenes) < 0) __PYX_ERR(0, 284, __pyx_L1_error)
   __pyx_ptype_10picoscenes_Picoscenes = &__pyx_type_10picoscenes_Picoscenes;
-  __pyx_vtabptr_10picoscenes_PicoFrames = &__pyx_vtable_10picoscenes_PicoFrames;
-  __pyx_vtable_10picoscenes_PicoFrames.get_block = (PyObject *(*)(struct __pyx_obj_10picoscenes_PicoFrames *, PyObject *, PyObject *, int __pyx_skip_dispatch))__pyx_f_10picoscenes_10PicoFrames_get_block;
-  __pyx_vtable_10picoscenes_PicoFrames.get_frames = (PyObject *(*)(struct __pyx_obj_10picoscenes_PicoFrames *, int __pyx_skip_dispatch))__pyx_f_10picoscenes_10PicoFrames_get_frames;
-  if (PyType_Ready(&__pyx_type_10picoscenes_PicoFrames) < 0) __PYX_ERR(0, 370, __pyx_L1_error)
-  #if PY_VERSION_HEX < 0x030800B1
-  __pyx_type_10picoscenes_PicoFrames.tp_print = 0;
-  #endif
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_10picoscenes_PicoFrames.tp_dictoffset && __pyx_type_10picoscenes_PicoFrames.tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_type_10picoscenes_PicoFrames.tp_getattro = __Pyx_PyObject_GenericGetAttr;
-  }
-  if (__Pyx_SetVtable(__pyx_type_10picoscenes_PicoFrames.tp_dict, __pyx_vtabptr_10picoscenes_PicoFrames) < 0) __PYX_ERR(0, 370, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_PicoFrames, (PyObject *)&__pyx_type_10picoscenes_PicoFrames) < 0) __PYX_ERR(0, 370, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_10picoscenes_PicoFrames) < 0) __PYX_ERR(0, 370, __pyx_L1_error)
-  __pyx_ptype_10picoscenes_PicoFrames = &__pyx_type_10picoscenes_PicoFrames;
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -10080,130 +8435,6 @@ bad:
 }
 #endif
 
-/* PyIntBinop */
-#if !CYTHON_COMPILING_IN_PYPY
-static PyObject* __Pyx_PyInt_AddObjC(PyObject *op1, PyObject *op2, CYTHON_UNUSED long intval, int inplace, int zerodivision_check) {
-    (void)inplace;
-    (void)zerodivision_check;
-    #if PY_MAJOR_VERSION < 3
-    if (likely(PyInt_CheckExact(op1))) {
-        const long b = intval;
-        long x;
-        long a = PyInt_AS_LONG(op1);
-            x = (long)((unsigned long)a + b);
-            if (likely((x^a) >= 0 || (x^b) >= 0))
-                return PyInt_FromLong(x);
-            return PyLong_Type.tp_as_number->nb_add(op1, op2);
-    }
-    #endif
-    #if CYTHON_USE_PYLONG_INTERNALS
-    if (likely(PyLong_CheckExact(op1))) {
-        const long b = intval;
-        long a, x;
-#ifdef HAVE_LONG_LONG
-        const PY_LONG_LONG llb = intval;
-        PY_LONG_LONG lla, llx;
-#endif
-        const digit* digits = ((PyLongObject*)op1)->ob_digit;
-        const Py_ssize_t size = Py_SIZE(op1);
-        if (likely(__Pyx_sst_abs(size) <= 1)) {
-            a = likely(size) ? digits[0] : 0;
-            if (size == -1) a = -a;
-        } else {
-            switch (size) {
-                case -2:
-                    if (8 * sizeof(long) - 1 > 2 * PyLong_SHIFT) {
-                        a = -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
-                        lla = -(PY_LONG_LONG) (((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case 2:
-                    if (8 * sizeof(long) - 1 > 2 * PyLong_SHIFT) {
-                        a = (long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
-                        lla = (PY_LONG_LONG) (((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case -3:
-                    if (8 * sizeof(long) - 1 > 3 * PyLong_SHIFT) {
-                        a = -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
-                        lla = -(PY_LONG_LONG) (((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case 3:
-                    if (8 * sizeof(long) - 1 > 3 * PyLong_SHIFT) {
-                        a = (long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
-                        lla = (PY_LONG_LONG) (((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case -4:
-                    if (8 * sizeof(long) - 1 > 4 * PyLong_SHIFT) {
-                        a = -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
-                        lla = -(PY_LONG_LONG) (((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case 4:
-                    if (8 * sizeof(long) - 1 > 4 * PyLong_SHIFT) {
-                        a = (long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
-                        lla = (PY_LONG_LONG) (((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                default: return PyLong_Type.tp_as_number->nb_add(op1, op2);
-            }
-        }
-                x = a + b;
-            return PyLong_FromLong(x);
-#ifdef HAVE_LONG_LONG
-        long_long:
-                llx = lla + llb;
-            return PyLong_FromLongLong(llx);
-#endif
-        
-        
-    }
-    #endif
-    if (PyFloat_CheckExact(op1)) {
-        const long b = intval;
-        double a = PyFloat_AS_DOUBLE(op1);
-            double result;
-            PyFPE_START_PROTECT("add", return NULL)
-            result = ((double)a) + (double)b;
-            PyFPE_END_PROTECT(result)
-            return PyFloat_FromDouble(result);
-    }
-    return (inplace ? PyNumber_InPlaceAdd : PyNumber_Add)(op1, op2);
-}
-#endif
-
 /* GetModuleGlobalName */
 #if CYTHON_USE_DICT_VERSIONS
 static PyObject *__Pyx__GetModuleGlobalName(PyObject *name, PY_UINT64_T *dict_version, PyObject **dict_cached_value)
@@ -10238,211 +8469,6 @@ static CYTHON_INLINE PyObject *__Pyx__GetModuleGlobalName(PyObject *name)
 #endif
     return __Pyx_GetBuiltinName(name);
 }
-
-/* ArgTypeTest */
-static int __Pyx__ArgTypeTest(PyObject *obj, PyTypeObject *type, const char *name, int exact)
-{
-    if (unlikely(!type)) {
-        PyErr_SetString(PyExc_SystemError, "Missing type object");
-        return 0;
-    }
-    else if (exact) {
-        #if PY_MAJOR_VERSION == 2
-        if ((type == &PyBaseString_Type) && likely(__Pyx_PyBaseString_CheckExact(obj))) return 1;
-        #endif
-    }
-    else {
-        if (likely(__Pyx_TypeCheck(obj, type))) return 1;
-    }
-    PyErr_Format(PyExc_TypeError,
-        "Argument '%.200s' has incorrect type (expected %.200s, got %.200s)",
-        name, type->tp_name, Py_TYPE(obj)->tp_name);
-    return 0;
-}
-
-/* RaiseTooManyValuesToUnpack */
-static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected) {
-    PyErr_Format(PyExc_ValueError,
-                 "too many values to unpack (expected %" CYTHON_FORMAT_SSIZE_T "d)", expected);
-}
-
-/* RaiseNeedMoreValuesToUnpack */
-static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index) {
-    PyErr_Format(PyExc_ValueError,
-                 "need more than %" CYTHON_FORMAT_SSIZE_T "d value%.1s to unpack",
-                 index, (index == 1) ? "" : "s");
-}
-
-/* IterFinish */
-static CYTHON_INLINE int __Pyx_IterFinish(void) {
-#if CYTHON_FAST_THREAD_STATE
-    PyThreadState *tstate = __Pyx_PyThreadState_Current;
-    PyObject* exc_type = tstate->curexc_type;
-    if (unlikely(exc_type)) {
-        if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) {
-            PyObject *exc_value, *exc_tb;
-            exc_value = tstate->curexc_value;
-            exc_tb = tstate->curexc_traceback;
-            tstate->curexc_type = 0;
-            tstate->curexc_value = 0;
-            tstate->curexc_traceback = 0;
-            Py_DECREF(exc_type);
-            Py_XDECREF(exc_value);
-            Py_XDECREF(exc_tb);
-            return 0;
-        } else {
-            return -1;
-        }
-    }
-    return 0;
-#else
-    if (unlikely(PyErr_Occurred())) {
-        if (likely(PyErr_ExceptionMatches(PyExc_StopIteration))) {
-            PyErr_Clear();
-            return 0;
-        } else {
-            return -1;
-        }
-    }
-    return 0;
-#endif
-}
-
-/* UnpackItemEndCheck */
-static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected) {
-    if (unlikely(retval)) {
-        Py_DECREF(retval);
-        __Pyx_RaiseTooManyValuesError(expected);
-        return -1;
-    } else {
-        return __Pyx_IterFinish();
-    }
-    return 0;
-}
-
-/* PyIntBinop */
-#if !CYTHON_COMPILING_IN_PYPY
-static PyObject* __Pyx_PyInt_SubtractObjC(PyObject *op1, PyObject *op2, CYTHON_UNUSED long intval, int inplace, int zerodivision_check) {
-    (void)inplace;
-    (void)zerodivision_check;
-    #if PY_MAJOR_VERSION < 3
-    if (likely(PyInt_CheckExact(op1))) {
-        const long b = intval;
-        long x;
-        long a = PyInt_AS_LONG(op1);
-            x = (long)((unsigned long)a - b);
-            if (likely((x^a) >= 0 || (x^~b) >= 0))
-                return PyInt_FromLong(x);
-            return PyLong_Type.tp_as_number->nb_subtract(op1, op2);
-    }
-    #endif
-    #if CYTHON_USE_PYLONG_INTERNALS
-    if (likely(PyLong_CheckExact(op1))) {
-        const long b = intval;
-        long a, x;
-#ifdef HAVE_LONG_LONG
-        const PY_LONG_LONG llb = intval;
-        PY_LONG_LONG lla, llx;
-#endif
-        const digit* digits = ((PyLongObject*)op1)->ob_digit;
-        const Py_ssize_t size = Py_SIZE(op1);
-        if (likely(__Pyx_sst_abs(size) <= 1)) {
-            a = likely(size) ? digits[0] : 0;
-            if (size == -1) a = -a;
-        } else {
-            switch (size) {
-                case -2:
-                    if (8 * sizeof(long) - 1 > 2 * PyLong_SHIFT) {
-                        a = -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
-                        lla = -(PY_LONG_LONG) (((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case 2:
-                    if (8 * sizeof(long) - 1 > 2 * PyLong_SHIFT) {
-                        a = (long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
-                        lla = (PY_LONG_LONG) (((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case -3:
-                    if (8 * sizeof(long) - 1 > 3 * PyLong_SHIFT) {
-                        a = -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
-                        lla = -(PY_LONG_LONG) (((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case 3:
-                    if (8 * sizeof(long) - 1 > 3 * PyLong_SHIFT) {
-                        a = (long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
-                        lla = (PY_LONG_LONG) (((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case -4:
-                    if (8 * sizeof(long) - 1 > 4 * PyLong_SHIFT) {
-                        a = -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
-                        lla = -(PY_LONG_LONG) (((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case 4:
-                    if (8 * sizeof(long) - 1 > 4 * PyLong_SHIFT) {
-                        a = (long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-#ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
-                        lla = (PY_LONG_LONG) (((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-#endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                default: return PyLong_Type.tp_as_number->nb_subtract(op1, op2);
-            }
-        }
-                x = a - b;
-            return PyLong_FromLong(x);
-#ifdef HAVE_LONG_LONG
-        long_long:
-                llx = lla - llb;
-            return PyLong_FromLongLong(llx);
-#endif
-        
-        
-    }
-    #endif
-    if (PyFloat_CheckExact(op1)) {
-        const long b = intval;
-        double a = PyFloat_AS_DOUBLE(op1);
-            double result;
-            PyFPE_START_PROTECT("subtract", return NULL)
-            result = ((double)a) - (double)b;
-            PyFPE_END_PROTECT(result)
-            return PyFloat_FromDouble(result);
-    }
-    return (inplace ? PyNumber_InPlaceSubtract : PyNumber_Subtract)(op1, op2);
-}
-#endif
 
 /* PyObject_GenericGetAttrNoDict */
 #if CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP && PY_VERSION_HEX < 0x03070000
@@ -11207,202 +9233,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
         return _PyLong_FromByteArray(bytes, sizeof(int),
                                      little, !is_unsigned);
     }
-}
-
-/* CIntFromPy */
-static CYTHON_INLINE uint32_t __Pyx_PyInt_As_uint32_t(PyObject *x) {
-#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-#endif
-    const uint32_t neg_one = (uint32_t) -1, const_zero = (uint32_t) 0;
-#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
-#pragma GCC diagnostic pop
-#endif
-    const int is_unsigned = neg_one > const_zero;
-#if PY_MAJOR_VERSION < 3
-    if (likely(PyInt_Check(x))) {
-        if (sizeof(uint32_t) < sizeof(long)) {
-            __PYX_VERIFY_RETURN_INT(uint32_t, long, PyInt_AS_LONG(x))
-        } else {
-            long val = PyInt_AS_LONG(x);
-            if (is_unsigned && unlikely(val < 0)) {
-                goto raise_neg_overflow;
-            }
-            return (uint32_t) val;
-        }
-    } else
-#endif
-    if (likely(PyLong_Check(x))) {
-        if (is_unsigned) {
-#if CYTHON_USE_PYLONG_INTERNALS
-            const digit* digits = ((PyLongObject*)x)->ob_digit;
-            switch (Py_SIZE(x)) {
-                case  0: return (uint32_t) 0;
-                case  1: __PYX_VERIFY_RETURN_INT(uint32_t, digit, digits[0])
-                case 2:
-                    if (8 * sizeof(uint32_t) > 1 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) >= 2 * PyLong_SHIFT) {
-                            return (uint32_t) (((((uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0]));
-                        }
-                    }
-                    break;
-                case 3:
-                    if (8 * sizeof(uint32_t) > 2 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) >= 3 * PyLong_SHIFT) {
-                            return (uint32_t) (((((((uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0]));
-                        }
-                    }
-                    break;
-                case 4:
-                    if (8 * sizeof(uint32_t) > 3 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) >= 4 * PyLong_SHIFT) {
-                            return (uint32_t) (((((((((uint32_t)digits[3]) << PyLong_SHIFT) | (uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0]));
-                        }
-                    }
-                    break;
-            }
-#endif
-#if CYTHON_COMPILING_IN_CPYTHON
-            if (unlikely(Py_SIZE(x) < 0)) {
-                goto raise_neg_overflow;
-            }
-#else
-            {
-                int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
-                if (unlikely(result < 0))
-                    return (uint32_t) -1;
-                if (unlikely(result == 1))
-                    goto raise_neg_overflow;
-            }
-#endif
-            if (sizeof(uint32_t) <= sizeof(unsigned long)) {
-                __PYX_VERIFY_RETURN_INT_EXC(uint32_t, unsigned long, PyLong_AsUnsignedLong(x))
-#ifdef HAVE_LONG_LONG
-            } else if (sizeof(uint32_t) <= sizeof(unsigned PY_LONG_LONG)) {
-                __PYX_VERIFY_RETURN_INT_EXC(uint32_t, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
-#endif
-            }
-        } else {
-#if CYTHON_USE_PYLONG_INTERNALS
-            const digit* digits = ((PyLongObject*)x)->ob_digit;
-            switch (Py_SIZE(x)) {
-                case  0: return (uint32_t) 0;
-                case -1: __PYX_VERIFY_RETURN_INT(uint32_t, sdigit, (sdigit) (-(sdigit)digits[0]))
-                case  1: __PYX_VERIFY_RETURN_INT(uint32_t,  digit, +digits[0])
-                case -2:
-                    if (8 * sizeof(uint32_t) - 1 > 1 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) - 1 > 2 * PyLong_SHIFT) {
-                            return (uint32_t) (((uint32_t)-1)*(((((uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
-                        }
-                    }
-                    break;
-                case 2:
-                    if (8 * sizeof(uint32_t) > 1 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) - 1 > 2 * PyLong_SHIFT) {
-                            return (uint32_t) ((((((uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
-                        }
-                    }
-                    break;
-                case -3:
-                    if (8 * sizeof(uint32_t) - 1 > 2 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) - 1 > 3 * PyLong_SHIFT) {
-                            return (uint32_t) (((uint32_t)-1)*(((((((uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
-                        }
-                    }
-                    break;
-                case 3:
-                    if (8 * sizeof(uint32_t) > 2 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) - 1 > 3 * PyLong_SHIFT) {
-                            return (uint32_t) ((((((((uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
-                        }
-                    }
-                    break;
-                case -4:
-                    if (8 * sizeof(uint32_t) - 1 > 3 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) - 1 > 4 * PyLong_SHIFT) {
-                            return (uint32_t) (((uint32_t)-1)*(((((((((uint32_t)digits[3]) << PyLong_SHIFT) | (uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
-                        }
-                    }
-                    break;
-                case 4:
-                    if (8 * sizeof(uint32_t) > 3 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) - 1 > 4 * PyLong_SHIFT) {
-                            return (uint32_t) ((((((((((uint32_t)digits[3]) << PyLong_SHIFT) | (uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
-                        }
-                    }
-                    break;
-            }
-#endif
-            if (sizeof(uint32_t) <= sizeof(long)) {
-                __PYX_VERIFY_RETURN_INT_EXC(uint32_t, long, PyLong_AsLong(x))
-#ifdef HAVE_LONG_LONG
-            } else if (sizeof(uint32_t) <= sizeof(PY_LONG_LONG)) {
-                __PYX_VERIFY_RETURN_INT_EXC(uint32_t, PY_LONG_LONG, PyLong_AsLongLong(x))
-#endif
-            }
-        }
-        {
-#if CYTHON_COMPILING_IN_PYPY && !defined(_PyLong_AsByteArray)
-            PyErr_SetString(PyExc_RuntimeError,
-                            "_PyLong_AsByteArray() not available in PyPy, cannot convert large numbers");
-#else
-            uint32_t val;
-            PyObject *v = __Pyx_PyNumber_IntOrLong(x);
- #if PY_MAJOR_VERSION < 3
-            if (likely(v) && !PyLong_Check(v)) {
-                PyObject *tmp = v;
-                v = PyNumber_Long(tmp);
-                Py_DECREF(tmp);
-            }
- #endif
-            if (likely(v)) {
-                int one = 1; int is_little = (int)*(unsigned char *)&one;
-                unsigned char *bytes = (unsigned char *)&val;
-                int ret = _PyLong_AsByteArray((PyLongObject *)v,
-                                              bytes, sizeof(val),
-                                              is_little, !is_unsigned);
-                Py_DECREF(v);
-                if (likely(!ret))
-                    return val;
-            }
-#endif
-            return (uint32_t) -1;
-        }
-    } else {
-        uint32_t val;
-        PyObject *tmp = __Pyx_PyNumber_IntOrLong(x);
-        if (!tmp) return (uint32_t) -1;
-        val = __Pyx_PyInt_As_uint32_t(tmp);
-        Py_DECREF(tmp);
-        return val;
-    }
-raise_overflow:
-    PyErr_SetString(PyExc_OverflowError,
-        "value too large to convert to uint32_t");
-    return (uint32_t) -1;
-raise_neg_overflow:
-    PyErr_SetString(PyExc_OverflowError,
-        "can't convert negative value to uint32_t");
-    return (uint32_t) -1;
 }
 
 /* CIntToPy */

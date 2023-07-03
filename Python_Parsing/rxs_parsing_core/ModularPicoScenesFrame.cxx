@@ -333,6 +333,8 @@ std::optional<ModularPicoScenesRxFrame> ModularPicoScenesRxFrame::concatenateFra
         cargos.emplace_back(frame.cargoSegment->getCargo());
     });
     auto mergedPayload = PayloadCargo::mergeAndValidateCargo(cargos);
+    if (mergedPayload.empty()) // in case of decompression failure
+        return std::nullopt;
 
     auto pos = 0, numSegment = 0;
     while (pos < mergedPayload.size()) {
@@ -407,6 +409,12 @@ Uint8Vector ModularPicoScenesRxFrame::toBuffer() const {
     if (preEQSymbolsSegment) {
         auto segmentBuffer = preEQSymbolsSegment->toBuffer();
         std::copy(segmentBuffer.cbegin(), segmentBuffer.cend(), std::back_inserter(rxSegmentBuffer));
+        modularFrameHeader.numRxSegments++;
+    }
+
+    for (const auto &segment: rxUnknownSegments) {
+        auto buffer = segment.second.toBuffer();
+        std::copy(buffer.cbegin(), buffer.cend(), std::back_inserter(rxSegmentBuffer));
         modularFrameHeader.numRxSegments++;
     }
 
@@ -499,7 +507,7 @@ Uint8Vector ModularPicoScenesTxFrame::toBuffer() const {
     auto bufferLength = totalLength();
     Uint8Vector buffer(bufferLength);
     auto copiedLength = toBuffer(&buffer[0], bufferLength);
-    assert(bufferLength == copiedLength);
+    assert(bufferLength == copiedLength || bufferLength == copiedLength + 4);
     return buffer;
 }
 
@@ -530,7 +538,7 @@ int ModularPicoScenesTxFrame::toBuffer(uint8_t *buffer, uint32_t bufferLength) c
     return pos;
 }
 
-std::vector<ModularPicoScenesTxFrame> ModularPicoScenesTxFrame::autoSplit(int16_t maxSegmentBuffersLength) const {
+std::vector<ModularPicoScenesTxFrame> ModularPicoScenesTxFrame::autoSplit(int16_t maxSegmentBuffersLength, std::optional<uint16_t> firstSegmentCappingLength) const {
     if (!frameHeader)
         return std::vector<ModularPicoScenesTxFrame>{1, *this};
 
@@ -543,24 +551,50 @@ std::vector<ModularPicoScenesTxFrame> ModularPicoScenesTxFrame::autoSplit(int16_
         return std::vector<ModularPicoScenesTxFrame>{1, *this};
 
     auto pos = 0;
-    Uint8Vector allSegmentBuffer(segmentsLength);
+    Uint8Vector allSegmentBuffer(segmentsLength), compressedBuffer;
     for (const auto &segment: segments) {
         segment->toBuffer(allSegmentBuffer.data() + pos);
         pos += segment->totalLength() + 4;
     }
 
+    Uint8Vector *bufferPtr;
+    size_t bufferLength{0};
+    bool usingCompression{false};
+    if (CargoCompression::isAlgorithmRegistered()) {
+        compressedBuffer = CargoCompression::getCompressor()(allSegmentBuffer.data(), allSegmentBuffer.size()).value_or(Uint8Vector());
+        bufferLength = compressedBuffer.size();
+        bufferPtr = &compressedBuffer;
+        usingCompression = true;
+
+//        auto decompressedPayload = CargoCompression::getDecompressor()(compressedBuffer.data(), compressedBuffer.size()).value_or(Uint8Vector());
+//        std::cout << "identical:" << (decompressedPayload == allSegmentBuffer) << std::endl;
+    } else {
+        bufferPtr = &allSegmentBuffer;
+        bufferLength = allSegmentBuffer.size();
+    }
+
+    uint8_t numCargos = std::ceil(1.0 * bufferLength / maxSegmentBuffersLength);
+    if (firstSegmentCappingLength) {
+        auto remainLength = bufferLength - firstSegmentCappingLength.value();
+        numCargos = std::ceil(1.0 * remainLength / maxSegmentBuffersLength) + 1;
+    }
+    auto avgStepLength = size_t(std::ceil(1.0 * bufferLength / numCargos));
+    auto cargos = std::vector<PayloadCargo>();
+
     pos = 0;
     uint8_t sequence = 0;
-    uint8_t numCargos = std::ceil(1.0 * segmentsLength / maxSegmentBuffersLength);
-    auto cargos = std::vector<PayloadCargo>();
-    while (pos < segmentsLength) {
-        auto stepLength = pos + maxSegmentBuffersLength < segmentsLength ? maxSegmentBuffersLength : segmentsLength - pos;
+    while (pos < bufferLength) {
+        auto stepLength = pos + avgStepLength < bufferLength ? avgStepLength : bufferLength - pos;
+        if (pos == 0 && firstSegmentCappingLength)
+            stepLength = pos + *firstSegmentCappingLength < bufferLength ? *firstSegmentCappingLength : bufferLength - pos;
         cargos.emplace_back(PayloadCargo{
                 .taskId = frameHeader->taskId,
                 .numSegments = frameHeader->numSegments,
                 .sequence = sequence++,
                 .totalParts = numCargos,
-                .payloadData = Uint8Vector(allSegmentBuffer.data() + pos, allSegmentBuffer.data() + pos + stepLength),
+                .compressed = usingCompression,
+                .payloadLength = static_cast<uint32_t>(bufferLength),
+                .payloadData = Uint8Vector(bufferPtr->data() + pos, bufferPtr->data() + pos + stepLength),
         });
         pos += stepLength;
     }
@@ -571,6 +605,8 @@ std::vector<ModularPicoScenesTxFrame> ModularPicoScenesTxFrame::autoSplit(int16_
         auto txframe = *this;
         txframe.standardHeader.seq = i;
         txframe.segments.clear();
+        txframe.txParameters.postfixPaddingTime = 2e-3;
+        txframe.frameHeader = this->frameHeader;
         txframe.addSegments(std::make_shared<CargoSegment>(cargo));
         cargoFrames.emplace_back(txframe);
     }
@@ -583,8 +619,7 @@ void ModularPicoScenesTxFrame::reset() {
     txParameters = PicoScenesFrameTxParameters();
     arbitraryMPDUContent.clear();
     AMPDUFrames.clear();
-    prebuiltCS8Signals.clear();
-    prebuiltCS16Signals.clear();
+    prebuiltSignals.clear();
     segments.clear();
 }
 
@@ -742,6 +777,11 @@ std::string ModularPicoScenesTxFrame::toString() const {
 
     if (!arbitraryMPDUContent.empty()) {
         ss << ", ArbitraryMPDU:" << std::to_string(arbitraryMPDUContent.size()) << "B}";
+        return ss.str();
+    }
+
+    if (!AMPDUFrames.empty()) {
+        ss << ", AMPDU:" << std::to_string(AMPDUFrames.size() + 1) << " Pkts}";
         return ss.str();
     }
 

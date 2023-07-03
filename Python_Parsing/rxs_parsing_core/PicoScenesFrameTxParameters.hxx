@@ -27,9 +27,8 @@ public:
     }
 };
 
-class PicoScenesFrameTxParameters {
-public:
-    std::shared_ptr<FrontEndModePreset> preset = FrontEndModePreset::Customized;
+struct PicoScenesFrameTxParameters {
+    std::shared_ptr<FrontEndModePreset> preset = FrontEndModePreset::DEFAULT;
     std::optional<double> preciseTxTime = std::nullopt;
     bool NDPFrame;
     PacketFormatEnum frameType;
@@ -40,6 +39,7 @@ public:
     ChannelBandwidthEnum cbw;
     GuardIntervalEnum guardInterval;
     std::vector<ChannelCodingEnum> coding;
+    bool preferAMPDU;
     double numExtraSounding;
     bool forceSounding;
     double prefixPaddingTime;
@@ -61,7 +61,6 @@ public:
     double heMidamblePeriodicity;
     double heLTFType;
     bool hePreHESpatialMapping;
-    double additiveNoiseVarianceDb;
     TxPrecodingParameters precodingParameters;
 
     PicoScenesFrameTxParameters() {
@@ -78,9 +77,10 @@ public:
         cbw = ChannelBandwidthEnum::CBW_20;
         guardInterval = GuardIntervalEnum::GI_800;
         coding = std::vector<ChannelCodingEnum>(1, ChannelCodingEnum::BCC);
+        preferAMPDU = false;
         numExtraSounding = 0;
         forceSounding = true;
-        prefixPaddingTime = 4e-6;
+        prefixPaddingTime = 8e-6; // should not less than 6us for SDR Frontend
         idleTime = 4e-6;
         postfixPaddingTime = 0;
         scramblerState = 39;
@@ -99,11 +99,10 @@ public:
         heMidamblePeriodicity = 10;
         heLTFType = 4;
         hePreHESpatialMapping = false;
-        additiveNoiseVarianceDb = -45;
     }
 
     void applyPreset(const std::string &presetName) {
-        if (!FrontEndModePreset::getPresetMap().contains(presetName))
+        if (FrontEndModePreset::getPresetMap().find(presetName) == FrontEndModePreset::getPresetMap().cend())
             throw std::invalid_argument("invalid frontend mode preset name: " + presetName + "\n" + FrontEndModePreset::printHelpContentForFrontEndModePreset());
         applyPreset(FrontEndModePreset::getPresetMap().at(presetName));
     }
