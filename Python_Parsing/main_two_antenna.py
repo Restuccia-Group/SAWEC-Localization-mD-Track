@@ -53,7 +53,6 @@ for file in files:
 
         correlation_coefficient_two = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_two)))
         correlation_coefficient_one = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_one)))
-9
 
 
         if (correlation_coefficient_two) > (correlation_coefficient_one):
