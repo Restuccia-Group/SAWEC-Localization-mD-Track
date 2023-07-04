@@ -16,13 +16,13 @@ def process_file(file, directory, directory_sync):
     frames = Picoscenes(file)
     for i in S:
         numTones = frames.raw[i].get("CSI").get("numTones")
-        CSI = np.array(frames.raw[i].get("CSI").get("CSI"))[:numTones]
+        CSI = np.array(frames.raw[i].get("CSI").get("CSI"))
         np.array(globals()[seq_array].append(CSI))
     np.save(saved_file, globals()[seq_array])
 
 if __name__ == "__main__":
-    directory = '../Data1/Captures_0/'
-    directory_sync = '../Data1/Captures_0/Synced/'
+    directory = '../Data6/'
+    directory_sync = '../Data6/Synced/'
     extension = '*.csi'
     files = load_files(directory, extension)
     for file in files:
