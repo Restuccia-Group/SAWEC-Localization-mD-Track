@@ -7,6 +7,14 @@ from scipy.spatial.distance import cosine
 from sklearn.metrics.pairwise import cosine_similarity
 
 
+def cosine_similarity(signal1, signal2):
+    dot_product = np.vdot(signal1, signal2)
+    norm_signal1 = np.linalg.norm(signal1)
+    norm_signal2 = np.linalg.norm(signal2)
+
+    similarity = dot_product / (norm_signal1 * norm_signal2)
+    return similarity
+
 directory = '../Data_two_antenna/Pannel_A/'
 extension = '*.csi'  # Replace with the desired file extension
 
@@ -39,79 +47,47 @@ for file in files:
         CSI_one = np.array(frames.raw[i].get("CSI").get("CSI"))[:numTones]
         CSI_two = np.array(frames.raw[i].get("CSI").get("CSI"))[numTones:]
 
-        # CSI_next_one = np.array(frames.raw[i+1].get("CSI").get("CSI"))[:numTones]
-        # CSI_next_two = np.array(frames.raw[i+1].get("CSI").get("CSI"))[numTones:]
-        #
-        #
 
-        correlation_coefficient_one = np.abs(np.corrcoef(CSI_base_one, CSI_one)[0, 1])
-        correlation_coefficient_two = np.abs(np.corrcoef(CSI_base_two, CSI_one)[0, 1])
+        # correlation_coefficient_two = np.abs(np.corrcoef(CSI_base_two, CSI_two)[0, 1])
+        # correlation_coefficient_one = np.abs(np.corrcoef(CSI_base_two, CSI_one)[0, 1])
 
-        if (correlation_coefficient_one) > (correlation_coefficient_two):
+        correlation_coefficient_two = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_two)))
+        correlation_coefficient_one = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_one)))
+9
+
+
+        if (correlation_coefficient_two) > (correlation_coefficient_one):
             globals()[seq_array_one].append(CSI_one)
             globals()[seq_array_two].append(CSI_two)
-            CSI_base_one = CSI_one
+            CSI_base_two = CSI_two
 
         else:
             globals()[seq_array_two].append(CSI_one)
             globals()[seq_array_one].append(CSI_two)
-            CSI_base_one = CSI_two
+            CSI_base_two = CSI_one
 
-        a = np.array(globals()[seq_array_one])
-        b = np.array(globals()[seq_array_two])
-        # #similarity_one = cosine(CSI_one, CSI_next_one)
-        # similarity_one = cosine_similarity(CSI_one.reshape(1, -1), CSI_next_one.reshape(1, -1))
-        # #similarity_two = cosine(CSI_one, CSI_next_two)
-        # similarity_two = cosine_similarity(CSI_one.reshape(1, -1), CSI_next_two.reshape(1, -1))
 
-        # Calculate the complex correlation coefficient
-        # numerator = np.sum(np.multiply(CSI_one, np.conj(CSI_next_one)))
-        # denominator = np.sqrt(np.sum(np.square(np.abs(CSI_one))) * np.sum(np.square(np.abs(CSI_next_one))))
-        # similarity_one = numerator / denominator
-        #
-        #
-        # numerator = np.sum(np.multiply(CSI_one, np.conj(CSI_next_two)))
-        # denominator = np.sqrt(np.sum(np.square(np.abs(CSI_one))) * np.sum(np.square(np.abs(CSI_next_two))))
-        # similarity_two = numerator / denominator
 
-        # print(i)
-        # print(correlation_coefficient_one)
-        # print(correlation_coefficient_two)
+    ### PLot
+    # a = np.array(globals()[seq_array_one])
+    # b = np.array(globals()[seq_array_two])
+    #
+    # a = abs(a[10:500, :])
+    # num_packets, num_subcarriers = a.shape
+    #
+    # # Create a figure and axes
+    # fig, ax = plt.subplots()
+    #
+    # # Iterate over each packet
+    # for i in range(num_packets):
+    #     # Plot the CSI magnitude for the current packet
+    #     ax.plot(range(num_subcarriers), a[i], label=f'Packet {i + 1}')
+    # # Add labels and title
+    # ax.set_xlabel('Subcarrier Index')
+    # ax.set_ylabel('CSI Magnitude')
+    # ax.set_title('CSI Magnitude for Each Packet')
+    # plt.show()
 
-        # print(similarity_one)
-        # print(similarity_two)
-
-        # np.array(globals()[seq_array_one].append(CSI_one))
-        # np.array(globals()[seq_array_two].append(CSI_two))
 
     np.save(saved_file_one, globals()[seq_array_one])
     np.save(saved_file_two, globals()[seq_array_two])
-
-
-
-csi_magnitude = np.abs(b[20:30, :])
-x = np.arange(len(csi_magnitude))
-
-
-num_packets = 10
-num_subcarriers = 2025
-
-# Create a figure and axes
-fig, ax = plt.subplots()
-
-# Iterate over each packet
-for i in range(num_packets):
-    # Plot the CSI magnitude for the current packet
-    ax.plot(range(num_subcarriers), csi_magnitude[i], label=f'Packet {i+1}')
-
-
-
-
-# Add labels and title
-plt.xlabel('Index')
-plt.ylabel('CSI Magnitude')
-plt.title('Magnitude of CSI Data')
-
-# Display the plot
-plt.show()
-print('1')
