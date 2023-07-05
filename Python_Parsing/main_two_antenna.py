@@ -15,7 +15,7 @@ def cosine_similarity(signal1, signal2):
     similarity = dot_product / (norm_signal1 * norm_signal2)
     return similarity
 
-directory = '../Data_two_antenna/Pannel_A/'
+directory = '../Data6/calibration_wired_A1/'
 extension = '*.csi'  # Replace with the desired file extension
 
 # Create the search pattern
@@ -37,19 +37,14 @@ for file in files:
     CSI_base_two= np.array(frames.raw[0].get("CSI").get("CSI"))[2025:]
     globals()[seq_array_one].append(CSI_base_one)
     globals()[seq_array_two].append(CSI_base_two)
-    for i in range(1, 500):
-        saved_file_one = directory + 'Synced/' + file[-6:-5] + ".npy"
-        saved_file_two = directory + 'Synced/' + file[-5:-4] + ".npy"
-        #print(saved_file_one)
-        #print(saved_file_two)
+    for i in range(0, 2000):
+        saved_file_one = directory + 'processed/' + file[-7:-4] + '_1' + ".npy"
+        saved_file_two = directory + 'processed/' + file[-7:-4] + '_2' + ".npy"
 
         numTones = frames.raw[i].get("CSI").get("numTones")
         CSI_one = np.array(frames.raw[i].get("CSI").get("CSI"))[:numTones]
         CSI_two = np.array(frames.raw[i].get("CSI").get("CSI"))[numTones:]
 
-
-        # correlation_coefficient_two = np.abs(np.corrcoef(CSI_base_two, CSI_two)[0, 1])
-        # correlation_coefficient_one = np.abs(np.corrcoef(CSI_base_two, CSI_one)[0, 1])
 
         correlation_coefficient_two = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_two)))
         correlation_coefficient_one = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_one)))
@@ -66,12 +61,11 @@ for file in files:
             CSI_base_two = CSI_one
 
 
-
-    ### PLot
+    # ## PLot
     # a = np.array(globals()[seq_array_one])
     # b = np.array(globals()[seq_array_two])
     #
-    # a = abs(a[10:500, :])
+    # a = abs(a[:, :])
     # num_packets, num_subcarriers = a.shape
     #
     # # Create a figure and axes
@@ -80,13 +74,14 @@ for file in files:
     # # Iterate over each packet
     # for i in range(num_packets):
     #     # Plot the CSI magnitude for the current packet
-    #     ax.plot(range(num_subcarriers), a[i], label=f'Packet {i + 1}')
+    #     ax.plot(range(num_subcarriers), a[i])
     # # Add labels and title
     # ax.set_xlabel('Subcarrier Index')
     # ax.set_ylabel('CSI Magnitude')
     # ax.set_title('CSI Magnitude for Each Packet')
     # plt.show()
+    # print('1')
 
 
     np.save(saved_file_one, globals()[seq_array_one])
-    np.save(saved_file_two, globals()[seq_array_two])
+    #np.save(saved_file_two, globals()[seq_array_two])
