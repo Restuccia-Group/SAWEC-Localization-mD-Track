@@ -11,6 +11,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
     You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
@@ -63,8 +64,8 @@ def individual_aoa_tof_estimation(cfr_sample, aoa_matrix, toa_matrix, num_ant, n
 
     matrix_cfr_aoa = np.dot(cfr_sample_toa, aoa_matrix)
     angle_idx_max = np.argmax(np.power(np.abs(matrix_cfr_aoa), 2))
-    cfr_sample_aoa = np.dot(cfr_sample, aoa_matrix[:, angle_idx_max])
 
+    cfr_sample_aoa = np.dot(cfr_sample, aoa_matrix[:, angle_idx_max])
     matrix_cfr_toa = np.dot(toa_matrix, cfr_sample_aoa) / (num_ant * num_subc)
     power_matrix_cfr_toa = np.power(np.abs(matrix_cfr_toa), 2)
     time_idx_max = np.argmax(power_matrix_cfr_toa)

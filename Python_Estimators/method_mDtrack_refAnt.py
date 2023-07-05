@@ -73,14 +73,12 @@ if __name__ == '__main__':
     parser.add_argument('nics', help='Name of the files, comma separated')
     parser.add_argument('fc', help='Central frequency in MHz', type=int)
     parser.add_argument('exp_dir', help='Name base of the directory')
-    parser.add_argument('calibration_dir', help='Name base of the directory for calibration')
     parser.add_argument('name_base', help='Name base of the simulation')
     parser.add_argument('--delta_t', help='Delta ToA for grid search in multiples of 10^-11', default=50, type=int, required=False)
     args = parser.parse_args()
 
     exp_dir = args.exp_dir
-    calibration_dir = args.calibration_dir
-    name_base = args.name_base  # simulation
+    name_base = args.name_base
 
     delta_t = np.round(args.delta_t * 1e-11, 11)  # 5E-10  # 1.25e-11
     save_dir = '../results/mdTrack' + str(delta_t) + '/'
@@ -102,14 +100,13 @@ if __name__ == '__main__':
 
     singal_nics = []
     for file_name in nics_list:
-        csi_file = exp_dir + file_name + '.npy'
-        csi_file_calib = calibration_dir + file_name + '.npy'
-        # globals()[file_name] = np.load(csi_file)
-        # globals()[file_name] = globals()[file_name][:11000]
-        signal_raw = np.load(csi_file)[:11000]
-        signal_calibration = np.load(csi_file_calib)
-        # signal_calibrated = signal_raw * np.conj(signal_calibration[100])
-        signal_calibrated = signal_raw / signal_calibration[0, :]
+        csi_file_1 = exp_dir + file_name + '_1.npy'
+        csi_file_2 = exp_dir + file_name + '_2.npy'
+        signal_raw = np.load(csi_file_1)
+        signal_reference = np.load(csi_file_2)
+
+        signal_calibrated = signal_raw / signal_reference
+
         singal_nics.append(signal_calibrated)
 
         # plt.figure()
@@ -147,17 +144,17 @@ if __name__ == '__main__':
     #                                       np.arange(12, 510),
     #                                       np.arange(515, 1013))) + 1024
 
-    frequency_vector_hz =  np.delete(frequency_vector_hz, control_subchannels)  # frequency_vector_hz[frequency_vector_idx]
+    frequency_vector_hz = np.delete(frequency_vector_hz, control_subchannels)
 
     delete_idxs = np.arange(1996, 2025)  # PicoScenes return zero here
     frequency_vector_idx = np.delete(frequency_vector_idx, delete_idxs)
     frequency_vector_hz = np.delete(frequency_vector_hz, delete_idxs)
     H_complete_valid = np.delete(signal_complete, delete_idxs, axis=1)  # packets, subchannels, angles
 
-    plt.figure()
-    plt.plot(np.abs(H_complete_valid[20:30, :, 0]).T)
-    plt.ylim([-0.5, 2.5])
-    plt.show()
+    # plt.figure()
+    # plt.plot(np.abs(H_complete_valid[20:30, :, 0]).T)
+    # plt.ylim([-0.5, 2.5])
+    # plt.show()
 
     fc = args.fc * 1e6  # B: 5570E6  # A: 5250E6 # carrier frequency in MHz
     frequency_vector_hz = frequency_vector_hz + fc
@@ -253,14 +250,14 @@ if __name__ == '__main__':
     plt.figure()
     vmin = threshold*10
     vmax = 0 
-    for i in range(0, 363):
+    for i in range(0, 49):  # number of packets
         sort_idx = np.flip(np.argsort(abs(paths_amplitude_list[i])))
         paths_amplitude_sort = paths_amplitude_list[i][sort_idx]
         paths_power = np.power(np.abs(paths_amplitude_sort), 2)
         paths_power = 10 * np.log10(paths_power / np.amax(np.nan_to_num(paths_power)))  # dB
         paths_toa_sort = paths_toa_list[i][sort_idx]
         paths_aoa_sort = paths_aoa_list[i][sort_idx]
-        num_paths_plot = 5
+        num_paths_plot = 20
         # print(paths_power[:num_paths_plot])
         aoa_array = paths_aoa_sort - paths_aoa_sort[0]
         aoa_array[aoa_array > 90] = aoa_array[aoa_array > 90] - 180
