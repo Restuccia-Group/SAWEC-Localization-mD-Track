@@ -22,11 +22,16 @@ import pickle
 import math as mt
 import matplotlib.pyplot as plt
 import os
+import utilityfunct_optimization_routines as opr
+from utilityfunct_optimization_SHARP import *
+from os import listdir
+import pickle
 
 from utilityfunct_aoa_toa_doppler import build_aoa_matrix, build_toa_matrix
 from utilityfunct_md_track import md_track_2d
 import matplotlib
 # matplotlib.use('QtCairo')
+
 
 def plot_combined(paths_refined_amplitude_array, paths_refined_toa_array, paths_refined_aoa_array,
                   path_loss_sorted_sim, times_sorted_sim, azimuth_sorted_sim_2):
@@ -83,7 +88,7 @@ if __name__ == '__main__':
     name_base = args.name_base  # simulation
 
     delta_t = np.round(args.delta_t * 1e-11, 11)  # 5E-10  # 1.25e-11
-    save_dir = '../results/mdTrack' + str(delta_t) + '/'
+    save_dir = './results/mdTrack' + str(delta_t) + '/'
     if os.path.exists(save_dir + 'paths_list_' + name_base + '.txt'):
         print('Already processed')
         exit()
@@ -186,10 +191,138 @@ if __name__ == '__main__':
     num_iteration_refinement = 10
     threshold = -2.5
 
-    for time_idx in range(0, num_time_steps):
-        # time_start = time.time()
-        cfr_sample = H_complete_valid[time_idx, :, :]
+    T_matrix, time_matrix = build_T_matrix(frequency_vector_hz, delta_t*10, t_min, t_max)
+    r_length = int((t_max - t_min) / delta_t)
 
+    subcarriers_space = 1
+    start_subcarrier = 0
+    end_subcarrier = frequency_vector_hz.shape[0]
+    select_subcarriers = np.arange(start_subcarrier, end_subcarrier, subcarriers_space)
+
+    # Auxiliary data for first step
+    row_T = int(T_matrix.shape[0] / subcarriers_space)
+    col_T = T_matrix.shape[1]
+    m = 2 * row_T
+    n = 2 * col_T
+    In = scipy.sparse.eye(n)
+    Im = scipy.sparse.eye(m)
+    On = scipy.sparse.csc_matrix((n, n))
+    Onm = scipy.sparse.csc_matrix((n, m))
+    P = scipy.sparse.block_diag([On, Im, On], format='csc')
+    q = np.zeros(2 * n + m)
+    A2 = scipy.sparse.hstack([In, Onm, -In])
+    A3 = scipy.sparse.hstack([In, Onm, In])
+    ones_n_matr = np.ones(n)
+    zeros_n_matr = np.zeros(n)
+    zeros_nm_matr = np.zeros(n + m)
+
+    ##############################
+    # SHARP
+    ##############################
+    H_complete_valid_corrected = np.zeros_like(H_complete_valid)
+    for stream in range(num_ant):
+        cfr_sample_stream = H_complete_valid[:, :, stream]
+        H_est = np.zeros_like(cfr_sample_stream.T)
+
+        for time_idx in range(0, 5):
+            # time_start = time.time()
+            cfr_sample = cfr_sample_stream[time_idx, :]
+
+            complex_opt_r = lasso_regression_osqp_fast(cfr_sample, T_matrix, select_subcarriers, row_T, col_T,
+                                                       Im, Onm, P, q, A2, A3, ones_n_matr, zeros_n_matr,
+                                                       zeros_nm_matr)
+
+            position_max_r = np.argmax(abs(complex_opt_r))
+            time_max_r = time_matrix[position_max_r]
+
+            T_matrix_refined, time_matrix_refined = build_T_matrix(frequency_vector_hz, delta_t,
+                                                                   max(time_max_r - range_refined_down, t_min),
+                                                                   min(time_max_r + range_refined_up, t_max))
+
+            # Auxiliary data for second step
+            col_T_refined = T_matrix_refined.shape[1]
+            n_refined = 2 * col_T_refined
+            In_refined = scipy.sparse.eye(n_refined)
+            On_refined = scipy.sparse.csc_matrix((n_refined, n_refined))
+            Onm_refined = scipy.sparse.csc_matrix((n_refined, m))
+            P_refined = scipy.sparse.block_diag([On_refined, Im, On_refined], format='csc')
+            q_refined = np.zeros(2 * n_refined + m)
+            A2_refined = scipy.sparse.hstack([In_refined, Onm_refined, -In_refined])
+            A3_refined = scipy.sparse.hstack([In_refined, Onm_refined, In_refined])
+            ones_n_matr_refined = np.ones(n_refined)
+            zeros_n_matr_refined = np.zeros(n_refined)
+            zeros_nm_matr_refined = np.zeros(n_refined + m)
+
+            complex_opt_r_refined = lasso_regression_osqp_fast(cfr_sample, T_matrix_refined, select_subcarriers,
+                                                               row_T, col_T_refined, Im, Onm_refined, P_refined,
+                                                               q_refined, A2_refined, A3_refined,
+                                                               ones_n_matr_refined, zeros_n_matr_refined,
+                                                               zeros_nm_matr_refined)
+
+            position_max_r_refined = np.argmax(abs(complex_opt_r_refined))
+
+            Tr = np.multiply(T_matrix_refined, complex_opt_r_refined)
+
+            Tr_sum = np.sum(Tr, axis=1)
+
+            Trr = np.multiply(Tr, np.conj(Tr[:, position_max_r_refined:position_max_r_refined + 1]))
+            Trr_sum = np.sum(Trr, axis=1)
+
+            H_est[:, time_idx] = Trr_sum
+
+        csi_matrix_processed = np.zeros((num_time_steps, frequency_vector_hz.shape[0], 2))
+
+        # PHASE
+        phase_before = np.unwrap(np.angle(H_est), axis=0)
+        phase_err_tot = np.diff(phase_before, axis=1)
+        ones_vector = np.ones((2, phase_before.shape[0]))
+        ones_vector[1, :] = np.arange(0, phase_before.shape[0])
+        for tidx in range(1, num_time_steps):
+            stop = False
+            idx_prec = -1
+            while not stop:
+                phase_err = phase_before[:, tidx] - phase_before[:, tidx - 1]
+                diff_phase_err = np.diff(phase_err)
+                idxs_invert_up = np.argwhere(diff_phase_err > 0.9 * mt.pi)[:, 0]
+                idxs_invert_down = np.argwhere(diff_phase_err < -0.9 * mt.pi)[:, 0]
+                if idxs_invert_up.shape[0] > 0:
+                    idx_act = idxs_invert_up[0]
+                    if idx_act == idx_prec:  # to avoid a continuous jump
+                        stop = True
+                    else:
+                        phase_before[idx_act + 1:, tidx] = phase_before[idx_act + 1:, tidx] \
+                                                           - 2 * mt.pi
+                        idx_prec = idx_act
+                elif idxs_invert_down.shape[0] > 0:
+                    idx_act = idxs_invert_down[0]
+                    if idx_act == idx_prec:
+                        stop = True
+                    else:
+                        phase_before[idx_act + 1:, tidx] = phase_before[idx_act + 1:, tidx] \
+                                                           + 2 * mt.pi
+                        idx_prec = idx_act
+                else:
+                    stop = True
+        for tidx in range(1, H_est.shape[1] - 1):
+            val_prec = phase_before[:, tidx - 1:tidx]
+            val_act = phase_before[:, tidx:tidx + 1]
+            error = val_act - val_prec
+            temp2 = np.linalg.lstsq(ones_vector.T, error)[0]
+            phase_before[:, tidx] = phase_before[:, tidx] - (np.dot(ones_vector.T, temp2)).T
+
+        csi_matrix_complete = np.abs(H_est).T * np.exp(1j * phase_before.T)
+        H_complete_valid_corrected[:, :, stream] = csi_matrix_complete
+
+    save_name = save_dir + 'H_complete_valid_corrected_' + name_base + '.txt'  # + '.npz'
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
+    with open(save_name, "wb") as fp:  # Pickling
+        pickle.dump(H_complete_valid_corrected, fp)
+    ##############################
+    ##############################
+
+    for time_idx in range(0, num_time_steps):
+        cfr_sample = H_complete_valid_corrected[time_idx, :, :]
         # plt.figure()
         # cir = np.fft.fftshift(np.fft.fft2(cfr_sample, s=(2048 * 4, 2048)), axes=(1, 0))
         # plt.pcolor(abs(cir[2048 * 2 - 200:2048 * 2 + 200, :]).T)
@@ -252,19 +385,17 @@ if __name__ == '__main__':
 
     plt.figure()
     vmin = threshold*10
-    vmax = 0 
-    for i in range(0, 363):
+    vmax = 0
+    for i in range(0, 5):
         sort_idx = np.flip(np.argsort(abs(paths_amplitude_list[i])))
         paths_amplitude_sort = paths_amplitude_list[i][sort_idx]
         paths_power = np.power(np.abs(paths_amplitude_sort), 2)
         paths_power = 10 * np.log10(paths_power / np.amax(np.nan_to_num(paths_power)))  # dB
         paths_toa_sort = paths_toa_list[i][sort_idx]
         paths_aoa_sort = paths_aoa_list[i][sort_idx]
-        num_paths_plot = 5
+        num_paths_plot = 10
         # print(paths_power[:num_paths_plot])
-        aoa_array = paths_aoa_sort - paths_aoa_sort[0]
-        aoa_array[aoa_array > 90] = aoa_array[aoa_array > 90] - 180
-        aoa_array[aoa_array < -90] = 180 + aoa_array[aoa_array < -90]
+        aoa_array = paths_aoa_sort
         toa_array = paths_toa_sort - paths_toa_sort[0]
         plt.scatter(toa_array[:num_paths_plot] * 1E9, aoa_array[:num_paths_plot],
                     c=paths_power[:num_paths_plot],
@@ -273,7 +404,7 @@ if __name__ == '__main__':
     cbar = plt.colorbar()
     cbar.ax.set_ylabel('power [dB]', rotation=90)
     plt.xlabel('ToA [ns]')
-    plt.ylabel('AoA [deg]')    
+    plt.ylabel('AoA [deg]')
     plt.xlim([-1, 40])  # range_considered + 100 * delta_t])
     # plt.ylim([-90, 90])
     plt.grid()
