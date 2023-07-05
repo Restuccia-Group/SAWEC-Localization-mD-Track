@@ -100,10 +100,12 @@ if __name__ == '__main__':
 
     singal_nics = []
     for file_name in nics_list:
+        print(file_name)
         csi_file_1 = exp_dir + file_name + '_1.npy'
         csi_file_2 = exp_dir + file_name + '_2.npy'
         signal_raw = np.load(csi_file_1)
         signal_reference = np.load(csi_file_2)
+        print('1')
 
         signal_calibrated = signal_raw / signal_reference
 
@@ -250,7 +252,7 @@ if __name__ == '__main__':
     plt.figure()
     vmin = threshold*10
     vmax = 0 
-    for i in range(0, 49):  # number of packets
+    for i in range(0, 18):  # number of packets
         sort_idx = np.flip(np.argsort(abs(paths_amplitude_list[i])))
         paths_amplitude_sort = paths_amplitude_list[i][sort_idx]
         paths_power = np.power(np.abs(paths_amplitude_sort), 2)
@@ -284,3 +286,21 @@ if __name__ == '__main__':
     plt.figure()
     plt.stem(abs(power_matrix_cfr_toa[:1000]))
     plt.show()
+
+
+    # #Plot_CSI
+    # plt.figure()
+    # subcarrier= len(signal_raw[1])
+    # for i in range(len(signal_raw[0][1:100])):
+    #     plt.plot(range(subcarrier), abs(signal_raw[i]))
+    # plt.title('Raw data')
+    #
+    #
+    # #Plot_CSI
+    #
+    # plt.figure()
+    # subcarrier= len(signal_reference[1])
+    # for i in range(len(signal_reference[0][1:100])):
+    #     plt.plot(range(subcarrier), abs(signal_reference[i]))
+    # plt.title('Reference data')
+    # plt.show()
