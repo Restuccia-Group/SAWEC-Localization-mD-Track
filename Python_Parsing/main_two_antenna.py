@@ -15,7 +15,7 @@ def cosine_similarity(signal1, signal2):
     similarity = dot_product / (norm_signal1 * norm_signal2)
     return similarity
 
-directory = '../Data6/calibration_wired_A1/'
+directory = '../4_ant_wired/'
 extension = '*.csi'  # Replace with the desired file extension
 
 # Create the search pattern
@@ -84,4 +84,4 @@ for file in files:
 
 
     np.save(saved_file_one, globals()[seq_array_one])
-    #np.save(saved_file_two, globals()[seq_array_two])
+    np.save(saved_file_two, globals()[seq_array_two])

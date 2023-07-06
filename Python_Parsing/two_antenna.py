@@ -15,7 +15,7 @@ def cosine_similarity(signal1, signal2):
     return similarity
 
 
-directory = '../Data6/Synced/'
+directory = '../Data7/Synced/'
 extension = '*.npy'  # Replace with the desired file extension
 
 # Create the search pattern
