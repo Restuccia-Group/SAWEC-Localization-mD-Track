@@ -15,7 +15,7 @@ def cosine_similarity(signal1, signal2):
     return similarity
 
 
-directory = '../Data7/Synced/'
+directory = '../Data11/Synced/'
 extension = '*.npy'  # Replace with the desired file extension
 
 # Create the search pattern
@@ -37,7 +37,7 @@ for file in files:
 
 
 
-    for i in range(7500):
+    for i in range(2500):
         saved_file_one = directory + 'Antenna_Separated/' + file[-7:-4] + '_1' + ".npy"
         saved_file_two = directory + 'Antenna_Separated/' + file[-7:-4] + '_2' + ".npy"
 
@@ -47,6 +47,14 @@ for file in files:
 
         correlation_coefficient_two = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_two)))
         correlation_coefficient_one = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_one)))
+
+        if (abs(correlation_coefficient_two - correlation_coefficient_one)) < 0.04:
+            print(file)
+            print(i)
+            print(correlation_coefficient_two)
+            print(correlation_coefficient_one)
+
+            continue
 
         if correlation_coefficient_two > correlation_coefficient_one:
             globals()[seq_array_one].append(CSI_one)
@@ -58,26 +66,26 @@ for file in files:
             globals()[seq_array_one].append(CSI_two)
             CSI_base_two = CSI_one
 
-    # ## PLot
-    # a = np.array(globals()[seq_array_one])
-    # b = np.array(globals()[seq_array_two])
-    #
-    # b = abs(a[0:1000, :])
-    # num_packets, num_subcarriers = a.shape
-    #
-    # # Create a figure and axes
-    # fig, ax = plt.subplots()
-    #
-    # # Iterate over each packet
-    # for i in range(num_packets):
-    #     # Plot the CSI magnitude for the current packet
-    #     ax.plot(range(num_subcarriers), b[i], label=f'Packet {i + 1}')
-    # # Add labels and title
-    # ax.set_xlabel('Subcarrier Index')
-    # ax.set_ylabel('CSI Magnitude')
-    # ax.set_title('CSI Magnitude for Each Packet')
-    # plt.show()
-    # print('1')
+        # ## PLot
+        # a = np.array(globals()[seq_array_one])
+        # b = np.array(globals()[seq_array_two])
+        #
+        # b = abs(a[0:1000, :])
+        # num_packets, num_subcarriers = a.shape
+        #
+        # # Create a figure and axes
+        # fig, ax = plt.subplots()
+        #
+        # # Iterate over each packet
+        # for i in range(num_packets):
+        #     # Plot the CSI magnitude for the current packet
+        #     ax.plot(range(num_subcarriers), b[i], label=f'Packet {i + 1}')
+        # # Add labels and title
+        # ax.set_xlabel('Subcarrier Index')
+        # ax.set_ylabel('CSI Magnitude')
+        # ax.set_title('CSI Magnitude for Each Packet')
+        # plt.show()
+        # print('1')
 
 
     np.save(saved_file_one, globals()[seq_array_one])

@@ -20,7 +20,7 @@ def process_file(file):
     frames = Picoscenes(file)
 
 
-    for i in range(8000):
+    for i in range(4300):
         sequence = frames.raw[i].get("StandardHeader").get("Sequence")
         np.array(A.append((i, sequence)))
     seq = [tuple[1] for tuple in A]
@@ -52,12 +52,11 @@ def save_corresponding_elements(directory, array_names, synced_sequence):
         save_name = directory + name + ".npy"
         corresponding_element = find_corresponding_first_element(globals()[name], synced_sequence)
         corresponding_element = list(set(corresponding_element))
-        print(len(corresponding_element))
         np.save(save_name, corresponding_element)
 
 if __name__ == "__main__":
-    array_names = ['A01', 'A02']
-    directory = '../Data7/'
+    array_names = ['A01', 'A02', 'A03']
+    directory = '/home/foysal/Github/WiViVerse-Sensing-Assisted-Computing/Data11/'
     extension = '*.csi'
     files = load_files(directory, extension)
     for file in files:
