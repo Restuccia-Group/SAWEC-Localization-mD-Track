@@ -99,37 +99,38 @@ if __name__ == '__main__':
     for nic in nics.split(','):
         nics_list.append(nic)
     num_ant_per_nic = 2
-    num_ant = len(nics_list) * num_ant_per_nic
+    num_nics = len(nics_list)
 
     singal_nics_raw = []
-    singal_nics_calib_wired = []
+    singal_nics_calib = []
+    singal_nics_ref_raw = []
+    singal_nics_ref_calib = []
     for file_name in nics_list:
         csi_file = exp_dir + file_name + '_1.npy'
         signal_raw = np.load(csi_file)
         singal_nics_raw.append(signal_raw)
 
-        csi_file_calib = exp_dir + file_name + '_2.npy'
-        signal_calibration = np.load(csi_file_calib)
-        singal_nics_raw.append(signal_calibration)
+        csi_file_ref = exp_dir + file_name + '_2.npy'
+        signal_ref = np.load(csi_file_ref)
+        singal_nics_ref_raw.append(signal_ref)
 
-        csi_file_calib_wired = calibration_dir + file_name + '_1.npy'
-        signal_calibration_wired = np.load(csi_file_calib_wired)
-        singal_nics_calib_wired.append(signal_calibration_wired[0, :])
+        csi_file_calib_ref = calibration_dir + file_name + '_1.npy'
+        signal_calibration_ref = np.load(csi_file_calib_ref)
+        singal_nics_calib.append(signal_calibration_ref[0, :])
 
-        csi_file_calib_wired = calibration_dir + file_name + '_2.npy'
-        signal_calibration_wired = np.load(csi_file_calib_wired)
-        singal_nics_calib_wired.append(signal_calibration_wired[0, :])
+        csi_file_calib_ref = calibration_dir + file_name + '_2.npy'
+        signal_calibration_ref = np.load(csi_file_calib_ref)
+        singal_nics_ref_calib.append(signal_calibration_ref[0, :])
 
     singal_nics = []
-    for index_nic in range(num_ant):
+    singal_nics_ref = []
+    for index_nic in range(num_nics):
         # signal_calibrated = singal_nics_raw[index_nic] * np.conj(singal_nics_calib_wired[index_nic])
-        signal_calibrated = singal_nics_raw[index_nic] / singal_nics_calib_wired[index_nic]
-
-        # signal_calibrated = singal_nics_raw[index_nic] / \
-        #                     (singal_nics_calib_wireless[index_nic] / singal_nics_calib_wireless[0]) / \
-        #                     (singal_nics_calib_wired[index_nic][0, :] / singal_nics_calib_wired[0][0, :])
-
+        signal_calibrated = singal_nics_raw[index_nic] / singal_nics_calib[index_nic]
         singal_nics.append(signal_calibrated)
+
+        signal_calibrated = singal_nics_ref_raw[index_nic] / singal_nics_ref_calib[index_nic]
+        singal_nics_ref.append(signal_calibrated)
 
         # plt.figure()
         # plt.pcolor(abs(signal_calibration[:500, :]).T)
@@ -143,16 +144,16 @@ if __name__ == '__main__':
 
     signal_nic_calibrated = []
 
-    offset_wireless = singal_nics[3] / singal_nics[1]
+    offset_wireless = singal_nics_ref[:num_nics - 1] / singal_nics_ref[num_nics - 1]
     # offset_wired = singal_nics_calib_wired / singal_nics_calib_wired[3]
 
     # wireless calibration
-    for index_nic in range(int(num_ant/2)):
+    for index_nic in range(num_nics - 1):
         # signal_calibrated = singal_nics[index_nic] * np.conj(offset_wireless)
-        signal_calibrated = singal_nics[index_nic] / offset_wireless
+        signal_calibrated = singal_nics[index_nic] / offset_wireless[index_nic]
         signal_nic_calibrated.append(signal_calibrated)
-    for index_nic in range(int(num_ant/2), num_ant):
-        signal_nic_calibrated.append(singal_nics[index_nic])
+    signal_nic_calibrated.append(singal_nics[num_nics-1])
+    signal_nic_calibrated.append(singal_nics_ref[num_nics - 1])
 
     # fully wired
     # for index_nic in range(num_ant):
@@ -160,7 +161,8 @@ if __name__ == '__main__':
     #     signal_nic_calibrated.append(signal_calibrated)
 
     signal_stack = []
-    for index_nic in [0, 2]:
+    antennas_idx_considered = [2, 3]
+    for index_nic in antennas_idx_considered:
         signal_stack.append(signal_nic_calibrated[index_nic])
 
     num_ant = len(signal_stack)
@@ -168,14 +170,17 @@ if __name__ == '__main__':
     signal_complete = np.stack(signal_stack, axis=2)
     num_time_steps = signal_complete.shape[0]
 
-    plt.figure()
-    plt.pcolor(np.abs(signal_complete[0:300, :, 0]).T, vmax=3)
-    plt.colorbar()
-    plt.show()
-    plt.figure()
-    plt.pcolor(np.abs(singal_nics[0][0:300, :]).T, vmax=3)
-    plt.colorbar()
-    plt.show()
+    # plt.figure()
+    # plt.pcolor(np.abs(signal_complete[100:1200, :, 2]).T, vmax=3)
+    # plt.colorbar()
+    # plt.show()
+    # plt.figure()
+    # plt.pcolor(np.abs(singal_nics[2][280:300, :]).T, vmax=3)
+    # plt.colorbar()
+    # plt.figure()
+    # plt.pcolor(np.abs(singal_nics_ref[2][280:300, :]).T, vmax=3)
+    # plt.colorbar()
+    # plt.show()
 
     # plt.figure()
     # plt.plot(np.abs(singal_nics[0][100, :]).T)
@@ -319,14 +324,14 @@ if __name__ == '__main__':
     plt.figure()
     vmin = threshold*10
     vmax = 0
-    for i in range(0, 89):  # number of packets
+    for i in range(0, 100):  # number of packets
         sort_idx = np.flip(np.argsort(abs(paths_amplitude_list[i])))
         paths_amplitude_sort = paths_amplitude_list[i][sort_idx]
         paths_power = np.power(np.abs(paths_amplitude_sort), 2)
         paths_power = 10 * np.log10(paths_power / np.amax(np.nan_to_num(paths_power)))  # dB
         paths_toa_sort = paths_toa_list[i][sort_idx]
         paths_aoa_sort = paths_aoa_list[i][sort_idx]
-        num_paths_plot = 10
+        num_paths_plot = 5
         # print(paths_power[:num_paths_plot])
         aoa_array = paths_aoa_sort - paths_aoa_sort[0]
         aoa_array[aoa_array > 90] = aoa_array[aoa_array > 90] - 180
@@ -340,8 +345,10 @@ if __name__ == '__main__':
     cbar.ax.set_ylabel('power [dB]', rotation=90)
     plt.xlabel('ToA [ns]')
     plt.ylabel('AoA [deg]')
-    # plt.xlim([-10, 20])  # range_considered + 100 * delta_t])
+    plt.xlim([-10, 20])  # range_considered + 100 * delta_t])
     # plt.ylim([-90, 90])
+    title = 'Antennas idx ' + str(antennas_idx_considered)
+    plt.title(title)
     plt.grid()
     # plt.scatter(paths_refined_toa_array[:20], paths_refined_aoa_array[:20])
     plt.show()
