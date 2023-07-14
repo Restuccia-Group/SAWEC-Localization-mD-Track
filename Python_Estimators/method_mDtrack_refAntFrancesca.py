@@ -98,8 +98,13 @@ if __name__ == '__main__':
     files_name = []
     for nic in nics.split(','):
         nics_list.append(nic)
+<<<<<<< HEAD
+    num_ant_per_nic = 1
+    num_ant = len(nics_list) * num_ant_per_nic
+=======
     num_ant_per_nic = 2
     num_nics = len(nics_list)
+>>>>>>> 9847d007bb803877ec6497c8a38cc4390513fa9b
 
     singal_nics_raw = []
     singal_nics_calib = []
@@ -108,11 +113,19 @@ if __name__ == '__main__':
     for file_name in nics_list:
         csi_file = exp_dir + file_name + '_1.npy'
         signal_raw = np.load(csi_file)
+        signal_raw = signal_raw[:2400, :]
         singal_nics_raw.append(signal_raw)
 
+<<<<<<< HEAD
+        csi_file_calib = exp_dir + file_name + '_2.npy'
+        signal_calibration = np.load(csi_file_calib)
+        signal_calibration = signal_calibration[:2400, :]
+        singal_nics_raw.append(signal_calibration)
+=======
         csi_file_ref = exp_dir + file_name + '_2.npy'
         signal_ref = np.load(csi_file_ref)
         singal_nics_ref_raw.append(signal_ref)
+>>>>>>> 9847d007bb803877ec6497c8a38cc4390513fa9b
 
         csi_file_calib_ref = calibration_dir + file_name + '_1.npy'
         signal_calibration_ref = np.load(csi_file_calib_ref)
@@ -144,7 +157,11 @@ if __name__ == '__main__':
 
     signal_nic_calibrated = []
 
+<<<<<<< HEAD
+    offset_wireless = singal_nics[2] / singal_nics[1]
+=======
     offset_wireless = singal_nics_ref[:num_nics - 1] / singal_nics_ref[num_nics - 1]
+>>>>>>> 9847d007bb803877ec6497c8a38cc4390513fa9b
     # offset_wired = singal_nics_calib_wired / singal_nics_calib_wired[3]
 
     # wireless calibration
@@ -331,7 +348,11 @@ if __name__ == '__main__':
         paths_power = 10 * np.log10(paths_power / np.amax(np.nan_to_num(paths_power)))  # dB
         paths_toa_sort = paths_toa_list[i][sort_idx]
         paths_aoa_sort = paths_aoa_list[i][sort_idx]
+<<<<<<< HEAD
+        num_paths_plot = 6
+=======
         num_paths_plot = 5
+>>>>>>> 9847d007bb803877ec6497c8a38cc4390513fa9b
         # print(paths_power[:num_paths_plot])
         aoa_array = paths_aoa_sort - paths_aoa_sort[0]
         aoa_array[aoa_array > 90] = aoa_array[aoa_array > 90] - 180
