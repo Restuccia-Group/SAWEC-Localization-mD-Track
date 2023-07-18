@@ -6,7 +6,7 @@ import glob
 
 #array_names =['A01']
 
-directory = '../11n_calibration_setup3/Reference/Synced/'
+directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/calibration/Injector_1/Channel_1/20MHz/'
 extension = '*.npy'  # Replace with the desired file extension
 
 # Create the search pattern
@@ -25,8 +25,8 @@ for file in files:
 
     frames = Picoscenes(file)
     for i in range(3000):
-        saved_file_one = directory + 'Two_Antenna/' + file[-7:-4] + '_1' + ".npy"
-        saved_file_two = directory + 'Two_Antenna/' + file[-7:-4] + '_2' + ".npy"
+        saved_file_one = directory + 'Synced' + 'Two_Antenna/' + file[-7:-4] + '_1' + ".npy"
+        saved_file_two = directory + 'Synced' + 'Two_Antenna/' + file[-7:-4] + '_2' + ".npy"
 
         CSI = np.load(file)
         CSI_one = CSI[i, :53]

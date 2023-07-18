@@ -20,7 +20,7 @@ def process_file(file):
     frames = Picoscenes(file)
 
 
-    for i in range(4300):
+    for i in range(10000):
         sequence = frames.raw[i].get("StandardHeader").get("Sequence")
         np.array(A.append((i, sequence)))
     seq = [tuple[1] for tuple in A]
@@ -56,7 +56,7 @@ def save_corresponding_elements(directory, array_names, synced_sequence):
 
 if __name__ == "__main__":
     array_names = ['A01', 'A02', 'A03']
-    directory = '../11n_calibration_setup3/Reference/'
+    directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/location_1/Injector_1/Channel_1/20MHz/'
     extension = '*.csi'
     files = load_files(directory, extension)
     for file in files:
