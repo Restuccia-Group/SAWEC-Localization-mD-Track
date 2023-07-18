@@ -3,8 +3,6 @@
 *.pkl
 */__pycache__/*
 *.idea/*
-Data1/*
-Data2/*
-Data_unipd/*
 .idea/*
 __pycache__/*
+data/*
