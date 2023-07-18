@@ -56,7 +56,7 @@ def save_corresponding_elements(directory, array_names, synced_sequence):
 
 if __name__ == "__main__":
     array_names = ['A01', 'A02', 'A03']
-    directory = '/home/foysal/Github/WiViVerse-Sensing-Assisted-Computing/Data11/'
+    directory = '../11n_calibration_setup3/Reference/'
     extension = '*.csi'
     files = load_files(directory, extension)
     for file in files:
