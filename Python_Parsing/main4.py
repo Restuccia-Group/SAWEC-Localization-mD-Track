@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 import os
 import glob
 
+array_names = ['A01', 'A02', 'A03']
+directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/location_2/Injector_2/Channel_33/160MHz/'
+extension = '*.csi'
+
 def load_files(directory, extension):
     search_pattern = os.path.join(directory, extension)
     return glob.glob(search_pattern)
@@ -19,8 +23,7 @@ def process_file(file):
     group_size = 4096
     frames = Picoscenes(file)
 
-
-    for i in range(10000):
+    for i in range(frames.count):
         sequence = frames.raw[i].get("StandardHeader").get("Sequence")
         np.array(A.append((i, sequence)))
     seq = [tuple[1] for tuple in A]
@@ -55,9 +58,9 @@ def save_corresponding_elements(directory, array_names, synced_sequence):
         np.save(save_name, corresponding_element)
 
 if __name__ == "__main__":
-    array_names = ['A01', 'A02', 'A03']
-    directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/location_1/Injector_1/Channel_1/20MHz/'
-    extension = '*.csi'
+    array_names = array_names
+    # directory = directory
+    # extension = extension
     files = load_files(directory, extension)
     for file in files:
         process_file(file)

@@ -15,8 +15,8 @@ def cosine_similarity(signal1, signal2):
     similarity = dot_product / (norm_signal1 * norm_signal2)
     return similarity
 
-BW = 160
-directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/location_2/Injector_2/Channel_33/' + str(BW) + 'MHz/Synced/'
+BW = 20
+directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/location_2/Injector_1/Channel_33/' + str(BW) + 'MHz/Synced/'
 extension = '*.npy'  # Replace with the desired file extension
 
 if BW == 20:
@@ -28,7 +28,7 @@ elif BW == 80:
 else:
     subcarrier = 2025
 
-# A01 =A02 =A03 =[]
+
 
 # Create the search pattern
 search_pattern = os.path.join(directory, extension)
@@ -53,67 +53,38 @@ for file in files:
 
 
 
-    for i in range(len(CSI[:])):
+    for i in range(15000):
         saved_file_one = directory + 'Antenna_Separated/' + file[-7:-4] + '_1' + ".npy"
         saved_file_two = directory + 'Antenna_Separated/' + file[-7:-4] + '_2' + ".npy"
 
         CSI_one = CSI[i, :subcarrier]
         CSI_two = CSI[i, subcarrier:]
 
-        correlation_coefficient_two = np.linalg.norm(abs(CSI_base_two) - abs(CSI_two))
-        correlation_coefficient_one = np.linalg.norm(abs(CSI_base_two) - abs(CSI_one))
 
+        correlation_coefficient_two = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_two)))
+        correlation_coefficient_one = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_one)))
 
-        # correlation_coefficient_two = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_two)))
-        # correlation_coefficient_one = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_one)))
-        #
+        if (abs(correlation_coefficient_two - correlation_coefficient_one)) < 0.02:
+            # print(file)
+            # print(i)
+            corrupted = (file, i)
+            Antenna_Sync.append(corrupted)
+            # print(correlation_coefficient_two)
+            # print(correlation_coefficient_one)
 
-        # if (abs(correlation_coefficient_two - correlation_coefficient_one)) < 0.01:
-        #
-        #     if file[-7:-4] == "A01":
-        #         A01.append(i)
-        #     elif file[-7:-4] == "A02":
-        #         A02.append(i)
-        #     elif file[-7:-4] == "A03":
-        #         A03.append(i)
-        #
-        #     continue
+            continue
 
-
-        if correlation_coefficient_two < correlation_coefficient_one:
+        if correlation_coefficient_two > correlation_coefficient_one:
             globals()[seq_array_one].append(CSI_one)
             globals()[seq_array_two].append(CSI_two)
             CSI_base_two = CSI_two
-            #print('Okay')
-
 
         else:
             globals()[seq_array_two].append(CSI_one)
             globals()[seq_array_one].append(CSI_two)
             CSI_base_two = CSI_one
-            print('Switch')
-
-    fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-    for i in range(len(globals()[seq_array_one][:])):
-        ax[0].plot(abs(globals()[seq_array_one][i]), label='Antenna 1')
-        ax[1].plot(abs(globals()[seq_array_two][i]), label='Antenna 2')
-        ax[0].set_title('Antenna One')
-        ax[1].set_title('Antenna Two')
-        #plt.plot(abs(globals()[seq_array_two][i]))
-    plt.show()
 
 
-    # plt.figure(1)
-    # for i in range(len(globals()[seq_array_one][:])):
-    #     plt.plot(abs(globals()[seq_array_one][i]))
-    #     #plt.plot(abs(globals()[seq_array_two][i]))
-    # plt.show()
-    #
-    # plt.figure(2)
-    # for i in range(len(globals()[seq_array_two][:])):
-    #     plt.plot(abs(globals()[seq_array_two][i]))
-    #     #plt.plot(abs(globals()[seq_array_two][i]))
-    # plt.show()
 
     print(np.shape(globals()[seq_array_one]))
     print(np.shape(globals()[seq_array_two]))
@@ -121,8 +92,17 @@ for file in files:
     np.save(saved_file_one, globals()[seq_array_one])
     np.save(saved_file_two, globals()[seq_array_two])
 
-
-
+    for file in files_Antenna_Separated:
+        print('step3')
+        A = []
+        CSI = np.load(file)
+        for index, value in Antenna_Sync:
+            if (index[-7:-4]) != (file[-9:-6]):
+                A = value
+                # Delete the exact index from the CSI array
+        CSI_new = np.delete(CSI, A, axis=0)
+        print(np.shape(CSI_new))
+        np.save(file, CSI_new)
 
 
 
@@ -139,17 +119,7 @@ for file in files:
 
 
 
-#
-# for file in files_Antenna_Separated:
-#     print('step3')
-#     A = []
-#     CSI = np.load(file)
-#     for index, value in Antenna_Sync:
-#         if (index[-7:-4]) != (file[-9:-6]):
-#             A = value
-#             # Delete the exact index from the CSI array
-#     CSI_new = np.delete(CSI, A, axis=0)
-#     print(np.shape(CSI_new))
-#     np.save(file, CSI_new)
+
+
 
 

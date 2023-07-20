@@ -3,6 +3,10 @@ import numpy as np
 import os
 import glob
 
+
+directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/location_2/Injector_2/Channel_33/160MHz/'
+directory_sync = directory + 'Synced/'
+extension = '*.csi'
 def load_files(directory, extension):
     search_pattern = os.path.join(directory, extension)
     return glob.glob(search_pattern)
@@ -18,12 +22,10 @@ def process_file(file, directory, directory_sync):
         numTones = frames.raw[i].get("CSI").get("numTones")
         CSI = np.array(frames.raw[i].get("CSI").get("CSI"))
         np.array(globals()[seq_array].append(CSI))
+    print(np.shape(globals()[seq_array]))
     np.save(saved_file, globals()[seq_array])
 
 if __name__ == "__main__":
-    directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/location_1/Injector_1/Channel_1/20MHz/'
-    directory_sync = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/location_1/Injector_1/Channel_1/20MHz/Synced/'
-    extension = '*.csi'
     files = load_files(directory, extension)
     for file in files:
         process_file(file, directory, directory_sync)
