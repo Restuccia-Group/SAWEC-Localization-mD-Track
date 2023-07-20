@@ -15,7 +15,7 @@ def cosine_similarity(signal1, signal2):
     return similarity
 
 
-directory = '../Data11/Synced/'
+directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/calibration/Injector_1/Channel_1/20MHz/'
 extension = '*.npy'  # Replace with the desired file extension
 
 # Create the search pattern
@@ -32,17 +32,17 @@ for file in files:
     globals()[seq_array_two] = []
 
     CSI = np.load(file)
-    CSI_base_one = CSI[0, :2025]
-    CSI_base_two = CSI[0, 2025:]
+    CSI_base_one = CSI[0, :53]
+    CSI_base_two = CSI[0, 53:]
 
 
 
     for i in range(2500):
-        saved_file_one = directory + 'Antenna_Separated/' + file[-7:-4] + '_1' + ".npy"
-        saved_file_two = directory + 'Antenna_Separated/' + file[-7:-4] + '_2' + ".npy"
+        saved_file_one = directory + 'Synced/' + 'Antenna_Separated/' + file[-7:-4] + '_1' + ".npy"
+        saved_file_two = directory + 'Synced/' + 'Antenna_Separated/' + file[-7:-4] + '_2' + ".npy"
 
-        CSI_one = CSI[i, :2025]
-        CSI_two = CSI[i, 2025:]
+        CSI_one = CSI[i, :53]
+        CSI_two = CSI[i, 53:]
 
 
         correlation_coefficient_two = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_two)))
