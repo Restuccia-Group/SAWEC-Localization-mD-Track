@@ -16,19 +16,20 @@ def cosine_similarity(signal1, signal2):
     return similarity
 
 BW = 20
-directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/location_2/Injector_1/Channel_33/' + str(BW) + 'MHz/Synced/'
+#directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/location_2/Injector_1/Channel_33/' + str(BW) + 'MHz/Synced/'
+directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/11n_calibration_setup4/Reference/Synced/'
 extension = '*.npy'  # Replace with the desired file extension
 
-if BW == 20:
-    subcarrier = 245
-elif BW == 40:
-    subcarrier = 489
-elif BW == 80:
-    subcarrier = 1001
-else:
-    subcarrier = 2025
+# if BW == 20:
+#     subcarrier = 245
+# elif BW == 40:
+#     subcarrier = 489
+# elif BW == 80:
+#     subcarrier = 1001
+# else:
+#     subcarrier = 2025
 
-
+subcarrier = 53
 
 # Create the search pattern
 search_pattern = os.path.join(directory, extension)
@@ -53,7 +54,7 @@ for file in files:
 
 
 
-    for i in range(15000):
+    for i in range(1000):
         saved_file_one = directory + 'Antenna_Separated/' + file[-7:-4] + '_1' + ".npy"
         saved_file_two = directory + 'Antenna_Separated/' + file[-7:-4] + '_2' + ".npy"
 

@@ -17,6 +17,7 @@ def cosine_similarity(signal1, signal2):
 
 BW = 160
 directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/location_2/Injector_2/Channel_33/' + str(BW) + 'MHz/Synced/'
+#directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/11n_calibration_setup4/Reference/Synced/'
 extension = '*.npy'  # Replace with the desired file extension
 
 if BW == 20:
@@ -28,7 +29,9 @@ elif BW == 80:
 else:
     subcarrier = 2025
 
-# A01 =A02 =A03 =[]
+
+
+A01 =A02 =A03 =[]
 
 # Create the search pattern
 search_pattern = os.path.join(directory, extension)
@@ -62,11 +65,11 @@ for file in files:
 
         correlation_coefficient_two = np.linalg.norm(abs(CSI_base_two) - abs(CSI_two))
         correlation_coefficient_one = np.linalg.norm(abs(CSI_base_two) - abs(CSI_one))
-
-
+        #
+        #
         # correlation_coefficient_two = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_two)))
         # correlation_coefficient_one = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_one)))
-        #
+
 
         # if (abs(correlation_coefficient_two - correlation_coefficient_one)) < 0.01:
         #
@@ -91,16 +94,21 @@ for file in files:
             globals()[seq_array_two].append(CSI_one)
             globals()[seq_array_one].append(CSI_two)
             CSI_base_two = CSI_one
-            print('Switch')
+            #print('Switch')
+
+        # globals()[seq_array_two].append(CSI_two)
+        # globals()[seq_array_one].append(CSI_one)
 
     fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-    for i in range(len(globals()[seq_array_one][:])):
+    for i in range(len(globals()[seq_array_one][500:800])):
         ax[0].plot(abs(globals()[seq_array_one][i]), label='Antenna 1')
         ax[1].plot(abs(globals()[seq_array_two][i]), label='Antenna 2')
         ax[0].set_title('Antenna One')
         ax[1].set_title('Antenna Two')
         #plt.plot(abs(globals()[seq_array_two][i]))
     plt.show()
+
+    print('1')
 
 
     # plt.figure(1)

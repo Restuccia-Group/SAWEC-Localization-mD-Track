@@ -5,7 +5,7 @@ import os
 import glob
 
 #array_names =['A01']
-BW = 20
+BW = 40
 directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_1_Classroom/calibration/Injector_1/Channel_1/' + str(BW) + 'MHz/Synced/'
 extension = '*.npy'  # Replace with the desired file extension
 
@@ -37,8 +37,8 @@ for file in files:
     A = []
 
     for i in range(len(CSI[:])):
-        saved_file_one = directory + 'Synced' + 'Antenna_Separated/' + file[-7:-4] + '_1' + ".npy"
-        saved_file_two = directory + 'Synced' + 'Antenna_Separated/' + file[-7:-4] + '_2' + ".npy"
+        saved_file_one = directory + 'Antenna_Separated/' + file[-7:-4] + '_1' + ".npy"
+        saved_file_two = directory + 'Antenna_Separated/' + file[-7:-4] + '_2' + ".npy"
 
         CSI_one = CSI[i, :subcarrier]
         CSI_two = CSI[i, subcarrier:]

@@ -29,7 +29,7 @@ import matplotlib
 # matplotlib.use('QtCairo')
 
 
-def plot_mdtrack_results(amplitude_list, toa_list, aoa_list):
+def plot_mdtrack_results(amplitude_list, toa_list, aoa_list, num_paths_plot):
     plt.figure()
     vmin = threshold*10
     vmax = 0
@@ -41,11 +41,10 @@ def plot_mdtrack_results(amplitude_list, toa_list, aoa_list):
         paths_power = 10 * np.log10(paths_power / np.amax(np.nan_to_num(paths_power)))  # dB
         paths_toa_sort = toa_list[i][sort_idx]
         paths_aoa_sort = aoa_list[i][sort_idx]
-        num_paths_plot = 5
         # print(paths_power[:num_paths_plot])
-        aoa_array = paths_aoa_sort #- paths_aoa_sort[0]
-        # aoa_array[aoa_array > 90] = aoa_array[aoa_array > 90] - 180
-        # aoa_array[aoa_array < -90] = 180 + aoa_array[aoa_array < -90]
+        aoa_array = paths_aoa_sort - paths_aoa_sort[0]
+        aoa_array[aoa_array > 90] = aoa_array[aoa_array > 90] - 180
+        aoa_array[aoa_array < -90] = 180 + aoa_array[aoa_array < -90]
         toa_array = paths_toa_sort - paths_toa_sort[0]
         plt.scatter(toa_array[:num_paths_plot] * 1E9, aoa_array[:num_paths_plot],
                     c=paths_power[:num_paths_plot],
@@ -85,12 +84,28 @@ if __name__ == '__main__':
         F_frequency = 64  # 1996 without pilot probably
         delta_f = 312.5E3
         control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 59, 60, 61, 62, 63], dtype=int)
+        junk_subchannel = [25]
 
     elif BW == 160E6:  # 802.11ax
         F_frequency = 2048  # 1996 without pilot probably
         delta_f = 78.125E3
         control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
                                           2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047], dtype=int)
+        junk_subchannel = np.arange(1996, 2025)  # PicoScenes return zero here
+
+    elif BW == 80E6:  # 802.11ax
+        F_frequency = 1024
+        delta_f = 78.125E3
+        control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                          1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023], dtype=int)
+        junk_subchannel = []  # PicoScenes return zero here
+
+    elif BW == 40E6:  # 802.11ax
+        F_frequency = 512
+        delta_f = 78.125E3
+        control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                          501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511], dtype=int)
+        junk_subchannel = []  # PicoScenes return zero here
 
     # delta_t for time granularity
     delta_t = np.round(args.delta_t * 1e-11, 11)  # 5E-10  # 1.25e-11
@@ -110,9 +125,11 @@ if __name__ == '__main__':
     num_ant_per_nic = 2
     num_nics = len(nics_list)
 
+    # lists with wireless data
     singal_nics_raw = []  # signal from the antennas connected to different RF chains (first antennas)
     singal_nics_ref_raw = []  # signal from a single antenna for the RF chains connected together for wireless calibration
 
+    # lists with wired data
     singal_nics_calib = []  # signal wired from the antennas connected to different RF chains
     singal_nics_ref_calib = []  # signal wired for the RF chains connected together for wireless calibration
 
@@ -133,6 +150,7 @@ if __name__ == '__main__':
         signal_calibration_ref = np.load(csi_file_calib_ref)
         singal_nics_ref_calib.append(signal_calibration_ref[0, :])  # consider the first element to calibrate
 
+    # apply wired calibration
     singal_nics = []
     singal_nics_ref = []
     for index_nic in range(num_nics):
@@ -174,18 +192,17 @@ if __name__ == '__main__':
         signal_calibrated = singal_nics[index_nic] / offset_wireless[index_nic]
         signal_nic_calibrated.append(signal_calibrated)
     signal_nic_calibrated.append(singal_nics[num_nics-1])  # add the signal for the last NIC first antenna
-    signal_nic_calibrated.append(singal_nics_ref[num_nics - 1])  # add the signal for the last NIC common antenna
 
     # create the input signal selecting the antennas to be considered
     # the order of the antennas will be the physical one (i.e., one antenna per NIC and the last antenna in common)
     signal_stack = []
-    antennas_idx_considered = [2, 3]
+    antennas_idx_considered = [0, 1, 2]  # [0, 1, 2]
     for index_nic in antennas_idx_considered:
         signal_stack.append(signal_nic_calibrated[index_nic])
 
     signal_complete = np.stack(signal_stack, axis=2)
     num_time_steps = signal_complete.shape[0]
-    num_ant = signal_stack.shape[2]
+    num_ant = signal_complete.shape[2]
 
     # FIGURES FOR DEBUG
     # plt.figure()
@@ -225,10 +242,9 @@ if __name__ == '__main__':
     frequency_vector_idx = np.delete(frequency_vector_idx, control_subchannels)
     frequency_vector_hz = np.delete(frequency_vector_hz, control_subchannels)
 
-    delete_idxs = [25]  # center frequency
-    frequency_vector_idx = np.delete(frequency_vector_idx, delete_idxs)
-    frequency_vector_hz = np.delete(frequency_vector_hz, delete_idxs)
-    H_complete_valid = np.delete(signal_complete, delete_idxs, axis=1)  # packets, subchannels, angles
+    frequency_vector_idx = np.delete(frequency_vector_idx, junk_subchannel)
+    frequency_vector_hz = np.delete(frequency_vector_hz, junk_subchannel)
+    H_complete_valid = np.delete(signal_complete, junk_subchannel, axis=1)  # packets, subchannels, angles
 
     # plt.figure()
     # plt.plot(np.abs(H_complete_valid[20:30, :, 0]).T)
@@ -318,7 +334,10 @@ if __name__ == '__main__':
 
         a = 1
         # PLOT FOR DEBUG
-        # plot_mdtrack_results(paths_amplitude_list[:time_idx], paths_toa_list[:time_idx], paths_aoa_list[:time_idx])
+        num_paths_plot = 5
+        start_plot = 0
+        end_plot = 100 #len(paths_amplitude_list)
+        plot_mdtrack_results(paths_amplitude_list[start_plot:end_plot], paths_toa_list[start_plot:end_plot], paths_aoa_list[start_plot:end_plot], num_paths_plot)
 
     # Saving results
     save_name = save_dir + 'opr_sim_' + name_base + '.txt'  # + '.npz'

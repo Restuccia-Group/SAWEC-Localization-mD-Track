@@ -28,43 +28,35 @@ from utilityfunct_md_track import md_track_2d
 import matplotlib
 # matplotlib.use('QtCairo')
 
-def plot_combined(paths_refined_amplitude_array, paths_refined_toa_array, paths_refined_aoa_array,
-                  path_loss_sorted_sim, times_sorted_sim, azimuth_sorted_sim_2):
-    vmin = -40
+def plot_mdtrack_results(amplitude_list, toa_list, aoa_list, num_paths_plot):
+    plt.figure()
+    vmin = threshold*10
     vmax = 0
-    plt.figure(figsize=(5, 4))
-
-    # plot ground truth
-    if path_loss_sorted_sim is not None:
-        paths_power = - path_loss_sorted_sim + path_loss_sorted_sim[:, 0]  # dB
-        paths_power = paths_power[0, :]
-    else:
-        paths_power = np.ones_like(azimuth_sorted_sim_2)
-    toa_array = times_sorted_sim
-    plt.scatter(toa_array * 1E9, azimuth_sorted_sim_2,
-                c=paths_power,
-                marker='o', cmap='Blues', s=20,
-                vmin=vmin, vmax=vmax, label='ground')
-
+    end_plot = len(amplitude_list)
+    for i in range(0, end_plot):  # number of packets
+        sort_idx = np.flip(np.argsort(abs(amplitude_list[i])))
+        paths_amplitude_sort = amplitude_list[i][sort_idx]
+        paths_power = np.power(np.abs(paths_amplitude_sort), 2)
+        paths_power = 10 * np.log10(paths_power / np.amax(np.nan_to_num(paths_power)))  # dB
+        paths_toa_sort = toa_list[i][sort_idx]
+        paths_aoa_sort = aoa_list[i][sort_idx]
+        # print(paths_power[:num_paths_plot])
+        aoa_array = paths_aoa_sort #- paths_aoa_sort[0]
+        # aoa_array[aoa_array > 90] = aoa_array[aoa_array > 90] - 180
+        # aoa_array[aoa_array < -90] = 180 + aoa_array[aoa_array < -90]
+        toa_array = paths_toa_sort - paths_toa_sort[0]
+        plt.scatter(toa_array[:num_paths_plot] * 1E9, aoa_array[:num_paths_plot],
+                    c=paths_power[:num_paths_plot],
+                    marker='o', cmap='Blues', s=12,
+                    vmin=vmin, vmax=vmax)
     cbar = plt.colorbar()
-
-    # plot sim
-    paths_power = np.power(np.abs(paths_refined_amplitude_array), 2)
-    paths_power = 10 * np.log10(paths_power / np.amax(np.nan_to_num(paths_power)))  # dB
-    toa_array = paths_refined_toa_array  # - paths_refined_toa_array[0]
-    plt.scatter(toa_array * 1E9, paths_refined_aoa_array,
-                c=paths_power,
-                marker='x', cmap='Reds', s=20,
-                vmin=vmin, vmax=vmax, label='mdTrack')
-
     cbar.ax.set_ylabel('power [dB]', rotation=90)
     plt.xlabel('ToA [ns]')
     plt.ylabel('AoA [deg]')
-    plt.ylim([-90, 90])
-    plt.yticks(np.arange(-90, 91, 20))
+    # plt.xlim([-10, 20])  # range_considered + 100 * delta_t])
+    # plt.ylim([-90, 90])
     plt.grid()
-    plt.legend(prop={'size': 10})
-    plt.tight_layout()
+    # plt.scatter(paths_refined_toa_array[:20], paths_refined_aoa_array[:20])
     plt.show()
 
 
@@ -72,6 +64,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('nics', help='Name of the files, comma separated')
     parser.add_argument('fc', help='Central frequency in MHz', type=int)
+    parser.add_argument('BW', help='Bandwidth in MHz', type=int)
     parser.add_argument('exp_dir', help='Name base of the directory')
     parser.add_argument('calibration_dir', help='Name base of the directory for calibration')
     parser.add_argument('name_base', help='Name base of the simulation')
@@ -81,6 +74,35 @@ if __name__ == '__main__':
     exp_dir = args.exp_dir
     calibration_dir = args.calibration_dir
     name_base = args.name_base  # simulation
+
+    BW = args.BW * 1e6
+    if BW == 20E6:   # 802.11n
+        F_frequency = 64  # 1996 without pilot probably
+        delta_f = 312.5E3
+        control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 59, 60, 61, 62, 63], dtype=int)
+        junk_subchannel = [25]
+
+    elif BW == 160E6:  # 802.11ax
+        F_frequency = 2048  # 1996 without pilot probably
+        delta_f = 78.125E3
+        control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                          2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047], dtype=int)
+        # pilot_subchannels = [-468, -400, -334, -266, -226, -158, -92, -24, 24, 92, 158, 226, 266, 334, 400, 468]
+        junk_subchannel = np.arange(1996, 2025)  # PicoScenes return zero here
+
+    elif BW == 80E6:  # 802.11ax
+        F_frequency = 1024
+        delta_f = 78.125E3
+        control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                          1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023], dtype=int)
+        junk_subchannel = []  # PicoScenes return zero here
+
+    elif BW == 40E6:  # 802.11ax
+        F_frequency = 512
+        delta_f = 78.125E3
+        control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                          501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511], dtype=int)
+        junk_subchannel = []  # PicoScenes return zero here
 
     delta_t = np.round(args.delta_t * 1e-11, 11)  # 5E-10  # 1.25e-11
     save_dir = '../results/mdTrack' + str(delta_t) + '/'
@@ -129,30 +151,15 @@ if __name__ == '__main__':
 
     num_time_steps = signal_complete.shape[0]
 
-    BW = 160E6
-    F_frequency = 2048  # 1996 without pilot probably
-
-    delta_f = 78.125E3
-
     frequency_vector_idx = np.arange(F_frequency)
     frequency_vector_hz = delta_f * (frequency_vector_idx - F_frequency / 2)
 
-    control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-                                      2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047], dtype=int)
-    # pilot_subchannels = [-468, -400, -334, -266, -226, -158, -92, -24, 24, 92, 158, 226, 266, 334, 400, 468]
-
     frequency_vector_idx = np.delete(frequency_vector_idx, control_subchannels)
-    # frequency_vector_idx = np.concatenate((np.arange(-1012, -514),
-    #                                       np.arange(-509, -11),
-    #                                       np.arange(12, 510),
-    #                                       np.arange(515, 1013))) + 1024
+    frequency_vector_hz = np.delete(frequency_vector_hz, control_subchannels)  # frequency_vector_hz[frequency_vector_idx]
 
-    frequency_vector_hz =  np.delete(frequency_vector_hz, control_subchannels)  # frequency_vector_hz[frequency_vector_idx]
-
-    delete_idxs = np.arange(1996, 2025)  # PicoScenes return zero here
-    frequency_vector_idx = np.delete(frequency_vector_idx, delete_idxs)
-    frequency_vector_hz = np.delete(frequency_vector_hz, delete_idxs)
-    H_complete_valid = np.delete(signal_complete, delete_idxs, axis=1)  # packets, subchannels, angles
+    frequency_vector_idx = np.delete(frequency_vector_idx, junk_subchannel)
+    frequency_vector_hz = np.delete(frequency_vector_hz, junk_subchannel)
+    H_complete_valid = np.delete(signal_complete, junk_subchannel, axis=1)  # packets, subchannels, angles
 
     plt.figure()
     plt.plot(np.abs(H_complete_valid[20:30, :, 0]).T)
@@ -227,6 +234,13 @@ if __name__ == '__main__':
         paths_toa_list.append(paths_refined_toa_array)
         #####
 
+        a = 1
+        # PLOT FOR DEBUG
+        num_paths_plot = 5
+        start_plot = 0
+        end_plot = 100 #len(paths_amplitude_list)
+        plot_mdtrack_results(paths_amplitude_list[start_plot:end_plot], paths_toa_list[start_plot:end_plot], paths_aoa_list[start_plot:end_plot], num_paths_plot)
+
     # Saving results
     save_name = save_dir + 'opr_sim_' + name_base + '.txt'  # + '.npz'
     if not os.path.exists(save_dir):
@@ -247,43 +261,10 @@ if __name__ == '__main__':
     with open(name_file, "wb") as fp:  # Pickling
         pickle.dump(paths_toa_list, fp)
 
-    # plot_combined(paths_refined_amplitude_array, paths_refined_toa_array, paths_refined_aoa_array,
-    #               path_loss_sorted_sim, times_sorted_sim, azimuth_sorted_sim_2)
-
-    plt.figure()
-    vmin = threshold*10
-    vmax = 0 
-    for i in range(0, 363):
-        sort_idx = np.flip(np.argsort(abs(paths_amplitude_list[i])))
-        paths_amplitude_sort = paths_amplitude_list[i][sort_idx]
-        paths_power = np.power(np.abs(paths_amplitude_sort), 2)
-        paths_power = 10 * np.log10(paths_power / np.amax(np.nan_to_num(paths_power)))  # dB
-        paths_toa_sort = paths_toa_list[i][sort_idx]
-        paths_aoa_sort = paths_aoa_list[i][sort_idx]
-        num_paths_plot = 5
-        # print(paths_power[:num_paths_plot])
-        aoa_array = paths_aoa_sort - paths_aoa_sort[0]
-        aoa_array[aoa_array > 90] = aoa_array[aoa_array > 90] - 180
-        aoa_array[aoa_array < -90] = 180 + aoa_array[aoa_array < -90]
-        toa_array = paths_toa_sort - paths_toa_sort[0]
-        plt.scatter(toa_array[:num_paths_plot] * 1E9, aoa_array[:num_paths_plot],
-                    c=paths_power[:num_paths_plot],
-                    marker='o', cmap='Blues', s=12,
-                    vmin=vmin, vmax=vmax)
-    cbar = plt.colorbar()
-    cbar.ax.set_ylabel('power [dB]', rotation=90)
-    plt.xlabel('ToA [ns]')
-    plt.ylabel('AoA [deg]')    
-    plt.xlim([-1, 40])  # range_considered + 100 * delta_t])
-    # plt.ylim([-90, 90])
-    plt.grid()
-    # plt.scatter(paths_refined_toa_array[:20], paths_refined_aoa_array[:20])
-    plt.show()
-
-    plt.figure()
-    plt.stem(abs(paths_refined_amplitude_array))
-    plt.show()
-
-    plt.figure()
-    plt.stem(abs(power_matrix_cfr_toa[:1000]))
-    plt.show()
+    # plt.figure()
+    # plt.stem(abs(paths_refined_amplitude_array))
+    # plt.show()
+    #
+    # plt.figure()
+    # plt.stem(abs(power_matrix_cfr_toa[:1000]))
+    # plt.show()
