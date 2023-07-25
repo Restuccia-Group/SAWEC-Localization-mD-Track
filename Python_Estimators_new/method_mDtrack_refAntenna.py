@@ -196,7 +196,7 @@ if __name__ == '__main__':
     # create the input signal selecting the antennas to be considered
     # the order of the antennas will be the physical one (i.e., one antenna per NIC and the last antenna in common)
     signal_stack = []
-    antennas_idx_considered = [0, 1, 2]  # [0, 1, 2]
+    antennas_idx_considered = [0, 1, 2, 3]  # [0, 1, 2]
     for index_nic in antennas_idx_considered:
         signal_stack.append(signal_nic_calibrated[index_nic])
 
@@ -260,7 +260,7 @@ if __name__ == '__main__':
     idxs_range_ref_up = int(range_refined_up / delta_t + 1)
     range_refined_down = 1E-8  # 2.5E-7
     idxs_range_ref_down = int(range_refined_down / delta_t + 1)
-    t_min =  -T/4
+    t_min = -T/8
     t_max = T/4  # T/2
 
     num_angles = 360
@@ -333,10 +333,10 @@ if __name__ == '__main__':
         #####
 
         a = 1
-        # PLOT FOR DEBUG
+        #PLOT FOR DEBUG
         num_paths_plot = 5
-        start_plot = 0
-        end_plot = 100 #len(paths_amplitude_list)
+        start_plot = 300
+        end_plot = 350 #len(paths_amplitude_list)
         plot_mdtrack_results(paths_amplitude_list[start_plot:end_plot], paths_toa_list[start_plot:end_plot], paths_aoa_list[start_plot:end_plot], num_paths_plot)
 
     # Saving results

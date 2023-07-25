@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import os
 import glob
 
-array_names = ['A01', 'A02', 'A03', 'A04', 'A05', 'A06']
-directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/11n_calibration_setup4/Data/'
+array_names = ['A01', 'A02', 'A03', 'A04']
+directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_2_8_Ant/location_2/Injector_1/Channel_1/160MHz/'
 extension = '*.csi'
 
 def load_files(directory, extension):
