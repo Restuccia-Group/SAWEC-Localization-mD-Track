@@ -1,0 +1,8 @@
+*.pyx linguist-language=python
+*.pxd linguist-language=python
+*.cxx linguist-language=python
+*.cpp linguist-language=python
+*.hxx linguist-language=python
+*.c linguist-language=python
+*.h linguist-language=python
+

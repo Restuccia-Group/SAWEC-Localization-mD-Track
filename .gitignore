@@ -6,3 +6,5 @@
 .idea/*
 __pycache__/*
 data/*
+Asus_setting_files/traces/*
+Asus_setting_files/mat_files/*

@@ -1,0 +1,4 @@
+graft examples
+graft csiread
+graft docs
+recursive-exclude csiread *.c
