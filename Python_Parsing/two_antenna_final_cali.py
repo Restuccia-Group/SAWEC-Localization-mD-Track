@@ -15,8 +15,8 @@ def cosine_similarity(signal1, signal2):
     similarity = dot_product / (norm_signal1 * norm_signal2)
     return similarity
 
-BW = 160
-directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_2_8_Ant/location_2/Injector_1/Channel_1/' + str(BW) + 'MHz/Synced/'
+BW = 80
+directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_2_8_Ant/calibration/Injector_1/Channel_1/' + str(BW) + 'MHz/Synced/'
 #directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/11n_calibration_setup4/Reference/Synced/'
 extension = '*.npy'  # Replace with the desired file extension
 
@@ -63,8 +63,8 @@ for file in files:
         CSI_one = CSI[i, :subcarrier]
         CSI_two = CSI[i, subcarrier:]
 
-        correlation_coefficient_two = np.linalg.norm(abs(CSI_base_two) - abs(CSI_two))
-        correlation_coefficient_one = np.linalg.norm(abs(CSI_base_two) - abs(CSI_one))
+        # correlation_coefficient_two = np.linalg.norm(abs(CSI_base_two) - abs(CSI_two))
+        # correlation_coefficient_one = np.linalg.norm(abs(CSI_base_two) - abs(CSI_one))
         #
         #
         # correlation_coefficient_two = np.abs(cosine_similarity(np.abs(CSI_base_two), np.abs(CSI_two)))
@@ -83,30 +83,44 @@ for file in files:
         #     continue
 
 
-        if correlation_coefficient_two < correlation_coefficient_one:
-            globals()[seq_array_one].append(CSI_one)
-            globals()[seq_array_two].append(CSI_two)
-            CSI_base_two = CSI_two
-            #print('Okay')
+        # if correlation_coefficient_two < correlation_coefficient_one:
+        #     globals()[seq_array_one].append(CSI_one)
+        #     globals()[seq_array_two].append(CSI_two)
+        #     CSI_base_two = CSI_two
+        #     print('Okay')
+        #
+        #
+        # else:
+        #     globals()[seq_array_two].append(CSI_one)
+        #     globals()[seq_array_one].append(CSI_two)
+        #     CSI_base_two = CSI_one
+        #     #print('Switch')
 
-
-        else:
-            globals()[seq_array_two].append(CSI_one)
-            globals()[seq_array_one].append(CSI_two)
-            CSI_base_two = CSI_one
-            print('Switch')
-            print(correlation_coefficient_two)
-            print(correlation_coefficient_one)
-
+        globals()[seq_array_two].append(CSI_two)
+        globals()[seq_array_one].append(CSI_one)
 
     fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-    for i in range(len(globals()[seq_array_one][:])):
+    for i in range(len(globals()[seq_array_one][500:800])):
         ax[0].plot(abs(globals()[seq_array_one][i]), label='Antenna 1')
         ax[1].plot(abs(globals()[seq_array_two][i]), label='Antenna 2')
         ax[0].set_title('Antenna One')
         ax[1].set_title('Antenna Two')
+        #plt.plot(abs(globals()[seq_array_two][i]))
     plt.show()
 
+
+
+    # plt.figure(1)
+    # for i in range(len(globals()[seq_array_one][:])):
+    #     plt.plot(abs(globals()[seq_array_one][i]))
+    #     #plt.plot(abs(globals()[seq_array_two][i]))
+    # plt.show()
+    #
+    # plt.figure(2)
+    # for i in range(len(globals()[seq_array_two][:])):
+    #     plt.plot(abs(globals()[seq_array_two][i]))
+    #     #plt.plot(abs(globals()[seq_array_two][i]))
+    # plt.show()
 
     print(np.shape(globals()[seq_array_one]))
     print(np.shape(globals()[seq_array_two]))
