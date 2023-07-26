@@ -36,14 +36,14 @@ bash reload.sh
 ```
 3) Configure the TX and RX router. 
 ```
-bash config.sh
+bash config.sh <channel> <BW[MHz]>
 ```
 
 These two scripts must be executed one time. Once you do a power cycle of the router you have to run them another time.
 
 To send packets and extract CSI, run this command:
 ```
-bash send_collect_single.sh folder_name packets_per_capture 
+bash send_collect_single.sh <folder_name> <packets_per_capture> 
 ```
 e.g., ```bash send_collect_single.sh 072423 1000```
 where name is the name of the folder where you want to save the traces, packets means the number of packets to send. It sends a packet every 6ms.

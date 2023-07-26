@@ -9,15 +9,16 @@ ps="letmein" # change it
 tx="1"
 rxs="2 3 4 5"
 
-nss=$1
+channel=$1
+BW=$2
 
 echo "Setting up the transmitter"
-sshpass -p ${ps} ssh ${us}@192.168.50.${tx} /jffs/send_periodically/./config.sh
+sshpass -p ${ps} ssh ${us}@192.168.50.${tx} /jffs/send_periodically/./config.sh ${channel} ${BW}
 
 echo "Setting up the receiver"
 
 for rx in $rxs ; do
-  sshpass -p ${ps} ssh ${us}@192.168.50.${rx} /jffs/send_periodically/config_rx.sh
+  sshpass -p ${ps} ssh ${us}@192.168.50.${rx} /jffs/send_periodically/config_rx.sh ${channel} ${BW}
 done
 
 

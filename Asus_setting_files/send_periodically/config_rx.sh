@@ -2,16 +2,19 @@
 
 
 cd "$(dirname "$0")"
+
+channel=$1
+BW=$2
+
 echo $PATH
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/home/imdea:/mmc/sbin:/mmc/bin:/mmc/usr/sbin:/mmc/usr/bin:/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin
 echo $PATH
-BW=80
 
 # equivalent to configcsiblablabla.sh
 /usr/sbin/wl -i eth6 up
 /usr/sbin/wl -i eth6 radio on
 /usr/sbin/wl -i eth6 country UG
-/usr/sbin/wl -i eth6 chanspec 157/80
+/usr/sbin/wl -i eth6 chanspec ${channel}/${BW}
 /usr/sbin/wl -i eth6 monitor 1
 /sbin/ifconfig eth6 up
 

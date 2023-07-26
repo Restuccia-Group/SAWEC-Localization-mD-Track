@@ -10,7 +10,7 @@ if [ "$packets" = "" ]; then
 fi
 
 
-./rawperf -i eth6 -n ${packets} -f packetnode1x1BP.dat -t 6000 -q 0 
+./rawperf -i eth6 -n ${packets} -f packetnode1x1BP.dat -t 4000 -q 0 
 
 # -i    name of interface
 # -f    filename with frame data
