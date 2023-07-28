@@ -67,7 +67,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('nics', help='Name of the files, comma separated')
     parser.add_argument('fc', help='Central frequency in MHz', type=int)
+    parser.add_argument('num_ant_per_nic', help='Number of antennas per NIC', type=int)
     parser.add_argument('BW', help='Bandwidth in MHz', type=int)
+    parser.add_argument('standard', help='standard of wifi')
     parser.add_argument('exp_dir', help='Name base of the directory')
     parser.add_argument('calibration_dir', help='Name base of the directory for calibration')
     parser.add_argument('name_base', help='Name base of the simulation')
@@ -80,32 +82,42 @@ if __name__ == '__main__':
     name_base = args.name_base
 
     BW = args.BW * 1e6
-    if BW == 20E6:   # 802.11n
-        F_frequency = 64  # 1996 without pilot probably
-        delta_f = 312.5E3
-        control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 59, 60, 61, 62, 63], dtype=int)
-        junk_subchannel = [25]
 
-    elif BW == 160E6:  # 802.11ax
-        F_frequency = 2048  # 1996 without pilot probably
-        delta_f = 78.125E3
-        control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-                                          2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047], dtype=int)
-        junk_subchannel = np.arange(1996, 2025)  # PicoScenes return zero here
+    if (args.standard) == "AC":
+        if BW == 80E6:
+            delta_f = 312.5E3
+            F_frequency = 256
+            control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 127, 128, 129, 251, 252, 253, 254, 255], dtype=int)
+            junk_subchannel = []
 
-    elif BW == 80E6:  # 802.11ax
-        F_frequency = 1024
-        delta_f = 78.125E3
-        control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-                                          1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023], dtype=int)
-        junk_subchannel = []  # PicoScenes return zero here
+        elif BW == 20E6:   # 802.11n
+            F_frequency = 64
+            delta_f = 312.5E3
+            control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 59, 60, 61, 62, 63], dtype=int)
+            junk_subchannel = [25]
 
-    elif BW == 40E6:  # 802.11ax
-        F_frequency = 512
-        delta_f = 78.125E3
-        control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-                                          501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511], dtype=int)
-        junk_subchannel = []  # PicoScenes return zero here
+    elif (args.standard) == "AX":
+
+        if BW == 160E6:  # 802.11ax
+            F_frequency = 2048  # 1996 without pilot probably
+            delta_f = 78.125E3
+            control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                              2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047], dtype=int)
+            junk_subchannel = np.arange(1996, 2025)  # PicoScenes return zero here
+
+        elif BW == 80E6:  # 802.11ax
+            F_frequency = 1024
+            delta_f = 78.125E3
+            control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                              1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023], dtype=int)
+            junk_subchannel = []  # PicoScenes return zero here
+
+        elif BW == 40E6:  # 802.11ax
+            F_frequency = 512
+            delta_f = 78.125E3
+            control_subchannels = np.asarray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                              501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511], dtype=int)
+            junk_subchannel = []  # PicoScenes return zero here
 
     # delta_t for time granularity
     delta_t = np.round(args.delta_t * 1e-11, 11)  # 5E-10  # 1.25e-11
@@ -122,7 +134,7 @@ if __name__ == '__main__':
     files_name = []
     for nic in nics.split(','):
         nics_list.append(nic)
-    num_ant_per_nic = 2
+    num_ant_per_nic = args.num_ant_per_nic
     num_nics = len(nics_list)
 
     # lists with wireless data
@@ -134,19 +146,21 @@ if __name__ == '__main__':
     singal_nics_ref_calib = []  # signal wired for the RF chains connected together for wireless calibration
 
     for file_name in nics_list:
-        csi_file = exp_dir + file_name + '_1.npy'
-        signal_raw = np.load(csi_file)
-        singal_nics_raw.append(signal_raw)
+        for ant in range(num_ant_per_nic-1):
+            csi_file = exp_dir + file_name + '_' + str(ant) + '.npy'
+            signal_raw = np.load(csi_file)
+            singal_nics_raw.append(signal_raw)
 
-        csi_file_ref = exp_dir + file_name + '_2.npy'
+        csi_file_ref = exp_dir + file_name + '_' + str(num_ant_per_nic) + '.npy'
         signal_ref = np.load(csi_file_ref)
         singal_nics_ref_raw.append(signal_ref)
 
-        csi_file_calib_ref = calibration_dir + file_name + '_1.npy'
-        signal_calibration_ref = np.load(csi_file_calib_ref)
-        singal_nics_calib.append(signal_calibration_ref[0, :])  # consider the first element to calibrate
+        for ant in range(num_ant_per_nic-1):
+            csi_file_calib_ref = calibration_dir + file_name + '_' + str(ant) + '.npy'
+            signal_calibration_ref = np.load(csi_file_calib_ref)
+            singal_nics_calib.append(signal_calibration_ref[0, :])  # consider the first element to calibrate
 
-        csi_file_calib_ref = calibration_dir + file_name + '_2.npy'
+        csi_file_calib_ref = calibration_dir + file_name + '_' + str(num_ant_per_nic) + '.npy'
         signal_calibration_ref = np.load(csi_file_calib_ref)
         singal_nics_ref_calib.append(signal_calibration_ref[0, :])  # consider the first element to calibrate
 
@@ -189,14 +203,16 @@ if __name__ == '__main__':
     signal_nic_calibrated = []
     for index_nic in range(num_nics - 1):
         # signal_calibrated = singal_nics[index_nic] * np.conj(offset_wireless)
-        signal_calibrated = singal_nics[index_nic] / offset_wireless[index_nic]
-        signal_nic_calibrated.append(signal_calibrated)
+
+        for ant in range(num_ant_per_nic-1):
+            signal_calibrated = singal_nics[index_nic*num_ant_per_nic + ant] / offset_wireless[index_nic]
+            signal_nic_calibrated.append(signal_calibrated)
     signal_nic_calibrated.append(singal_nics[num_nics-1])  # add the signal for the last NIC first antenna
 
     # create the input signal selecting the antennas to be considered
     # the order of the antennas will be the physical one (i.e., one antenna per NIC and the last antenna in common)
     signal_stack = []
-    antennas_idx_considered = [0, 1, 2, 3]  # [0, 1, 2]
+    antennas_idx_considered = [0, 1, 2, 3, 4, 5, 6, 7]  # [0, 1, 2]
     for index_nic in antennas_idx_considered:
         signal_stack.append(signal_nic_calibrated[index_nic])
 
@@ -334,10 +350,10 @@ if __name__ == '__main__':
 
         a = 1
         #PLOT FOR DEBUG
-        num_paths_plot = 5
-        start_plot = 300
-        end_plot = 350 #len(paths_amplitude_list)
-        plot_mdtrack_results(paths_amplitude_list[start_plot:end_plot], paths_toa_list[start_plot:end_plot], paths_aoa_list[start_plot:end_plot], num_paths_plot)
+        # num_paths_plot = 5
+        # start_plot = 300
+        # end_plot = 350 #len(paths_amplitude_list)
+        # plot_mdtrack_results(paths_amplitude_list[start_plot:end_plot], paths_toa_list[start_plot:end_plot], paths_aoa_list[start_plot:end_plot], num_paths_plot)
 
     # Saving results
     save_name = save_dir + 'opr_sim_' + name_base + '.txt'  # + '.npz'

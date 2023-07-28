@@ -15,8 +15,8 @@ def cosine_similarity(signal1, signal2):
     similarity = dot_product / (norm_signal1 * norm_signal2)
     return similarity
 
-BW = 80
-directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/Experiments_2_8_Ant/calibration/Injector_1/Channel_1/' + str(BW) + 'MHz/Synced/'
+BW = 160
+directory = '/mnt/HDD2/Channel_Sensing_Raw_Data/Experiments_Anechoic_1/calibration/Injector_1/Channel_33/' + str(BW) + 'MHz/Synced/'
 #directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/11n_calibration_setup4/Reference/Synced/'
 extension = '*.npy'  # Replace with the desired file extension
 
@@ -103,8 +103,8 @@ for file in files:
     for i in range(len(globals()[seq_array_one][500:800])):
         ax[0].plot(abs(globals()[seq_array_one][i]), label='Antenna 1')
         ax[1].plot(abs(globals()[seq_array_two][i]), label='Antenna 2')
-        ax[0].set_title('Antenna One')
-        ax[1].set_title('Antenna Two')
+        ax[0].set_title('BW:' + str(BW) + ', Antenna One:' + file[-7:-4])
+        ax[1].set_title('BW:' + str(BW) + ', Antenna Two:' + file[-7:-4])
         #plt.plot(abs(globals()[seq_array_two][i]))
     plt.show()
 
