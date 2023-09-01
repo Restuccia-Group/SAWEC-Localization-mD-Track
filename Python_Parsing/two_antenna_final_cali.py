@@ -16,7 +16,7 @@ def cosine_similarity(signal1, signal2):
     return similarity
 
 BW = 160
-directory = '/mnt/HDD2/Channel_Sensing_Raw_Data/Experiments_Anechoic_1/calibration/Injector_1/Channel_33/' + str(BW) + 'MHz/Synced/'
+directory = '/mnt/HDD2/Channel_Sensing_Raw_Data/Experiments_Anechoic_1/calibration/Injector_1/Channel_1/' + str(BW) + 'MHz/Synced/'
 #directory = '/mnt/HDD1/Channel_Sensing_Raw_Data/11n_calibration_setup4/Reference/Synced/'
 extension = '*.npy'  # Replace with the desired file extension
 

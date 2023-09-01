@@ -4,7 +4,7 @@ import os
 import glob
 
 
-directory = '/mnt/HDD2/Channel_Sensing_Raw_Data/Experiments_Anechoic_1/location_2/Injector_1/Channel_1/80MHz/'
+directory = '/mnt/HDD2/Channel_Sensing_Raw_Data/Experiments_Anechoic_1/location_2/Injector_1/Channel_33/160MHz/'
 directory_sync = directory + 'Synced/'
 extension = '*.csi'
 def load_files(directory, extension):
