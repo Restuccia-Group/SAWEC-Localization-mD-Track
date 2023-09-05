@@ -42,9 +42,12 @@ def plot_mdtrack_results(amplitude_list, toa_list, aoa_list, num_paths_plot):
         paths_toa_sort = toa_list[i][sort_idx]
         paths_aoa_sort = aoa_list[i][sort_idx]
         # print(paths_power[:num_paths_plot])
+
         aoa_array = paths_aoa_sort #- paths_aoa_sort[0]
-        # aoa_array[aoa_array > 90] = aoa_array[aoa_array > 90] - 180
-        # aoa_array[aoa_array < -90] = 180 + aoa_array[aoa_array < -90]
+        # aoa_array[aoa_array > 90] = aoa_array[aoa_array > 90] - 90
+        # aoa_array[aoa_array < -90] = 90 + aoa_array[aoa_array < -90]
+
+
         toa_array = paths_toa_sort - paths_toa_sort[0]
         plt.scatter(toa_array[:num_paths_plot] * 1E9, aoa_array[:num_paths_plot],
                     c=paths_power[:num_paths_plot],
@@ -355,10 +358,10 @@ if __name__ == '__main__':
 
         a = 1
         #PLOT FOR DEBUG
-        # num_paths_plot = 5
-        # start_plot = 0
-        # end_plot = len(paths_amplitude_list)
-        # plot_mdtrack_results(paths_amplitude_list[start_plot:end_plot], paths_toa_list[start_plot:end_plot], paths_aoa_list[start_plot:end_plot], num_paths_plot)
+        num_paths_plot = 5
+        start_plot = 0
+        end_plot = len(paths_amplitude_list)
+        plot_mdtrack_results(paths_amplitude_list[start_plot:end_plot], paths_toa_list[start_plot:end_plot], paths_aoa_list[start_plot:end_plot], num_paths_plot)
 
     # Saving results
     save_name = save_dir + 'opr_sim_' + name_base + '.txt'  # + '.npz'
