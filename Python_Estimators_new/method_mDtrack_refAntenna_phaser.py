@@ -43,9 +43,22 @@ def plot_mdtrack_results(amplitude_list, toa_list, aoa_list, num_paths_plot):
         paths_aoa_sort = aoa_list[i][sort_idx]
         # print(paths_power[:num_paths_plot])
 
-        aoa_array = paths_aoa_sort #- paths_aoa_sort[0]
-        # aoa_array[aoa_array > 90] = aoa_array[aoa_array > 90] - 90
-        # aoa_array[aoa_array < -90] = 90 + aoa_array[aoa_array < -90]
+        # aoa_array = paths_aoa_sort - paths_aoa_sort[0]
+        # aoa_array[aoa_array > 90] = aoa_array[aoa_array > 90] - 180
+        # aoa_array[aoa_array < -90] = 180 + aoa_array[aoa_array < -90]
+
+        #print(paths_aoa_sort)
+        aoa_array = paths_aoa_sort - paths_aoa_sort[0]
+        #print(paths_aoa_sort[0])
+        #print(aoa_array)
+
+        aoa_array[aoa_array > 0] = aoa_array[aoa_array > 0] + paths_aoa_sort[0]
+        aoa_array[aoa_array < 0] = aoa_array[aoa_array < 0] + paths_aoa_sort[0]
+
+        aoa_array[aoa_array > 90] = aoa_array[aoa_array > 90] - 180
+        aoa_array[aoa_array < -90] = 180 + aoa_array[aoa_array < -90]
+
+        #print(aoa_array)
 
 
         toa_array = paths_toa_sort - paths_toa_sort[0]
@@ -124,7 +137,7 @@ if __name__ == '__main__':
 
     # delta_t for time granularity
     delta_t = np.round(args.delta_t * 1e-11, 11)  # 5E-10  # 1.25e-11
-    save_dir = '../results/mdTrack' + str(delta_t) + '/'
+    save_dir = '/mnt/HDD2/Channel_Sensing_Raw_Data/Experiments_Anechoic_1/Saved_Files/160MHz/2_Ant/Injector_1/Location_1/' + str(delta_t) + '/'
     if os.path.exists(save_dir + 'paths_list_' + name_base + '.txt'):
         print('Already processed')
         exit()
@@ -358,10 +371,10 @@ if __name__ == '__main__':
 
         a = 1
         #PLOT FOR DEBUG
-        num_paths_plot = 5
-        start_plot = 0
-        end_plot = len(paths_amplitude_list)
-        plot_mdtrack_results(paths_amplitude_list[start_plot:end_plot], paths_toa_list[start_plot:end_plot], paths_aoa_list[start_plot:end_plot], num_paths_plot)
+        # num_paths_plot = 5
+        # start_plot = 0
+        # end_plot = len(paths_amplitude_list)
+        # plot_mdtrack_results(paths_amplitude_list[start_plot:end_plot], paths_toa_list[start_plot:end_plot], paths_aoa_list[start_plot:end_plot], num_paths_plot)
 
     # Saving results
     save_name = save_dir + 'opr_sim_' + name_base + '.txt'  # + '.npz'

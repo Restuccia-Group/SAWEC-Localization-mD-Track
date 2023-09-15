@@ -355,10 +355,10 @@ if __name__ == '__main__':
 
         a = 1
         #PLOT FOR DEBUG
-        num_paths_plot = 5
-        start_plot = 0
-        end_plot = len(paths_amplitude_list)
-        plot_mdtrack_results(paths_amplitude_list[start_plot:end_plot], paths_toa_list[start_plot:end_plot], paths_aoa_list[start_plot:end_plot], num_paths_plot)
+        # num_paths_plot = 5
+        # start_plot = 0
+        # end_plot = len(paths_amplitude_list)
+        # plot_mdtrack_results(paths_amplitude_list[start_plot:end_plot], paths_toa_list[start_plot:end_plot], paths_aoa_list[start_plot:end_plot], num_paths_plot)
 
     # Saving results
     save_name = save_dir + 'opr_sim_' + name_base + '.txt'  # + '.npz'
