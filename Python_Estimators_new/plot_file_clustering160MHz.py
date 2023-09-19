@@ -16,17 +16,17 @@ delta_t = 50
 name_base = "refAnt"
 num_paths_plot = 5
 num_paths_plot = np.int32(num_paths_plot)
-start_plot = 12000
-end_plot = 12100
+start_plot = 19900
+end_plot = 20000
 a = 50  #50
 delta_t = np.round(delta_t * 1e-11, 11)  # 5E-10  # 1.25e-11
 # Example values (you may need to adjust these)
-clustering_epsilon = 1.2   #3   #1.2  # Adjust based on the scale of your data
+clustering_epsilon = 4   #3   #1.2  # Adjust based on the scale of your data
 clustering_min_samples = 8  #8 # Start with a reasonable guess and adjust as needed
 
 
 
-save_dir = '/mnt/HDD2/Channel_Sensing_Raw_Data/Experiments_Anechoic_1/Saved_Files/40MHz/4_Ant/Injector_1/Location_1/' + str(delta_t) + '/'
+save_dir = '/mnt/HDD2/Channel_Sensing_Raw_Data/Experiments_Anechoic_1/Saved_Files/40MHz/3_Ant/Injector_1/Location_1/' + str(delta_t) + '/'
 
 
 # Construct the file name
@@ -157,6 +157,7 @@ def plot_mdtrack_results(amplitude_list, toa_list, aoa_list, num_paths_plot, thr
         x_values = xy[:, 0]
         y_values = xy[:, 1]
 
+
         # Calculate the average x and y values for the cluster
         x_avg = np.mean(x_values)
         y_avg = np.mean(y_values)
@@ -192,7 +193,7 @@ def plot_mdtrack_results(amplitude_list, toa_list, aoa_list, num_paths_plot, thr
 
             new_label += 1  # Increment the new label
 
-        plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
+        plt.plot(xy[:, 0], xy[:, 1], 'o', #markerfacecolor=tuple(col),
                  markeredgecolor='k', markersize=6)
 
     # Set y-axis limits to -90 and 90
