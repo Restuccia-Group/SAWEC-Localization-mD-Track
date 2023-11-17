@@ -24,7 +24,8 @@ import matplotlib.pyplot as plt
 import os
 
 from utilityfunct_aoa_toa_doppler import build_aoa_matrix, build_toa_matrix
-from utilityfunct_md_track import md_track_2d
+#from utilityfunct_md_track import md_track_2d
+from mdtrack_fast import md_track_2d
 import matplotlib
 # matplotlib.use('QtCairo')
 
@@ -137,7 +138,7 @@ if __name__ == '__main__':
 
     # delta_t for time granularity
     delta_t = np.round(args.delta_t * 1e-11, 11)  # 5E-10  # 1.25e-11
-    save_dir = '/mnt/HDD2/Channel_Sensing_Raw_Data/Experiments_Anechoic_1/Saved_Files/160MHz/2_Ant/Injector_1/Location_1/' + str(delta_t) + '/'
+    save_dir = '/mnt/HDD2/Channel_Sensing_Raw_Data/Experiments_Anechoic_1/Saved_Files/160MHz/3_Ant/Injector_1/Location_1/' + str(delta_t) + '/'
     if os.path.exists(save_dir + 'paths_list_' + name_base + '.txt'):
         print('Already processed')
         exit()
@@ -180,6 +181,7 @@ if __name__ == '__main__':
         signal_calibration_ref = np.load(csi_file_calib_ref)
         singal_nics_ref_calib.append(signal_calibration_ref[0, :])  # consider the first element to calibrate
 
+    start_time = time.time()
     # apply wired calibration
     singal_nics = []
     singal_nics_ref = []
@@ -368,6 +370,10 @@ if __name__ == '__main__':
         paths_aoa_list.append(paths_refined_aoa_array)
         paths_toa_list.append(paths_refined_toa_array)
         #####
+
+        end_time = time.time()
+        process_time = end_time - start_time
+        print(f"Time taken for inference: {process_time:.2f} seconds")
 
         a = 1
         #PLOT FOR DEBUG

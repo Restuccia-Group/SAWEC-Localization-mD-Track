@@ -217,7 +217,7 @@ def plot_mdtrack_results(amplitude_list, toa_list, aoa_list, num_paths_plot, thr
     plt.ylim(-90, 90)
     plt.xlim(3e-9, 60e-9)
     plt.title('Clusters to capture Image')
-    #plt.show()
+    plt.show()
 
     return x_avg*3e8, y_avg, new_label
 
