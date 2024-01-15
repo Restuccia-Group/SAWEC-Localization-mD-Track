@@ -15,20 +15,19 @@ mpl.rcParams['font.size'] = 22
 def add_labels(rects):
     for rect in rects:
         height = rect.get_height()
-        ax.annotate('{:.2f}'.format(height),
+        ax.annotate('{:.1f}'.format(height),
                     xy=(rect.get_x() + rect.get_width() / 2, height),
-                    xytext=(13, 1),  # 3 points vertical offset
+                    xytext=(0, 3),  # 3 points vertical offset
                     textcoords="offset points",
-                    ha='center', va='bottom', fontsize=30)
-
+                    ha='center', va='bottom', fontsize=26)
 
 
 
 # Change Params Here:
 
-file_string = 'classroom_map50_90'
-rows_as_group = ['yolov8n', 'yolov8m', 'yolov8l', 'yolov8x']
-columns_as_bars = ["SAWEC", "Traditional"]
+file_string = 'average_bw_comp'
+rows_as_group = ['Compressed\n(1/8)', 'Resized\n(1/2)', 'Original\n(10K)']
+columns_as_bars = ["SAWEC", "Entire\nimage", "Partitioned\nimage"]
 
 
 
@@ -42,32 +41,38 @@ fig_eps_file = file_string + '.eps'
 data = np.loadtxt(data_file)
 data = data[:, :]
 
-column_1 = data[:, 0] * 100
-column_2 = data[:, 1] * 100
+column_1 = data[:, 0]
+column_2 = data[:, 1]
+column_3 = data[:, 2]
 
+print(column_1)
 
 x = np.arange(len(rows_as_group))
-width = 0.2
+width = 0.25
 fig, ax = plt.subplots()
 fig.set_figheight(6)
 fig.set_figwidth(12.5)
 
 rects1 = ax.bar(x - width, column_1, width, color='skyblue', hatch='/', edgecolor="black", linewidth=2)
 rects2 = ax.bar(x, column_2, width, color='lightcyan', hatch=' \ ', edgecolor="black", linewidth=2)
+rects3 = ax.bar(x + width, column_3, width, color='lightcoral', hatch=' \ ', edgecolor="black", linewidth=2)
 
 add_labels(rects1)
 add_labels(rects2)
+add_labels(rects3)
 
-ax.set_ylabel('$mAP_{50-95}$ (\%)', fontsize=35)
+
+ax.set_ylabel('BW / frame (MB)', fontsize=35)
 #ax.set_xlabel('Number of Subcarriers', fontsize=25)
 #ax.set_title('Scores by group and gender', fontsize= 25)
 
 ax.set_xticks(x)
 ax.set_xticklabels(rows_as_group, fontsize=35)
-ax.set_ylim(20, 105)
-ax.set_yticks([15, 30, 45, 60, 75], [15, 30, 45, 60, 75], fontsize=35)
+ax.set_ylim(0.1, 50000)
+ax.set_yscale('log')  # Set y-axis to a logarithmic scale
+ax.set_yticks([0.1, 1, 10, 100], [0.1, 1, 10, 100], fontsize=35)
 
-ax.legend([rects1, rects2], columns_as_bars, loc='upper center', ncol=2, fontsize=30, framealpha=0.0)
+ax.legend([rects1, rects2, rects3], columns_as_bars, loc='upper center', ncol=3, fontsize= 32, framealpha=0.0)
 
 
 

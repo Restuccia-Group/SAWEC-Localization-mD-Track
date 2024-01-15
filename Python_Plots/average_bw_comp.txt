@@ -1,0 +1,4 @@
+3.46   37.67       37.67           #Compressed [SAWEC   Entire_image Partitioned_image]
+2.125   34.72      34.72
+5.55   138.88      138.88
+

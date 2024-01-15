@@ -1,0 +1,3 @@
+0.784   0.375           #Compressed
+0.794   0.382           #Resized
+0.807   0.4             #no compressed mo resized

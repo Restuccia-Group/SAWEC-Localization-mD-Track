@@ -1,0 +1,4 @@
+3.46   27.67       24.65           #Compressed [SAWEC   ApproxDet EdgeDuet]
+2.125  24.72       21.99
+5.55   92.23      85.88
+

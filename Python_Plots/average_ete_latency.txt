@@ -1,0 +1,3 @@
+158.46   1819.53     598.83              # 83.46 + 75.0            # Compressed [SAWEC   Entire_image Partitioned_image]
+136.67   554.73      558.37              # 61.67 + 75.0             # Resized
+188.62  3000.82    2236.11            # 113.63 + 75.0           # Original

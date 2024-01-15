@@ -1,0 +1,4 @@
+0.288   0.909            # alpha= 1 yolov8m_mAP   bandwidth_usage
+0.671   3.63             # alpha= 2 yolov8m_mAP   bandwidth_usage
+0.673   8.18             # alpha= 3 yolov8m_mAP   bandwidth_usage
+0.632   14.54            # alpha= 3 yolov8m_mAP   bandwidth_usage

@@ -25,7 +25,7 @@ fig_eps_file = file_string + '.eps'
 data = np.loadtxt(data_file)
 
 # Model names
-models = ['32x32', '128x128', '256x256', '512x512', '1024x1024']
+models = ['1/16', '1/8', '1/4', '1/2', '1']
 
 # Accuracy and Time data (example values)
 # accuracy = [0.85, 0.92, 0.78, 0.88]  # Example accuracy values (left axis)
@@ -56,9 +56,9 @@ offset = 0.15
 # Bar plot for accuracy (left axis)
 accuracy_bars = np.arange(len(models))
 ax1.bar(accuracy_bars - offset, accuracy, width=bar_width, color='lightcyan', hatch='/', edgecolor="black", linewidth=2,label='Accuracy')
-ax1.set_ylabel('Accuracy (\%)', color='b', fontsize=35)
+ax1.set_ylabel('Accuracy (\%)', color='b', fontsize=40)
 ax1.tick_params(axis='y', labelcolor='b')
-ax1.set_yticks([20, 40, 60, 80, 100], [20, 40,  60, 80, 100], fontsize=35)
+ax1.set_yticks([25,  50, 75, 100], [25,  50, 75, 100], fontsize=35)
 ax1.set_ylim([0, 150])  # Set the y-axis range for accuracy (0 to 1)
 
 # Create a second y-axis for times (right axis)
@@ -72,12 +72,12 @@ ax2.tick_params(axis='y', labelcolor='r')
 ax2.set_ylim([90, 120])
 # Set the x-axis ticks and labels
 ax1.set_xticks(accuracy_bars)
-ax1.set_xticklabels(models)
-ax1.set_xlabel('Image resolution', fontsize=35)
+ax1.set_xticklabels(models, fontsize=35)
+ax1.set_xlabel('Image downsize ratio', fontsize=35)
 
 # Increase y-axis tick font size
-ax1.tick_params(axis='both', which='both', labelsize=32)
-ax2.tick_params(axis='both', which='both', labelsize=32)
+ax1.tick_params(axis='both', which='both', labelsize=35)
+ax2.tick_params(axis='both', which='both', labelsize=35)
 
 ax1.grid(axis='y', linestyle='--', linewidth=0.5)
 
@@ -86,7 +86,7 @@ lines1, labels1 = ax1.get_legend_handles_labels()
 lines2, labels2 = ax2.get_legend_handles_labels()
 lines = lines1 + lines2
 labels = labels1 + labels2
-ax1.legend(lines, labels, loc='upper left', ncol=2, fontsize=32)
+ax1.legend(lines, labels, loc='upper left', ncol=2, fontsize=32, framealpha=0.0)
 
 # Title and display the plot
 #plt.title('Accuracy and end-to-end latency for different image size', fontsize=25)
