@@ -11,6 +11,7 @@ mpl.rcParams['text.latex.preamble'] = r'\usepackage{newtxmath}'
 mpl.rcParams['font.size'] = 22
 #mpl.rcParams['axes.prop_cycle'] = plt.cycler(color=plt.cm.Set3.colors)
 
+fontsize=95
 
 
 def add_labels(rects):
@@ -27,7 +28,7 @@ def add_labels(rects):
 # Change Params Here:
 
 file_string = 'average_map_50_95'
-rows_as_group = ['YOLOv8n', 'YOLOv8m', 'YOLOv8l', 'YOLOv8x']
+rows_as_group = ['v8n', 'v8m', 'v8l', 'v8x']
 columns_as_bars = ["SAWEC", "YolactACOS", "EdgeDuet"]
 
 
@@ -48,27 +49,28 @@ column_3 = data[:, 2] * 100
 x = np.arange(len(rows_as_group))
 width = 0.2
 fig, ax = plt.subplots()
-fig.set_figheight(6)
-fig.set_figwidth(12.5)
+fig.set_figheight(12)
+fig.set_figwidth(16)
 
 rects1 = ax.bar(x - width, column_1, width, color='skyblue', hatch='/', edgecolor="black", linewidth=2)
-rects2 = ax.bar(x, column_2, width, color='lightcyan', hatch=' \ ', edgecolor="black", linewidth=2)
+rects2 = ax.bar(x, column_2, width, color='lightgreen', hatch=' \ ', edgecolor="black", linewidth=2)
 rects3 = ax.bar(x + width, column_3, width, color='lightcoral', hatch=' // ', edgecolor="black", linewidth=2)
 
-add_labels(rects1)
-add_labels(rects2)
-add_labels(rects3)
+# add_labels(rects1)
+# add_labels(rects2)
+# add_labels(rects3)
 
-ax.set_ylabel('$mAP_{50-95}$ (\%)', fontsize=35)
-#ax.set_xlabel('Number of Subcarriers', fontsize=25)
+ax.set_ylabel('$mAP_{50-95}$ (\%)', fontsize=fontsize)
+ax.set_xlabel('Different varients of YOLO', fontsize=fontsize)
 #ax.set_title('Scores by group and gender', fontsize= 25)
 
 ax.set_xticks(x)
-ax.set_xticklabels(rows_as_group, fontsize=35)
-ax.set_ylim(20, 110)
-ax.set_yticks([15, 30, 45, 60, 75, 90], [15, 30, 45, 60, 75, 90], fontsize=35)
+ax.set_xticklabels(rows_as_group, fontsize=fontsize)
+ax.set_ylim(10, 100)
+ax.set_yticks([30, 60, 90], [30, 60, 90], fontsize=fontsize)
 
-ax.legend([rects1, rects2, rects3], columns_as_bars, loc='upper center', ncol=3, fontsize=30, framealpha=0.0)
+#ax.legend([rects1, rects2, rects3], columns_as_bars, loc='upper center', ncol=2, fontsize=fontsize-20, framealpha=0.0)
+ax.legend([rects1, rects2, rects3], columns_as_bars, loc='upper center', ncol=2, fontsize=fontsize-30, framealpha=0.0, bbox_to_anchor=(0.56, 0.97), bbox_transform=plt.gcf().transFigure, columnspacing=-1.5)
 
 
 

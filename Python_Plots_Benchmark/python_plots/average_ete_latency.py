@@ -11,6 +11,7 @@ mpl.rcParams['text.usetex'] = 'true'
 mpl.rcParams['text.latex.preamble'] = r'\usepackage{newtxmath}'
 mpl.rcParams['font.size'] = 22
 
+fontsize = 55
 def add_labels(rects):
     for rect in rects:
         height = rect.get_height()
@@ -37,33 +38,33 @@ column_2 = data[:, 1]
 column_3 = data[:, 2]
 
 x = np.arange(len(rows_as_group))
-width = 0.2
+width = 0.15
 fig, ax = plt.subplots()
-fig.set_figheight(6)
-fig.set_figwidth(13)
+fig.set_figheight(9)
+fig.set_figwidth(16)
 
 rects1 = ax.bar(x - width, column_1, width, align='edge', color='skyblue', hatch='/', edgecolor="black", linewidth=2)
 rects2 = ax.bar(x, column_2, width, align='edge', color='lightcyan', hatch=' \ ', edgecolor="black", linewidth=2)
 rects3 = ax.bar(x + width , column_3, width, align='edge', color='lightcoral', hatch=' \ ', edgecolor="black", linewidth=2)
 
-add_labels(rects1)
-add_labels(rects2)
-add_labels(rects3)
+# add_labels(rects1)
+# add_labels(rects2)
+# add_labels(rects3)
 
-ax.set_ylabel('End-to-end latency (ms)', fontsize=35)
+ax.set_ylabel('End-to-end latency (ms)', fontsize=fontsize)
 ax.set_xticks(x + width/2)
-ax.set_xticklabels(rows_as_group, fontsize=35)
-ax.set_ylim(1, 1000000)  # Adjusted the lower limit to avoid issues with log scale
+ax.set_xticklabels(rows_as_group, fontsize=fontsize)
+ax.set_ylim(1, 30000)  # Adjusted the lower limit to avoid issues with log scale
 ax.set_yscale('log')  # Set y-axis to a logarithmic scale
-ax.set_yticks([1, 10, 100, 1000, 10000], [1, 10, 100, 1000, 10000], fontsize=35)  # Adjusted the y-axis ticks for log scale
+ax.set_yticks([1, 10, 100, 1000, 10000], [1, 10, 100, 1000, 10000], fontsize=fontsize)  # Adjusted the y-axis ticks for log scale
 
-ax.legend([rects1, rects2, rects3], columns_as_bars, loc='upper center', ncol=3, fontsize=30, framealpha=0.0)
+ax.legend([rects1, rects2, rects3], columns_as_bars, loc='upper center', ncol=2, fontsize=fontsize-5, framealpha=0.0)
 
 plt.grid(axis='y', linestyle='--', linewidth=0.5)
 plt.tight_layout()
 
 plt.savefig(fig_pdf_file, dpi=300, format='pdf')
-plt.savefig(fig_eps_file, dpi=300, format='eps')
+#plt.savefig(fig_eps_file, dpi=300, format='eps')
 
 plt.show()
 print('1')

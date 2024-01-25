@@ -11,7 +11,7 @@ mpl.rcParams['text.latex.preamble'] = r'\usepackage{newtxmath}'
 mpl.rcParams['font.size'] = 22
 #mpl.rcParams['axes.prop_cycle'] = plt.cycler(color=plt.cm.Set3.colors)
 
-
+fontsize = 55
 def add_labels(rects):
     for rect in rects:
         height = rect.get_height()
@@ -47,29 +47,28 @@ column_3 = data[:, 2] * 100
 
 
 x = np.arange(len(rows_as_group))
-width = 0.2
+width = 0.15
 fig, ax = plt.subplots()
-fig.set_figheight(6)
-fig.set_figwidth(12.5)
+fig.set_figheight(9)
+fig.set_figwidth(15)
 
 rects1 = ax.bar(x - width, column_1, width, color='skyblue', hatch='/', edgecolor="black", linewidth=2)
 rects2 = ax.bar(x, column_2, width, color='lightcyan', hatch=' \ ', edgecolor="black", linewidth=2)
 rects3 = ax.bar(x + width, column_3, width, color='lightcoral', hatch=' \ ', edgecolor="black", linewidth=2)
 
-add_labels(rects1)
-add_labels(rects2)
-add_labels(rects3)
+# add_labels(rects1)
+# add_labels(rects2)
+# add_labels(rects3)
 
-ax.set_ylabel('$mAP_{50-95}$ (\%)', fontsize=35)
-#ax.set_xlabel('Number of Subcarriers', fontsize=25)
+ax.set_ylabel('$mAP_{50-95}$ (\%)', fontsize=fontsize)#ax.set_xlabel('Number of Subcarriers', fontsize=25)
 #ax.set_title('Scores by group and gender', fontsize= 25)
 
 ax.set_xticks(x)
-ax.set_xticklabels(rows_as_group, fontsize=35)
-ax.set_ylim(0, 130)
-ax.set_yticks([0, 20, 40, 60, 80], [0, 20, 40, 60, 80], fontsize=35)
+ax.set_xticklabels(rows_as_group, fontsize=fontsize)
+ax.set_ylim(0, 115)
+ax.set_yticks([0, 40, 80], [0, 40, 80], fontsize=fontsize)
 
-ax.legend([rects1, rects2, rects3], columns_as_bars, loc='upper center', ncol=3, fontsize=30, framealpha=0.0)
+ax.legend([rects1, rects2, rects3], columns_as_bars, loc='upper center', ncol=2, fontsize=fontsize-5, framealpha=0.0)
 
 
 
@@ -78,7 +77,7 @@ plt.grid(axis='y', linestyle='--', linewidth=0.5)
 plt.tight_layout()
 
 plt.savefig(fig_pdf_file, dpi=300, format='pdf')
-plt.savefig(fig_eps_file, dpi=300, format='eps')
+#plt.savefig(fig_eps_file, dpi=300, format='eps')
 
 plt.show()
 print('1')
