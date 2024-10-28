@@ -1,0 +1,3 @@
+0.740   0.332   0.406                #Compressed (SAWEC     ApproxDet    EdgeDuet)
+0.748   0.34    0.411                #Resized
+0.762   0.357   0.453                #no compressed mo resized
